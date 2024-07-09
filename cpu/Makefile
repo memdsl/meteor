@@ -29,8 +29,6 @@ endif
 -include $(METEOR_ENV_HOME)/core/include/config/auto.conf
 -include $(METEOR_ENV_HOME)/core/include/config/auto.conf.cmd
 
-export PATH := $(PATH):$(abspath ./util)
-
 FUNC_REMOVE_QUOTE = $(patsubst "%",%,$(1))
 
 CFG_CFLAGS_TOP_NAME    = Top
@@ -146,7 +144,7 @@ $(SRCVS_GEN): $(SRCSS)
 	echo $(TEMP_SRCSS_TOPMAIN_INFO_L7) >> $(TEMP_SRCSS_TOPMAIN_PATH) && \
 	echo $(TEMP_SRCSS_TOPMAIN_INFO_L8) >> $(TEMP_SRCSS_TOPMAIN_PATH) && \
 	mkdir -p $(BUILD_DIR) &&                                            \
-	mill -i rtl.runMain TopMain -td $(BUILD_DIR)
+	mill -i __.runMain TopMain -td $(BUILD_DIR)
 $(METEOR_BIN): $(INCS) $(SRCS) $(CONFIG)
 	mkdir -p $(SRCVS_DIR)/temp
 	echo $(TEMP_SRCVS_BUILD_INFO) > $(TEMP_SRCVS_BUILD_PATH)
@@ -172,7 +170,7 @@ config:
 	cd ../env/core && make menuconfig
 
 test:
-	mill -i rtl.test
+	mill -i __.test
 
 gen: $(SRCVS_GEN)
 
@@ -191,10 +189,10 @@ sim: $(METEOR_BIN)
 	gtkwave $(BUILD_DIR)/wave.vcd
 
 fmt:
-	mill -i rtl.reformat
+	mill -i __.reformat
 
 cfmt:
-	mill -i rtl.checkFormat
+	mill -i __.checkFormat
 
 clean:
 	rm -rf out
