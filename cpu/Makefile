@@ -106,11 +106,13 @@ TEMP_SRCSS_TOPMAIN_PATH    = $(SRCSS_DIR)/temp/TopMain.scala
 TEMP_SRCSS_TOPMAIN_INFO_L1 = "import circt.stage._\n"
 TEMP_SRCSS_TOPMAIN_INFO_L2 = "object TopMain extends App {"
 TEMP_SRCSS_TOPMAIN_INFO_L3 = "    def top = new cpu.core.${CPU_PREFIX}.Top();"
-TEMP_SRCSS_TOPMAIN_INFO_L4 = "    val gen = Seq(chisel3.stage.ChiselGeneratorAnnotation(() => top));"
-TEMP_SRCSS_TOPMAIN_INFO_L5 = "    (new ChiselStage).execute("
-TEMP_SRCSS_TOPMAIN_INFO_L6 = "        args,"
-TEMP_SRCSS_TOPMAIN_INFO_L7 = "        gen :+ CIRCTTargetAnnotation(CIRCTTarget.Verilog))"
-TEMP_SRCSS_TOPMAIN_INFO_L8 = "}"
+TEMP_SRCSS_TOPMAIN_INFO_L4 = "    val firtoolOptions = Array(\"--lowering-options=\" + List("
+TEMP_SRCSS_TOPMAIN_INFO_L5 = "        \"disallowLocalVariables\","
+TEMP_SRCSS_TOPMAIN_INFO_L6 = "        \"disallowPackedArrays\","
+TEMP_SRCSS_TOPMAIN_INFO_L7 = "        \"locationInfoStyle=wrapInAtSquareBracket\""
+TEMP_SRCSS_TOPMAIN_INFO_L8 = "    ).reduce(_ + \",\" + _))"
+TEMP_SRCSS_TOPMAIN_INFO_L9 = "    ChiselStage.emitSystemVerilogFile(top, args, firtoolOptions)"
+TEMP_SRCSS_TOPMAIN_INFO_LA = "}"
 
 MEM_TIME_TYPE ?= ASYNC
 ifeq ($(CPU), ml2)
@@ -143,8 +145,10 @@ $(SRCVS_GEN): $(SRCSS)
 	echo $(TEMP_SRCSS_TOPMAIN_INFO_L6) >> $(TEMP_SRCSS_TOPMAIN_PATH) && \
 	echo $(TEMP_SRCSS_TOPMAIN_INFO_L7) >> $(TEMP_SRCSS_TOPMAIN_PATH) && \
 	echo $(TEMP_SRCSS_TOPMAIN_INFO_L8) >> $(TEMP_SRCSS_TOPMAIN_PATH) && \
+	echo $(TEMP_SRCSS_TOPMAIN_INFO_L9) >> $(TEMP_SRCSS_TOPMAIN_PATH) && \
+	echo $(TEMP_SRCSS_TOPMAIN_INFO_LA) >> $(TEMP_SRCSS_TOPMAIN_PATH) && \
 	mkdir -p $(BUILD_DIR) &&                                            \
-	mill -i __.runMain TopMain -td $(BUILD_DIR)
+	mill -i cpu.runMain TopMain -td $(BUILD_DIR)
 $(METEOR_BIN): $(INCS) $(SRCS) $(CONFIG)
 	mkdir -p $(SRCVS_DIR)/temp
 	echo $(TEMP_SRCVS_BUILD_INFO) > $(TEMP_SRCVS_BUILD_PATH)
@@ -170,7 +174,7 @@ config:
 	cd ../env/core && make menuconfig
 
 test:
-	mill -i __.test
+	mill -i cpu.test
 
 gen: $(SRCVS_GEN)
 
@@ -189,10 +193,10 @@ sim: $(METEOR_BIN)
 	gtkwave $(BUILD_DIR)/wave.vcd
 
 fmt:
-	mill -i __.reformat
+	mill -i cpu.reformat
 
 cfmt:
-	mill -i __.checkFormat
+	mill -i cpu.checkFormat
 
 clean:
 	rm -rf out
