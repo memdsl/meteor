@@ -1,40 +1,3 @@
-// import mill._
-// import mill.scalalib._
-// import mill.scalalib.scalafmt.ScalafmtModule
-// import mill.scalalib.TestModule.Utest
-
-// import mill.bsp._
-
-// object rtl extends ScalaModule with ScalafmtModule { m =>
-//     val useChisel5 = true
-//     override def scalaVersion = "2.13.10"
-//     override def scalacOptions = Seq(
-//         "-language:reflectiveCalls",
-//         "-deprecation",
-//         "-feature",
-//         "-Xcheckinit"
-//     )
-//     override def ivyDeps = Agg(
-//         if (useChisel5) ivy"org.chipsalliance::chisel:5.0.0" else
-//         ivy"edu.berkeley.cs::chisel3:3.6.0",
-//     )
-//     override def scalacPluginIvyDeps = Agg(
-//         if (useChisel5) ivy"org.chipsalliance:::chisel-plugin:5.0.0" else
-//         ivy"edu.berkeley.cs:::chisel3-plugin:3.6.0",
-//     )
-//     object test extends ScalaTests with Utest {
-//         override def ivyDeps = m.ivyDeps() ++ Agg(
-//             ivy"com.lihaoyi::utest:0.8.1",
-//             if (useChisel5) ivy"edu.berkeley.cs::chiseltest:5.0.0" else
-//             ivy"edu.berkeley.cs::chiseltest:0.6.0",
-//         )
-//     }
-//     def repositoriesTask = T.task { Seq(
-//         coursier.MavenRepository("https://maven.aliyun.com/repository/central"),
-//         coursier.MavenRepository("https://repo.scala-sbt.org/scalasbt/maven-releases"),
-//     ) ++ super.repositoriesTask() }
-// }
-
 import mill._
 import mill.define.Sources
 import mill.modules.Util
@@ -43,7 +6,7 @@ import mill.scalalib.TestModule.ScalaTest
 import mill.scalalib._
 import mill.bsp._
 
-object playground extends SbtModule with ScalafmtModule { m =>
+object cpu extends SbtModule with ScalafmtModule { m =>
     override def millSourcePath = os.pwd / "rtl"
     override def scalaVersion = "2.13.14"
     override def scalacOptions = Seq(
@@ -63,7 +26,7 @@ object playground extends SbtModule with ScalafmtModule { m =>
     )
     object test extends SbtModuleTests with TestModule.ScalaTest with ScalafmtModule {
         override def sources = T.sources {
-            super.sources() ++ Seq(PathRef(millSourcePath / "test"))
+            super.sources() ++ Seq(PathRef(this.millSourcePath / "test"))
         }
         override def ivyDeps = super.ivyDeps() ++ Agg(
             ivy"edu.berkeley.cs::chiseltest:6.0.0"
