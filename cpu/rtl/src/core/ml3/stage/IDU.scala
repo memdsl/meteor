@@ -34,6 +34,7 @@ class IDU extends Module with ConfigInstRV32I
         val oGPRRS1Addr     = Output(UInt(GPRS_WIDTH.W))
         val oGPRRS2Addr     = Output(UInt(GPRS_WIDTH.W))
         val oGPRRdAddr      = Output(UInt(GPRS_WIDTH.W))
+        val oGPRRS2Data     = Output(UInt(DATA_WIDTH.W))
         val oALURS1Data     = Output(UInt(DATA_WIDTH.W))
         val oALURS2Data     = Output(UInt(DATA_WIDTH.W))
     })
@@ -156,9 +157,10 @@ class IDU extends Module with ConfigInstRV32I
     val wALURS1Data = Mux(wHandShakeIFU2IDU, wGPRRS1Data, DATA_ZERO)
     val wALURS2Data = Mux(wHandShakeIFU2IDU, wGPRRS2Data, DATA_ZERO)
 
-    io.oGPRRS1Addr := Mux(wHandShakeIDU2EXU, wGPRRS1Addr, GPRS_ZERO)
-    io.oGPRRS2Addr := Mux(wHandShakeIDU2EXU, wGPRRS2Addr, GPRS_ZERO)
-    io.oGPRRdAddr  := Mux(wHandShakeIDU2EXU, wGPRRdAddr,  GPRS_ZERO)
-    io.oALURS1Data := Mux(wHandShakeIDU2EXU, wALURS1Data, DATA_ZERO)
-    io.oALURS2Data := Mux(wHandShakeIDU2EXU, wALURS2Data, DATA_ZERO)
+    io.oGPRRS1Addr := Mux(wHandShakeIDU2EXU, wGPRRS1Addr,    GPRS_ZERO)
+    io.oGPRRS2Addr := Mux(wHandShakeIDU2EXU, wGPRRS2Addr,    GPRS_ZERO)
+    io.oGPRRdAddr  := Mux(wHandShakeIDU2EXU, wGPRRdAddr,     GPRS_ZERO)
+    io.oGPRRS2Data := Mux(wHandShakeIDU2EXU, io.iGPRRS2Data, DATA_ZERO)
+    io.oALURS1Data := Mux(wHandShakeIDU2EXU, wALURS1Data,    DATA_ZERO)
+    io.oALURS2Data := Mux(wHandShakeIDU2EXU, wALURS2Data,    DATA_ZERO)
 }

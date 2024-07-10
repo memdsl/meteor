@@ -23,6 +23,7 @@ class LSU extends Module with ConfigInst {
         val iCtrRegWrEn     = Input(Bool())
         val iCtrRegWrSrc    = Input(UInt(SIGS_WIDTH.W))
         val iGPRRdAddr      = Input(UInt(GPRS_WIDTH.W))
+        val iGPRRS2Data     = Input(UInt(DATA_WIDTH.W))
         val iALUZero        = Input(Bool())
         val iALUOut         = Input(UInt(DATA_WIDTH.W))
         val iMemRdData      = Input(UInt(DATA_WIDTH.W))
@@ -57,6 +58,7 @@ class LSU extends Module with ConfigInst {
     val wCtrRegWrEn  = Mux(wHandShakeEXU2LSU, io.iCtrRegWrEn,  SIGS_ZERO)
     val wCtrRegWrSrc = Mux(wHandShakeEXU2LSU, io.iCtrRegWrSrc, SIGS_ZERO)
     val wGPRRdAddr   = Mux(wHandShakeEXU2LSU, io.iGPRRdAddr,   GPRS_ZERO)
+    val wGPRRS2Data  = Mux(wHandShakeEXU2LSU, io.iGPRRS2Data,   GPRS_ZERO)
     val wALUZero     = Mux(wHandShakeEXU2LSU, io.iALUZero,     false.B)
     val wALUOut      = Mux(wHandShakeEXU2LSU, io.iALUOut,      DATA_ZERO)
 
@@ -74,7 +76,7 @@ class LSU extends Module with ConfigInst {
     when (wHandShakeEXU2LSU && wCtrMemWrEn.asBool) {
         io.oMemWrEn   := true.B
         io.oMemWrAddr := wALUOut
-        io.oMemWrData := 0.U
+        io.oMemWrData := wGPRRS2Data
         io.oMemWrMask := MuxLookup(
             wCtrMemByt,
             VecInit(("b1111".U).asBools)) (

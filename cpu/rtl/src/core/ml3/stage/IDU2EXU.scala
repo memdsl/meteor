@@ -28,6 +28,7 @@ class IDU2EXU extends Module with ConfigInst {
         val iCtrRegWrEn  = Input(Bool())
         val iCtrRegWrSrc = Input(UInt(SIGS_WIDTH.W))
         val iGPRRdAddr   = Input(UInt(GPRS_WIDTH.W))
+        val iGPRRS2Data  = Input(UInt(DATA_WIDTH.W))
         val iALURS1Data  = Input(UInt(DATA_WIDTH.W))
         val iALURS2Data  = Input(UInt(DATA_WIDTH.W))
         val oCtrInstName = Output(UInt(SIGS_WIDTH.W))
@@ -39,7 +40,8 @@ class IDU2EXU extends Module with ConfigInst {
         val oCtrMemByt   = Output(UInt(SIGS_WIDTH.W))
         val oCtrRegWrEn  = Output(Bool())
         val oCtrRegWrSrc = Output(UInt(SIGS_WIDTH.W))
-        val oGPRRdAddr    = Output(UInt(GPRS_WIDTH.W))
+        val oGPRRdAddr   = Output(UInt(GPRS_WIDTH.W))
+        val oGPRRS2Data  = Output(UInt(DATA_WIDTH.W))
         val oALURS1Data  = Output(UInt(DATA_WIDTH.W))
         val oALURS2Data  = Output(UInt(DATA_WIDTH.W))
     })
@@ -70,6 +72,7 @@ class IDU2EXU extends Module with ConfigInst {
     val rALURS1Data  = RegEnable(io.iALURS1Data,  DATA_ZERO, wHandShakeIDU)
     val rALURS2Data  = RegEnable(io.iALURS2Data,  DATA_ZERO, wHandShakeIDU)
     val rGPRRdAddr   = RegEnable(io.iGPRRdAddr,   GPRS_ZERO, wHandShakeIDU)
+    val rGPRRS2Data  = RegEnable(io.iGPRRS2Data,  DATA_ZERO, wHandShakeIDU)
 
     io.oCtrInstName := Mux(wHandShakeEXU, rCtrInstName, SIGS_ZERO)
     io.oCtrALUType  := Mux(wHandShakeEXU, rCtrALUType , SIGS_ZERO)
@@ -81,6 +84,7 @@ class IDU2EXU extends Module with ConfigInst {
     io.oCtrRegWrEn  := Mux(wHandShakeEXU, rCtrRegWrEn , SIGS_ZERO)
     io.oCtrRegWrSrc := Mux(wHandShakeEXU, rCtrRegWrSrc, SIGS_ZERO)
     io.oGPRRdAddr   := Mux(wHandShakeEXU, rGPRRdAddr,   GPRS_ZERO)
+    io.oGPRRS2Data  := Mux(wHandShakeEXU, rGPRRS2Data,  DATA_ZERO)
     io.oALURS1Data  := Mux(wHandShakeEXU, rALURS1Data , DATA_ZERO)
     io.oALURS2Data  := Mux(wHandShakeEXU, rALURS2Data , DATA_ZERO)
 }
