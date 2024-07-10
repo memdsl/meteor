@@ -95,14 +95,14 @@ class IDU extends Module with ConfigInstRV32I
 
     val wCSRAddr = MuxLookup(wInstName, ADDR_ZERO) (
         Seq(
-            INST_NAME_ECALL  -> CSR_MTVEC,
+            INST_NAME_ECALL  -> CSRS_MTVEC,
             INST_NAME_CSRRW  -> ExtenImm(wInst, "immI"),
             INST_NAME_CSRRS  -> ExtenImm(wInst, "immI"),
             INST_NAME_CSRRC  -> ExtenImm(wInst, "immI"),
             INST_NAME_CSRRWI -> ExtenImm(wInst, "immI"),
             INST_NAME_CSRRSI -> ExtenImm(wInst, "immI"),
             INST_NAME_CSRRCI -> ExtenImm(wInst, "immI"),
-            INST_NAME_MRET   -> CSR_MEPC
+            INST_NAME_MRET   -> CSRS_MEPC
         )
     )
     val wCSRRdData = io.pCSRRd.bRdData

@@ -9,12 +9,12 @@ class Top extends Module with ConfigInst {
     val mIFU     = Module(new IFU)
     val mIFU2IDU = Module(new IFU2IDU)
 
-    mIFU.io.iReadyFrCPU := true.B
-    mIFU.io.iReadyFrIFU := mIFU2IDU.io.oValidToIFU
-    mIFU.io.iPCJumpEn   := false.B
-    mIFU.io.iPCJump     := ADDR_INIT
+    mIFU.io.iReadyFrCPU     := true.B
+    mIFU.io.iReadyFrIFU2IDU := mIFU2IDU.io.oValidToIFU
+    mIFU.io.iPCJmpEn       := false.B
+    mIFU.io.iPCJmp         := ADDR_INIT
 
-    mIFU2IDU.io.iReadyFrIFU := mIFU.io.oValidToIFU
+    mIFU2IDU.io.iReadyFrIFU := mIFU.io.oValidToIFU2IDU
     mIFU2IDU.io.iReadyFrIDU := true.B
     mIFU2IDU.io.iPC         := mIFU.io.oPC
     mIFU2IDU.io.iPCNext     := mIFU.io.oPCNext

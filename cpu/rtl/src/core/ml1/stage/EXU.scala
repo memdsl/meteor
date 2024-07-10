@@ -132,7 +132,7 @@ class EXU extends Module with ConfigInst with Build {
     .elsewhen (io.pIDUCtr.bInstName === INST_NAME_MRET) {
         val wRdMSTAData = io.pCSRRd.bRdMSTAData
         io.pCSRWr.bWrEn   := true.B
-        io.pCSRWr.bWrAddr := CSR_MSTATUS
+        io.pCSRWr.bWrAddr := CSRS_MSTATUS
         io.pCSRWr.bWrData := Cat(wRdMSTAData(31, 13),
                                  0.U(2.W),
                                  wRdMSTAData(10,  8),
@@ -149,7 +149,7 @@ class EXU extends Module with ConfigInst with Build {
     when (io.pIDUCtr.bInstName === INST_NAME_ECALL) {
         val wRdMSTAData = io.pCSRRd.bRdMSTAData
         io.pCSRWr.bWrEn   := true.B
-        io.pCSRWr.bWrAddr := CSR_MSTATUS
+        io.pCSRWr.bWrAddr := CSRS_MSTATUS
         io.pCSRWr.bWrData := Cat(wRdMSTAData(31, 13),
                                  3.U(2.W),
                                  wRdMSTAData(10,  8),
@@ -160,7 +160,7 @@ class EXU extends Module with ConfigInst with Build {
 
         io.pCSRWr.bWrMEn      := true.B
         io.pCSRWr.bWrMEPCData := io.pBase.bPC
-        io.pCSRWr.bWrMCAUData := CSR_CODE_M_ECALL
+        io.pCSRWr.bWrMCAUData := CSRS_CODE_M_ECALL
     }
     .otherwise {
         io.pCSRWr.bWrMEn      := false.B

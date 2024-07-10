@@ -17,7 +17,7 @@ class GPR extends Module with ConfigInst {
     io.pGPRRS.bRS1Data  := mGPR(io.pGPRRS.bRS1Addr)
     io.pGPRRS.bRS2Data  := mGPR(io.pGPRRS.bRS2Addr)
 
-    io.pGPRRd.bRdEData  := mGPR(GPR_END)
+    io.pGPRRd.bRdEData  := mGPR(GPRS_END)
     io.pGPRRd.bRdData0  := mGPR( 0.U(GPRS_WIDTH.W))
     io.pGPRRd.bRdData1  := mGPR( 1.U(GPRS_WIDTH.W))
     io.pGPRRd.bRdData2  := mGPR( 2.U(GPRS_WIDTH.W))
@@ -55,5 +55,5 @@ class GPR extends Module with ConfigInst {
         mGPR(io.pGPRWr.bWrAddr) := io.pGPRWr.bWrData
     }
 
-    mGPR(GPR_ZERO) := DATA_ZERO
+    mGPR(GPRS_ZERO) := DATA_ZERO
 }

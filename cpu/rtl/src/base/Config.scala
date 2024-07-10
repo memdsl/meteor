@@ -31,7 +31,7 @@ trait ConfigIO {
     val AXUS_WIDTH = 4
     val AXLN_WIDTH = 8
 
-    val CSR_TYPE = 2
+    val CSRS_TYPE = 2
 }
 
 trait ConfigInst extends ConfigIO {
@@ -41,19 +41,20 @@ trait ConfigInst extends ConfigIO {
     val DATA_ZERO = "x00000000".U(DATA_WIDTH.W)
     val MASK_ZERO = "x00000000".U(MASK_WIDTH.W)
     val INST_EBRK = "x00100073".U(INST_WIDTH.W)
+    val SIGS_ZERO = "x00000000".U(SIGS_WIDTH.W)
 
-    val GPR_ZERO         =     0.U(GPRS_WIDTH.W)
-    val GPR_END          =    10.U(GPRS_WIDTH.W)
-    val CSR_MSTATUS      = 0x300.U(CSRS_WIDTH.W)
-    val CSR_MTVEC        = 0x305.U(CSRS_WIDTH.W)
-    val CSR_MEPC         = 0x341.U(CSRS_WIDTH.W)
-    val CSR_MCAUSE       = 0x342.U(CSRS_WIDTH.W)
-    val CSR_CODE_M_ECALL =    11.U
-    val CSR_MSTATUS_INIT = "x00001800".U(ADDR_WIDTH.W)
+    val GPRS_ZERO         =     0.U(GPRS_WIDTH.W)
+    val GPRS_END          =    10.U(GPRS_WIDTH.W)
+    val CSRS_MSTATUS      = 0x300.U(CSRS_WIDTH.W)
+    val CSRS_MTVEC        = 0x305.U(CSRS_WIDTH.W)
+    val CSRS_MEPC         = 0x341.U(CSRS_WIDTH.W)
+    val CSRS_MCAUSE       = 0x342.U(CSRS_WIDTH.W)
+    val CSRS_CODE_M_ECALL =    11.U
+    val CSRS_MSTATUS_INIT = "x00001800".U(ADDR_WIDTH.W)
 
-    val CSR_TYPE_X     = 0.U(CSR_TYPE.W)
-    val CSR_TYPE_ECALL = 1.U(CSR_TYPE.W)
-    val CSR_TYPE_MRET  = 2.U(CSR_TYPE.W)
+    val CSRS_TYPE_X     = 0.U(CSRS_TYPE.W)
+    val CSRS_TYPE_ECALL = 1.U(CSRS_TYPE.W)
+    val CSRS_TYPE_MRET  = 2.U(CSRS_TYPE.W)
 
     val EN_TR = true.B
     val EN_FL = false.B
@@ -198,8 +199,8 @@ trait ConfigInst extends ConfigIO {
     val REG_WR_TR = 1.U(SIGS_WIDTH.W)
     val REG_WR_FL = 0.U(SIGS_WIDTH.W)
 
-    val CSR_WR_T = 1.U(SIGS_WIDTH.W)
-    val CSR_WR_F = 0.U(SIGS_WIDTH.W)
+    val CSRS_WR_T = 1.U(SIGS_WIDTH.W)
+    val CSRS_WR_F = 0.U(SIGS_WIDTH.W)
 
     val AXI4_RESP_OKEY   = 0.U(RESP_WIDTH.W)
     val AXI4_RESP_EXOKAY = 1.U(RESP_WIDTH.W)

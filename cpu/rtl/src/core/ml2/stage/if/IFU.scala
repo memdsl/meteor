@@ -14,7 +14,7 @@ class IFU extends Module with ConfigInst {
         val iIRWrEn   = Input(Bool())
 
         val iPCNext   = Input(UInt(ADDR_WIDTH.W))
-        val iPCJump   = Input(UInt(ADDR_WIDTH.W))
+        val iPCJmp   = Input(UInt(ADDR_WIDTH.W))
         val iALUZero  = Input(Bool())
         val iInst     = Input(UInt(INST_WIDTH.W))
 
@@ -34,10 +34,10 @@ class IFU extends Module with ConfigInst {
               io.iInstName === INST_NAME_BGE  ||
               io.iInstName === INST_NAME_BLTU ||
               io.iInstName === INST_NAME_BGEU) {
-            wPCNext := Mux(io.iALUZero === 1.U, io.iPCJump, io.iPCNext)
+            wPCNext := Mux(io.iALUZero === 1.U, io.iPCJmp, io.iPCNext)
         }
         .otherwise {
-            wPCNext := io.iPCJump
+            wPCNext := io.iPCJmp
         }
     }
 

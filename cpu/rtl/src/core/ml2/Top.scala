@@ -23,7 +23,7 @@ class Top extends Module with ConfigInst {
     io.pState.bEndPreFlag := mIDU.io.pCTR.oEndPreFlag
     io.pState.bEndAllFlag := false.B
     io.pState.bEndAllData := mIDU.io.pIDU.oEndData
-    io.pState.bCSRType    := CSR_TYPE_X
+    io.pState.bCSRType    := CSRS_TYPE_X
 
     io.pTrace.pBase.bPC          := mIFU.io.pIFU.oPC
     io.pTrace.pBase.bPCNext      := mIFU.io.pIFU.oPCNext
@@ -60,7 +60,7 @@ class Top extends Module with ConfigInst {
     mIFU.io.iPCWrSrc  := mIDU.io.pCTR.oPCWrSrc
     mIFU.io.iIRWrEn   := mIDU.io.pCTR.oIRWrEn
     mIFU.io.iPCNext   := mEXU.io.pEXU.oPCNext
-    mIFU.io.iPCJump   := mEXU.io.pEXU.oPCJump
+    mIFU.io.iPCJmp   := mEXU.io.pEXU.oPCJump
     mIFU.io.iALUZero  := mEXU.io.pEXU.oALUZero
     mIFU.io.iInst     := mLSU.io.pLSU.oMemRdDataInst
 
@@ -71,7 +71,7 @@ class Top extends Module with ConfigInst {
     mIDU.io.iWaitWrFlag := mLSU.io.oWaitWrFlag
 
     mEXU.io.iPCNextEn := mIDU.io.pCTR.oPCNextEn
-    mEXU.io.iPCJumpEn := mIDU.io.pCTR.oPCJumpEn
+    mEXU.io.iPCJmpEn := mIDU.io.pCTR.oPCJumpEn
     mEXU.io.iALUType  := mIDU.io.pCTR.oALUType
     mEXU.io.iALURS1   := mIDU.io.pCTR.oALURS1
     mEXU.io.iALURS2   := mIDU.io.pCTR.oALURS2

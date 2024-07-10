@@ -7,24 +7,24 @@ import cpu.base._
 
 class IFU extends Module with ConfigInst {
     val io = IO(new Bundle {
-        val iReadyFrCPU = Input(Bool())
-        val iReadyFrIFU = Input(Bool())
-        val iPCJumpEn   = Input(Bool())
-        val iPCJump     = Input(UInt())
+        val iReadyFrCPU     = Input(Bool())
+        val iReadyFrIFU2IDU = Input(Bool())
+        val iPCJmpEn        = Input(Bool())
+        val iPCJmp          = Input(UInt())
 
-        val oValidToIFU = Output(Bool())
-        val oPC         = Output(UInt(ADDR_WIDTH.W))
-        val oPCNext     = Output(UInt(ADDR_WIDTH.W))
+        val oValidToIFU2IDU = Output(Bool())
+        val oPC             = Output(UInt(ADDR_WIDTH.W))
+        val oPCNext         = Output(UInt(ADDR_WIDTH.W))
     })
 
-    io.oValidToIFU := true.B
+    io.oValidToIFU2IDU := true.B
 
     val rPC = RegInit(ADDR_INIT)
     rPC := Mux(io.iReadyFrCPU, rPC + 4.U(ADDR_WIDTH.W), rPC)
 
-    val wPC     = Mux(io.iPCJumpEn, io.iPCJump, rPC)
+    val wPC     = Mux(io.iPCJmpEn, io.iPCJmp, rPC)
     val wPCNext = wPC + 4.U(ADDR_WIDTH.W)
 
-    io.oPC     := Mux(io.oValidToIFU && io.iReadyFrIFU, wPC,     ADDR_INIT)
-    io.oPCNext := Mux(io.oValidToIFU && io.iReadyFrIFU, wPCNext, ADDR_INIT)
+    io.oPC     := Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wPC,     ADDR_ZERO)
+    io.oPCNext := Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wPCNext, ADDR_ZERO)
 }
