@@ -38,16 +38,19 @@ class IDU extends Module with ConfigInstRV32I
         val oALURS2Data     = Output(UInt(DATA_WIDTH.W))
     })
 
+    val wHandShakeIFU2IDU = io.oValidToIFU2IDU && io.iReadyFrIFU2IDU
+    val wHandShakeIDU2EXU = io.oValidToIDU2EXU && io.iReadyFrIDU2EXU
+
     io.oValidToIFU2IDU := true.B
     io.oValidToIDU2EXU := true.B
 
-    val wPC     = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, io.iPC,     ADDR_ZERO)
-    val wPCNext = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, io.iPCNext, ADDR_ZERO)
-    val wInst   = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, io.iInst,   INST_ZERO)
+    val wPC     = Mux(wHandShakeIFU2IDU, io.iPC,     ADDR_ZERO)
+    val wPCNext = Mux(wHandShakeIFU2IDU, io.iPCNext, ADDR_ZERO)
+    val wInst   = Mux(wHandShakeIFU2IDU, io.iInst,   INST_ZERO)
 
-    io.oPC     := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wPC,     ADDR_ZERO)
-    io.oPCNext := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wPCNext, ADDR_ZERO)
-    io.oInst   := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wInst,   INST_ZERO)
+    io.oPC     := Mux(wHandShakeIDU2EXU, wPC,     ADDR_ZERO)
+    io.oPCNext := Mux(wHandShakeIDU2EXU, wPCNext, ADDR_ZERO)
+    io.oInst   := Mux(wHandShakeIDU2EXU, wInst,   INST_ZERO)
 
     var lInst = ListLookup(
         io.iInst,
@@ -123,39 +126,39 @@ class IDU extends Module with ConfigInstRV32I
     val wRegWrEn  = lInst(7)
     val wRegWrSrc = lInst(8)
 
-    val wCtrInstName = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wInstName, SIGS_ZERO)
-    val wCtrALUType  = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wALUType,  SIGS_ZERO)
-    val wCtrALURS1   = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wALURS1,   SIGS_ZERO)
-    val wCtrALURS2   = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wALURS2,   SIGS_ZERO)
-    val wCtrJmpEn    = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wJmpEn,    SIGS_ZERO)
-    val wCtrMemWrEn  = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wMemWrEn,  SIGS_ZERO)
-    val wCtrMemByt   = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wMemByt,   SIGS_ZERO)
-    val wCtrRegWrEn  = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wRegWrEn,  SIGS_ZERO)
-    val wCtrRegWrSrc = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wRegWrSrc, SIGS_ZERO)
+    val wCtrInstName = Mux(wHandShakeIFU2IDU, wInstName, SIGS_ZERO)
+    val wCtrALUType  = Mux(wHandShakeIFU2IDU, wALUType,  SIGS_ZERO)
+    val wCtrALURS1   = Mux(wHandShakeIFU2IDU, wALURS1,   SIGS_ZERO)
+    val wCtrALURS2   = Mux(wHandShakeIFU2IDU, wALURS2,   SIGS_ZERO)
+    val wCtrJmpEn    = Mux(wHandShakeIFU2IDU, wJmpEn,    SIGS_ZERO)
+    val wCtrMemWrEn  = Mux(wHandShakeIFU2IDU, wMemWrEn,  SIGS_ZERO)
+    val wCtrMemByt   = Mux(wHandShakeIFU2IDU, wMemByt,   SIGS_ZERO)
+    val wCtrRegWrEn  = Mux(wHandShakeIFU2IDU, wRegWrEn,  SIGS_ZERO)
+    val wCtrRegWrSrc = Mux(wHandShakeIFU2IDU, wRegWrSrc, SIGS_ZERO)
 
-    io.oCtrInstName := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wCtrInstName, SIGS_ZERO)
-    io.oCtrALUType  := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wCtrALUType,  SIGS_ZERO)
-    io.oCtrALURS1   := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wCtrALURS1,   SIGS_ZERO)
-    io.oCtrALURS2   := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wCtrALURS2,   SIGS_ZERO)
-    io.oCtrJmpEn    := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wCtrJmpEn,    SIGS_ZERO)
-    io.oCtrMemWrEn  := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wCtrMemWrEn,  SIGS_ZERO)
-    io.oCtrMemByt   := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wCtrMemByt,   SIGS_ZERO)
-    io.oCtrRegWrEn  := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wCtrRegWrEn,  SIGS_ZERO)
-    io.oCtrRegWrSrc := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wCtrRegWrSrc, SIGS_ZERO)
+    io.oCtrInstName := Mux(wHandShakeIDU2EXU, wCtrInstName, SIGS_ZERO)
+    io.oCtrALUType  := Mux(wHandShakeIDU2EXU, wCtrALUType,  SIGS_ZERO)
+    io.oCtrALURS1   := Mux(wHandShakeIDU2EXU, wCtrALURS1,   SIGS_ZERO)
+    io.oCtrALURS2   := Mux(wHandShakeIDU2EXU, wCtrALURS2,   SIGS_ZERO)
+    io.oCtrJmpEn    := Mux(wHandShakeIDU2EXU, wCtrJmpEn,    SIGS_ZERO)
+    io.oCtrMemWrEn  := Mux(wHandShakeIDU2EXU, wCtrMemWrEn,  SIGS_ZERO)
+    io.oCtrMemByt   := Mux(wHandShakeIDU2EXU, wCtrMemByt,   SIGS_ZERO)
+    io.oCtrRegWrEn  := Mux(wHandShakeIDU2EXU, wCtrRegWrEn,  SIGS_ZERO)
+    io.oCtrRegWrSrc := Mux(wHandShakeIDU2EXU, wCtrRegWrSrc, SIGS_ZERO)
 
-    val wGPRRS1Addr = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, io.iInst(19, 15), GPRS_ZERO)
-    val wGPRRS2Addr = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, io.iInst(24, 20), GPRS_ZERO)
-    val wGPRRdAddr  = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, io.iInst(11,  7), GPRS_ZERO)
+    val wGPRRS1Addr = Mux(wHandShakeIFU2IDU, io.iInst(19, 15), GPRS_ZERO)
+    val wGPRRS2Addr = Mux(wHandShakeIFU2IDU, io.iInst(24, 20), GPRS_ZERO)
+    val wGPRRdAddr  = Mux(wHandShakeIFU2IDU, io.iInst(11,  7), GPRS_ZERO)
 
     val wGPRRS1Data = io.iGPRRS1Data
     val wGPRRS2Data = io.iGPRRS2Data
 
-    val wALURS1Data = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wGPRRS1Data, DATA_ZERO)
-    val wALURS2Data = Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wGPRRS2Data, DATA_ZERO)
+    val wALURS1Data = Mux(wHandShakeIFU2IDU, wGPRRS1Data, DATA_ZERO)
+    val wALURS2Data = Mux(wHandShakeIFU2IDU, wGPRRS2Data, DATA_ZERO)
 
-    io.oGPRRS1Addr := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wGPRRS1Addr, GPRS_ZERO)
-    io.oGPRRS2Addr := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wGPRRS2Addr, GPRS_ZERO)
-    io.oGPRRdAddr  := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wGPRRdAddr,  GPRS_ZERO)
-    io.oALURS1Data := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wALURS1Data, DATA_ZERO)
-    io.oALURS2Data := Mux(io.oValidToIDU2EXU && io.iReadyFrIDU2EXU, wALURS2Data, DATA_ZERO)
+    io.oGPRRS1Addr := Mux(wHandShakeIDU2EXU, wGPRRS1Addr, GPRS_ZERO)
+    io.oGPRRS2Addr := Mux(wHandShakeIDU2EXU, wGPRRS2Addr, GPRS_ZERO)
+    io.oGPRRdAddr  := Mux(wHandShakeIDU2EXU, wGPRRdAddr,  GPRS_ZERO)
+    io.oALURS1Data := Mux(wHandShakeIDU2EXU, wALURS1Data, DATA_ZERO)
+    io.oALURS2Data := Mux(wHandShakeIDU2EXU, wALURS2Data, DATA_ZERO)
 }

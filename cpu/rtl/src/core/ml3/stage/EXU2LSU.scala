@@ -18,18 +18,49 @@ class EXU2LSU extends Module with ConfigInst {
         val oPCNext      = Output(UInt(ADDR_WIDTH.W))
         val oInst        = Output(UInt(INST_WIDTH.W))
 
+        val iCtrMemWrEn  = Input(Bool())
+        val iCtrMemByt   = Input(UInt(SIGS_WIDTH.W))
+        val iCtrRegWrEn  = Input(Bool())
+        val iCtrRegWrSrc = Input(UInt(SIGS_WIDTH.W))
+        val iGPRRdAddr   = Input(UInt(GPRS_WIDTH.W))
+        val iALUZero     = Input(Bool())
+        val iALUOut      = Input(UInt(DATA_WIDTH.W))
+        val oCtrMemWrEn  = Output(UInt(SIGS_WIDTH.W))
+        val oCtrMemByt   = Output(UInt(SIGS_WIDTH.W))
+        val oCtrRegWrEn  = Output(UInt(SIGS_WIDTH.W))
+        val oCtrRegWrSrc = Output(UInt(SIGS_WIDTH.W))
+        val oGPRRdAddr   = Output(UInt(SIGS_WIDTH.W))
+        val oALUZero     = Output(Bool())
+        val oALUOut      = Output(UInt(DATA_WIDTH.W))
     })
+
+    val wHandShakeEXU = io.oValidToEXU && io.iReadyFrEXU
+    val wHandShakeLSU = io.oValidToLSU && io.iReadyFrLSU
 
     io.oValidToEXU := true.B
     io.oValidToLSU := true.B
 
-    val rPC     = RegEnable(io.iPC,     ADDR_INIT, io.oValidToEXU && io.iReadyFrEXU)
-    val rPCNext = RegEnable(io.iPCNext, ADDR_INIT, io.oValidToEXU && io.iReadyFrEXU)
-    val rInst   = RegEnable(io.iInst,   INST_ZERO, io.oValidToEXU && io.iReadyFrEXU)
+    val rPC     = RegEnable(io.iPC,     ADDR_INIT, wHandShakeEXU)
+    val rPCNext = RegEnable(io.iPCNext, ADDR_INIT, wHandShakeEXU)
+    val rInst   = RegEnable(io.iInst,   INST_ZERO, wHandShakeEXU)
 
-    io.oPC     := Mux(io.oValidToLSU && io.iReadyFrLSU, rPC,     ADDR_ZERO)
-    io.oPCNext := Mux(io.oValidToLSU && io.iReadyFrLSU, rPCNext, ADDR_ZERO)
-    io.oInst   := Mux(io.oValidToLSU && io.iReadyFrLSU, rInst,   INST_ZERO)
+    io.oPC     := Mux(wHandShakeLSU, rPC,     ADDR_ZERO)
+    io.oPCNext := Mux(wHandShakeLSU, rPCNext, ADDR_ZERO)
+    io.oInst   := Mux(wHandShakeLSU, rInst,   INST_ZERO)
 
+    val rCtrMemWrEn  = RegEnable(io.iCtrMemWrEn,  SIGS_ZERO, wHandShakeEXU)
+    val rCtrMemByt   = RegEnable(io.iCtrMemByt,   SIGS_ZERO, wHandShakeEXU)
+    val rCtrRegWrEn  = RegEnable(io.iCtrRegWrEn,  SIGS_ZERO, wHandShakeEXU)
+    val rCtrRegWrSrc = RegEnable(io.iCtrRegWrSrc, SIGS_ZERO, wHandShakeEXU)
+    val rGPRRdAddr   = RegEnable(io.iGPRRdAddr,   GPRS_ZERO, wHandShakeEXU)
+    val rALUZero     = RegEnable(io.iALUZero,     DATA_ZERO, wHandShakeEXU)
+    val rALUOut      = RegEnable(io.iALUOut,      DATA_ZERO, wHandShakeEXU)
 
+    io.oCtrMemWrEn  := Mux(wHandShakeLSU, rCtrMemWrEn,  SIGS_ZERO)
+    io.oCtrMemByt   := Mux(wHandShakeLSU, rCtrMemByt,   SIGS_ZERO)
+    io.oCtrRegWrEn  := Mux(wHandShakeLSU, rCtrRegWrEn,  SIGS_ZERO)
+    io.oCtrRegWrSrc := Mux(wHandShakeLSU, rCtrRegWrSrc, SIGS_ZERO)
+    io.oGPRRdAddr   := Mux(wHandShakeLSU, rGPRRdAddr,   SIGS_ZERO)
+    io.oALUZero     := Mux(wHandShakeLSU, rALUZero,     SIGS_ZERO)
+    io.oALUOut      := Mux(wHandShakeLSU, rALUOut,      SIGS_ZERO)
 }

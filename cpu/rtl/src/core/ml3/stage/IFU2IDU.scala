@@ -18,12 +18,15 @@ class IFU2IDU extends Module with ConfigInst {
         val oPCNext     = Output(UInt(ADDR_WIDTH.W))
     })
 
+    val wHandShakeIFU = io.oValidToIFU && io.iReadyFrIFU
+    val wHandShakeIDU = io.oValidToIFU && io.iReadyFrIFU
+
     io.oValidToIFU := true.B
     io.oValidToIDU := true.B
 
-    val rPC     = RegEnable(io.iPC,     ADDR_INIT, io.oValidToIFU && io.iReadyFrIFU)
-    val rPCNext = RegEnable(io.iPCNext, ADDR_INIT, io.oValidToIFU && io.iReadyFrIFU)
+    val rPC     = RegEnable(io.iPC,     ADDR_INIT, wHandShakeIFU)
+    val rPCNext = RegEnable(io.iPCNext, ADDR_INIT, wHandShakeIFU)
 
-    io.oPC     := Mux(io.oValidToIDU && io.iReadyFrIDU, rPC,     ADDR_ZERO)
-    io.oPCNext := Mux(io.oValidToIDU && io.iReadyFrIDU, rPCNext, ADDR_ZERO)
+    io.oPC     := Mux(wHandShakeIDU, rPC,     ADDR_ZERO)
+    io.oPCNext := Mux(wHandShakeIDU, rPCNext, ADDR_ZERO)
 }

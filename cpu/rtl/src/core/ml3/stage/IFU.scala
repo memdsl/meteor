@@ -17,6 +17,8 @@ class IFU extends Module with ConfigInst {
         val oPCNext         = Output(UInt(ADDR_WIDTH.W))
     })
 
+    val wHandShakeIFU2IDU = io.oValidToIFU2IDU && io.iReadyFrIFU2IDU
+
     io.oValidToIFU2IDU := true.B
 
     val rPC = RegInit(ADDR_INIT)
@@ -25,6 +27,6 @@ class IFU extends Module with ConfigInst {
     val wPC     = Mux(io.iPCJmpEn, io.iPCJmp, rPC)
     val wPCNext = wPC + 4.U(ADDR_WIDTH.W)
 
-    io.oPC     := Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wPC,     ADDR_ZERO)
-    io.oPCNext := Mux(io.oValidToIFU2IDU && io.iReadyFrIFU2IDU, wPCNext, ADDR_ZERO)
+    io.oPC     := Mux(wHandShakeIFU2IDU, wPC,     ADDR_ZERO)
+    io.oPCNext := Mux(wHandShakeIFU2IDU, wPCNext, ADDR_ZERO)
 }
