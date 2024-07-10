@@ -9,12 +9,12 @@ import cpu.calc._
 class EXU extends Module with ConfigInst {
     val io = IO(new Bundle {
         val iReadyFrIDU2EXU = Input(Bool())
-        val iReadyFrEXU2WBU = Input(Bool())
+        val iReadyFrEXU2LSU = Input(Bool())
         val iPC             = Input(UInt(ADDR_WIDTH.W))
         val iPCNext         = Input(UInt(ADDR_WIDTH.W))
         val iInst           = Input(UInt(INST_WIDTH.W))
         val oValidToIDU2EXU = Output(Bool())
-        val oValidToEXU2WBU = Output(Bool())
+        val oValidToEXU2LSU = Output(Bool())
         val oPC             = Output(UInt(ADDR_WIDTH.W))
         val oPCNext         = Output(UInt(ADDR_WIDTH.W))
         val oInst           = Output(UInt(INST_WIDTH.W))
@@ -43,18 +43,18 @@ class EXU extends Module with ConfigInst {
     })
 
     val wHandShakeIDU2EXU = io.oValidToIDU2EXU && io.iReadyFrIDU2EXU
-    val wHandShakeEXU2WBU = io.oValidToEXU2WBU && io.iReadyFrEXU2WBU
+    val wHandShakeEXU2LSU = io.oValidToEXU2LSU && io.iReadyFrEXU2LSU
 
     io.oValidToIDU2EXU := true.B
-    io.oValidToEXU2WBU := true.B
+    io.oValidToEXU2LSU := true.B
 
     val wPC     = Mux(wHandShakeIDU2EXU, io.iPC,     ADDR_ZERO)
     val wPCNext = Mux(wHandShakeIDU2EXU, io.iPCNext, ADDR_ZERO)
     val wInst   = Mux(wHandShakeIDU2EXU, io.iInst,   INST_ZERO)
 
-    io.oPC     := Mux(wHandShakeEXU2WBU, wPC,     ADDR_ZERO)
-    io.oPCNext := Mux(wHandShakeEXU2WBU, wPCNext, ADDR_ZERO)
-    io.oInst   := Mux(wHandShakeEXU2WBU, wInst,   INST_ZERO)
+    io.oPC     := Mux(wHandShakeEXU2LSU, wPC,     ADDR_ZERO)
+    io.oPCNext := Mux(wHandShakeEXU2LSU, wPCNext, ADDR_ZERO)
+    io.oInst   := Mux(wHandShakeEXU2LSU, wInst,   INST_ZERO)
 
     val wCtrInstName = Mux(wHandShakeIDU2EXU, io.iCtrInstName, SIGS_ZERO)
     val wCtrALUType  = Mux(wHandShakeIDU2EXU, io.iCtrALUType , SIGS_ZERO)
@@ -68,12 +68,12 @@ class EXU extends Module with ConfigInst {
     val wGPRRdAddr   = Mux(wHandShakeIDU2EXU, io.iGPRRdAddr,   DATA_ZERO)
     val wGPRRS2Data  = Mux(wHandShakeIDU2EXU, io.iGPRRS2Data,  DATA_ZERO)
 
-    io.oCtrMemWrEn  := Mux(wHandShakeEXU2WBU, wCtrMemWrEn,  SIGS_ZERO)
-    io.oCtrMemByt   := Mux(wHandShakeEXU2WBU, wCtrMemByt,   SIGS_ZERO)
-    io.oCtrRegWrEn  := Mux(wHandShakeEXU2WBU, wCtrRegWrEn,  SIGS_ZERO)
-    io.oCtrRegWrSrc := Mux(wHandShakeEXU2WBU, wCtrRegWrSrc, SIGS_ZERO)
-    io.oGPRRdAddr   := Mux(wHandShakeEXU2WBU, wGPRRdAddr,   GPRS_ZERO)
-    io.oGPRRS2Data  := Mux(wHandShakeEXU2WBU, wGPRRS2Data,  DATA_ZERO)
+    io.oCtrMemWrEn  := Mux(wHandShakeEXU2LSU, wCtrMemWrEn,  SIGS_ZERO)
+    io.oCtrMemByt   := Mux(wHandShakeEXU2LSU, wCtrMemByt,   SIGS_ZERO)
+    io.oCtrRegWrEn  := Mux(wHandShakeEXU2LSU, wCtrRegWrEn,  SIGS_ZERO)
+    io.oCtrRegWrSrc := Mux(wHandShakeEXU2LSU, wCtrRegWrSrc, SIGS_ZERO)
+    io.oGPRRdAddr   := Mux(wHandShakeEXU2LSU, wGPRRdAddr,   GPRS_ZERO)
+    io.oGPRRS2Data  := Mux(wHandShakeEXU2LSU, wGPRRS2Data,  DATA_ZERO)
 
     val wALURS1Data  = Mux(wHandShakeIDU2EXU, io.iALURS1Data , DATA_ZERO)
     val wALURS2Data  = Mux(wHandShakeIDU2EXU, io.iALURS2Data , DATA_ZERO)
@@ -83,6 +83,6 @@ class EXU extends Module with ConfigInst {
     mALU.io.iRS1Data := wALURS1Data
     mALU.io.iRS2Data := wALURS2Data
 
-    io.oALUZero := Mux(wHandShakeEXU2WBU, mALU.io.oZero, false.B)
-    io.oALUOut  := Mux(wHandShakeEXU2WBU, mALU.io.oOut,  DATA_ZERO)
+    io.oALUZero := Mux(wHandShakeEXU2LSU, mALU.io.oZero, false.B)
+    io.oALUOut  := Mux(wHandShakeEXU2LSU, mALU.io.oOut,  DATA_ZERO)
 }

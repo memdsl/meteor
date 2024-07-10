@@ -28,7 +28,7 @@ class LSU extends Module with ConfigInst {
         val iALUOut         = Input(UInt(DATA_WIDTH.W))
         val iMemRdData      = Input(UInt(DATA_WIDTH.W))
 
-        val oCtrMemByt      = Input(UInt(SIGS_WIDTH.W))
+        val oCtrMemByt      = Output(UInt(SIGS_WIDTH.W))
         val oCtrRegWrEn     = Output(Bool())
         val oCtrRegWrSrc    = Output(UInt(SIGS_WIDTH.W))
         val oGPRRdAddr      = Output(UInt(GPRS_WIDTH.W))
@@ -41,7 +41,7 @@ class LSU extends Module with ConfigInst {
         val oMemWrEn        = Output(Bool())
         val oMemWrAddr      = Output(UInt(ADDR_WIDTH.W))
         val oMemWrData      = Output(UInt(DATA_WIDTH.W))
-        val oMemWrMask      = Output(UInt(MASK_WIDTH.W))
+        val oMemWrMask      = Output(Vec(MASK_WIDTH, Bool()))
     })
 
     val wHandShakeEXU2LSU = io.oValidToEXU2LSU && io.iReadyFrEXU2LSU
@@ -74,15 +74,17 @@ class LSU extends Module with ConfigInst {
     io.oALUZero     := Mux(wHandShakeLSU2WBU, wALUZero,     false.B)
     io.oALUOut      := Mux(wHandShakeLSU2WBU, wALUOut,      DATA_ZERO)
 
-    val wMemRdInst = !(wCtrMemWrEn.asBool) && (wCtrMemByt != MEM_BYT_X).asBool
-    val wMemRdAddr = Mux(wHandShakeEXU2LSU && wMemRdInst, wALUOut, ADDR_ZERO)
+    val wMemRdInstFlag = ((wCtrMemWrEn === MEM_WR_FL) &&
+                          (wCtrMemByt  =/= MEM_BYT_X))
+    val wMemRdAddr = Mux(wHandShakeEXU2LSU && wMemRdInstFlag, wALUOut, ADDR_ZERO)
     val wMemRdData = Mux(wHandShakeEXU2LSU, io.iMemRdData, DATA_ZERO)
 
     io.oMemRdEn   := true.B
     io.oMemRdAddr := wMemRdAddr
     io.oMemRdData := Mux(wHandShakeLSU2WBU, wMemRdData, DATA_ZERO)
 
-    when (wHandShakeEXU2LSU && wCtrMemWrEn.asBool) {
+    val wMemWrInstFlag = (wCtrMemWrEn === MEM_WR_TR)
+    when (wHandShakeEXU2LSU && wMemWrInstFlag) {
         io.oMemWrEn   := true.B
         io.oMemWrAddr := wALUOut
         io.oMemWrData := wGPRRS2Data

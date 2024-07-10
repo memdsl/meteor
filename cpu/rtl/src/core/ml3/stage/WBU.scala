@@ -60,7 +60,7 @@ class WBU extends Module with ConfigInst {
             REG_WR_SRC_PC  -> wPCNext
         )
     )
-    when (wHandShakeCPU && wCtrRegWrEn.asBool) {
+    when (wHandShakeCPU && (wCtrRegWrEn === REG_WR_TR)) {
         io.oGPRWrEn   := true.B
         io.oGPRWrAddr := wGPRRdAddr
         when (wCtrRegWrSrc === REG_WR_SRC_MEM) {
