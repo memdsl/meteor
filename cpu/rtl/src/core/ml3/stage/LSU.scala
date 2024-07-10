@@ -26,8 +26,6 @@ class LSU extends Module with ConfigInst {
         val iGPRRS2Data     = Input(UInt(DATA_WIDTH.W))
         val iALUZero        = Input(Bool())
         val iALUOut         = Input(UInt(DATA_WIDTH.W))
-        val iMemRdData      = Input(UInt(DATA_WIDTH.W))
-
         val oCtrMemByt      = Output(UInt(SIGS_WIDTH.W))
         val oCtrRegWrEn     = Output(Bool())
         val oCtrRegWrSrc    = Output(UInt(SIGS_WIDTH.W))
@@ -36,6 +34,7 @@ class LSU extends Module with ConfigInst {
         val oALUOut         = Output(UInt(DATA_WIDTH.W))
         val oMemRdData      = Output(UInt(DATA_WIDTH.W))
 
+        val iMemRdData      = Input(UInt(DATA_WIDTH.W))
         val oMemRdEn        = Output(Bool())
         val oMemRdAddr      = Output(UInt(ADDR_WIDTH.W))
         val oMemWrEn        = Output(Bool())

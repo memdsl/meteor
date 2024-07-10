@@ -11,7 +11,6 @@ class IFU2IDU extends Module with ConfigInst {
         val iReadyFrIDU = Input(Bool())
         val iPC         = Input(UInt(ADDR_WIDTH.W))
         val iPCNext     = Input(UInt(ADDR_WIDTH.W))
-
         val oValidToIFU = Output(Bool())
         val oValidToIDU = Output(Bool())
         val oPC         = Output(UInt(ADDR_WIDTH.W))

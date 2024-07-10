@@ -28,9 +28,9 @@ class Top extends Module with ConfigInst {
 
     mIDU.io.iReadyFrIFU2IDU := mIFU2IDU.io.oValidToIDU
     mIDU.io.iReadyFrIDU2EXU := mIDU2EXU.io.oValidToIDU
-    mIDU.io.iInst           := 0.U
     mIDU.io.iPC             := mIFU2IDU.io.oPC
     mIDU.io.iPCNext         := mIFU2IDU.io.oPCNext
+    mIDU.io.iInst           := 0.U
     mIDU.io.iGPRRS1Data     := 0.U
     mIDU.io.iGPRRS2Data     := 0.U
 

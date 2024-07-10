@@ -26,9 +26,9 @@ class WBU extends Module with ConfigInst {
         val iALUOut         = Input(UInt(DATA_WIDTH.W))
         val iMemRdData      = Input(UInt(DATA_WIDTH.W))
 
-        val oGPRWrEn   = Output(Bool())
-        val oGPRWrAddr = Output(UInt(GPRS_WIDTH.W))
-        val oGPRWrData = Output(UInt(DATA_WIDTH.W))
+        val oGPRWrEn        = Output(Bool())
+        val oGPRWrAddr      = Output(UInt(GPRS_WIDTH.W))
+        val oGPRWrData      = Output(UInt(DATA_WIDTH.W))
     })
 
     val wHandShakeLSU2WBU = io.oValidToLSU2WBU && io.iReadyFrLSU2WBU

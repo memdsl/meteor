@@ -9,16 +9,18 @@ class IFU extends Module with ConfigInst {
     val io = IO(new Bundle {
         val iReadyFrCPU     = Input(Bool())
         val iReadyFrIFU2IDU = Input(Bool())
-        val iPCJmpEn        = Input(Bool())
-        val iPCJmp          = Input(UInt())
-
+        val oValidToCPU     = Output(Bool())
         val oValidToIFU2IDU = Output(Bool())
         val oPC             = Output(UInt(ADDR_WIDTH.W))
         val oPCNext         = Output(UInt(ADDR_WIDTH.W))
+
+        val iPCJmpEn        = Input(Bool())
+        val iPCJmp          = Input(UInt())
     })
 
     val wHandShakeIFU2IDU = io.oValidToIFU2IDU && io.iReadyFrIFU2IDU
 
+    io.oValidToCPU     := true.B
     io.oValidToIFU2IDU := true.B
 
     val rPC = RegInit(ADDR_INIT)

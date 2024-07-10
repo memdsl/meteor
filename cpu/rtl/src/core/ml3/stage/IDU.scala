@@ -11,7 +11,6 @@ class IDU extends Module with ConfigInstRV32I
     val io = IO(new Bundle {
         val iReadyFrIFU2IDU = Input(Bool())
         val iReadyFrIDU2EXU = Input(Bool())
-        val iInst           = Input(UInt(INST_WIDTH.W))
         val iPC             = Input(UInt(ADDR_WIDTH.W))
         val iPCNext         = Input(UInt(ADDR_WIDTH.W))
         val oValidToIFU2IDU = Output(Bool())
@@ -20,8 +19,6 @@ class IDU extends Module with ConfigInstRV32I
         val oPCNext         = Output(UInt(ADDR_WIDTH.W))
         val oInst           = Output(UInt(INST_WIDTH.W))
 
-        val iGPRRS1Data     = Input(UInt(DATA_WIDTH.W))
-        val iGPRRS2Data     = Input(UInt(DATA_WIDTH.W))
         val oCtrInstName    = Output(UInt(SIGS_WIDTH.W))
         val oCtrALUType     = Output(UInt(SIGS_WIDTH.W))
         val oCtrALURS1      = Output(UInt(SIGS_WIDTH.W))
@@ -37,6 +34,10 @@ class IDU extends Module with ConfigInstRV32I
         val oGPRRS2Data     = Output(UInt(DATA_WIDTH.W))
         val oALURS1Data     = Output(UInt(DATA_WIDTH.W))
         val oALURS2Data     = Output(UInt(DATA_WIDTH.W))
+
+        val iInst           = Input(UInt(INST_WIDTH.W))
+        val iGPRRS1Data     = Input(UInt(DATA_WIDTH.W))
+        val iGPRRS2Data     = Input(UInt(DATA_WIDTH.W))
     })
 
     val wHandShakeIFU2IDU = io.oValidToIFU2IDU && io.iReadyFrIFU2IDU
