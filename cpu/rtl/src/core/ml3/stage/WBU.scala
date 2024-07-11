@@ -53,7 +53,6 @@ class WBU extends Module with ConfigInst {
     val wALUOut      = Mux(wHandShakeLSU2WBU, io.iALUOut,      DATA_ZERO)
     val wMemRdData   = Mux(wHandShakeLSU2WBU, io.iMemRdData,   DATA_ZERO)
 
-
     val wGPRWrData = MuxLookup(wCtrRegWrSrc, DATA_ZERO) (
         Seq(
             REG_WR_SRC_ALU -> wALUOut,

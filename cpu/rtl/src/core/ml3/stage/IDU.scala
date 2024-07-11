@@ -28,8 +28,6 @@ class IDU extends Module with ConfigInstRV32I
         val oCtrMemByt      = Output(UInt(SIGS_WIDTH.W))
         val oCtrRegWrEn     = Output(Bool())
         val oCtrRegWrSrc    = Output(UInt(SIGS_WIDTH.W))
-        val oGPRRS1Addr     = Output(UInt(GPRS_WIDTH.W))
-        val oGPRRS2Addr     = Output(UInt(GPRS_WIDTH.W))
         val oGPRRdAddr      = Output(UInt(GPRS_WIDTH.W))
         val oGPRRS2Data     = Output(UInt(DATA_WIDTH.W))
         val oALURS1Data     = Output(UInt(DATA_WIDTH.W))
@@ -38,6 +36,8 @@ class IDU extends Module with ConfigInstRV32I
         val iInst           = Input(UInt(INST_WIDTH.W))
         val iGPRRS1Data     = Input(UInt(DATA_WIDTH.W))
         val iGPRRS2Data     = Input(UInt(DATA_WIDTH.W))
+        val oGPRRS1Addr     = Output(UInt(GPRS_WIDTH.W))
+        val oGPRRS2Addr     = Output(UInt(GPRS_WIDTH.W))
     })
 
     val wHandShakeIFU2IDU = io.oValidToIFU2IDU && io.iReadyFrIFU2IDU

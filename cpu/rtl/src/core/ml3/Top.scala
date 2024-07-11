@@ -6,11 +6,18 @@ import chisel3.util._
 import cpu.base._
 
 class Top extends Module with ConfigInst {
-    val mIFU     = Module(new IFU)
-    val mIDU     = Module(new IDU)
-    val mEXU     = Module(new EXU)
-    val mLSU     = Module(new LSU)
-    val mWBU     = Module(new WBU)
+    val mGPR = Module(new GPR)
+    val mMem = Module(new MemDualFakeBB)
+
+    mMem.io.iClock := clock
+    mMem.io.iReset := reset
+
+    val mIFU = Module(new IFU)
+    val mIDU = Module(new IDU)
+    val mEXU = Module(new EXU)
+    val mLSU = Module(new LSU)
+    val mWBU = Module(new WBU)
+
     val mIFU2IDU = Module(new IFU2IDU)
     val mIDU2EXU = Module(new IDU2EXU)
     val mEXU2LSU = Module(new EXU2LSU)
@@ -31,8 +38,11 @@ class Top extends Module with ConfigInst {
     mIDU.io.iPC             := mIFU2IDU.io.oPC
     mIDU.io.iPCNext         := mIFU2IDU.io.oPCNext
     mIDU.io.iInst           := 0.U
-    mIDU.io.iGPRRS1Data     := 0.U
-    mIDU.io.iGPRRS2Data     := 0.U
+    mIDU.io.iGPRRS1Data     := mGPR.io.pGPRRS.bRS1Data
+    mIDU.io.iGPRRS2Data     := mGPR.io.pGPRRS.bRS2Data
+
+    mGPR.io.pGPRRS.bRS1Addr := mIDU.io.oGPRRS1Addr
+    mGPR.io.pGPRRS.bRS2Addr := mIDU.io.oGPRRS2Addr
 
     mIDU2EXU.io.iReadyFrIDU  := mIDU.io.oValidToIDU2EXU
     mIDU2EXU.io.iReadyFrEXU  := mEXU.io.oValidToIDU2EXU
@@ -126,6 +136,10 @@ class Top extends Module with ConfigInst {
     mWBU.io.iALUZero        := mLSU2WBU.io.oALUZero
     mWBU.io.iALUOut         := mLSU2WBU.io.oALUOut
     mWBU.io.iMemRdData      := mLSU2WBU.io.oMemRdData
+
+    mGPR.io.pGPRWr.bWrEn   := mWBU.io.oGPRWrEn
+    mGPR.io.pGPRWr.bWrAddr := mWBU.io.oGPRWrAddr
+    mGPR.io.pGPRWr.bWrData := mWBU.io.oGPRWrData
 
     dontTouch(mIFU.io)
     dontTouch(mIDU.io)
