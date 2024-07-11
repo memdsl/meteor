@@ -13,6 +13,7 @@ class IDU extends Module with ConfigInstRV32I
         val iReadyFrIDU2EXU = Input(Bool())
         val iPC             = Input(UInt(ADDR_WIDTH.W))
         val iPCNext         = Input(UInt(ADDR_WIDTH.W))
+        val iInst           = Input(UInt(INST_WIDTH.W))
         val oValidToIFU2IDU = Output(Bool())
         val oValidToIDU2EXU = Output(Bool())
         val oPC             = Output(UInt(ADDR_WIDTH.W))
@@ -33,7 +34,6 @@ class IDU extends Module with ConfigInstRV32I
         val oALURS1Data     = Output(UInt(DATA_WIDTH.W))
         val oALURS2Data     = Output(UInt(DATA_WIDTH.W))
 
-        val iInst           = Input(UInt(INST_WIDTH.W))
         val iGPRRS1Data     = Input(UInt(DATA_WIDTH.W))
         val iGPRRS2Data     = Input(UInt(DATA_WIDTH.W))
         val oGPRRS1Addr     = Output(UInt(GPRS_WIDTH.W))

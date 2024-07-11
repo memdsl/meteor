@@ -4,6 +4,8 @@ import chisel3._
 import chisel3.util._
 
 import cpu.base._
+import cpu.temp._
+import cpu.mem._
 
 class Top extends Module with ConfigInst {
     val mGPR = Module(new GPR)
@@ -27,17 +29,22 @@ class Top extends Module with ConfigInst {
     mIFU.io.iReadyFrIFU2IDU := mIFU2IDU.io.oValidToIFU
     mIFU.io.iPCJmpEn        := false.B
     mIFU.io.iPCJmp          := ADDR_ZERO
+    mIFU.io.iInst           := mMem.io.pMemInst.pRd.bData
+
+    mMem.io.pMemInst.pRd.bEn   := mIFU.io.oInstEn
+    mMem.io.pMemInst.pRd.bAddr := mIFU.io.oPC
 
     mIFU2IDU.io.iReadyFrIFU := mIFU.io.oValidToIFU2IDU
     mIFU2IDU.io.iReadyFrIDU := mIDU.io.oValidToIFU2IDU
     mIFU2IDU.io.iPC         := mIFU.io.oPC
     mIFU2IDU.io.iPCNext     := mIFU.io.oPCNext
+    mIFU2IDU.io.iInst       := mIFU.io.oInst
 
     mIDU.io.iReadyFrIFU2IDU := mIFU2IDU.io.oValidToIDU
     mIDU.io.iReadyFrIDU2EXU := mIDU2EXU.io.oValidToIDU
     mIDU.io.iPC             := mIFU2IDU.io.oPC
     mIDU.io.iPCNext         := mIFU2IDU.io.oPCNext
-    mIDU.io.iInst           := 0.U
+    mIDU.io.iInst           := mIFU2IDU.io.oInst
     mIDU.io.iGPRRS1Data     := mGPR.io.pGPRRS.bRS1Data
     mIDU.io.iGPRRS2Data     := mGPR.io.pGPRRS.bRS2Data
 
@@ -109,7 +116,14 @@ class Top extends Module with ConfigInst {
     mLSU.io.iGPRRS2Data     := mEXU2LSU.io.oGPRRS2Data
     mLSU.io.iALUZero        := mEXU2LSU.io.oALUZero
     mLSU.io.iALUOut         := mEXU2LSU.io.oALUOut
-    mLSU.io.iMemRdData      := 0.U
+    mLSU.io.iMemRdData      := mMem.io.pMemData.pRd.bData
+
+    mMem.io.pMemData.pRd.bEn   := mLSU.io.oMemRdEn
+    mMem.io.pMemData.pRd.bAddr := mLSU.io.oMemRdAddr
+    mMem.io.pMemData.pWr.bEn   := mLSU.io.oMemWrEn
+    mMem.io.pMemData.pWr.bAddr := mLSU.io.oMemWrAddr
+    mMem.io.pMemData.pWr.bData := mLSU.io.oMemWrData
+    mMem.io.pMemData.pWr.bMask := mLSU.io.oMemWrMask
 
     mLSU2WBU.io.iReadyFrLSU  := mLSU.io.oValidToLSU2WBU
     mLSU2WBU.io.iReadyFrWBU  := mWBU.io.oValidToLSU2WBU
