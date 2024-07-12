@@ -4,7 +4,6 @@ import chisel3._
 import chisel3.util._
 
 import cpu.base._
-import scala.collection.Stepper.UnboxingIntStepper
 
 class IDUCtrIO extends Bundle with ConfigIO {
     val bInstName = Output(UInt(SIGS_WIDTH.W))

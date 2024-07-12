@@ -4,10 +4,17 @@ import chisel3._
 import chisel3.util._
 
 import cpu.base._
+import cpu.port._
+import cpu.port.ml3._
 import cpu.temp._
 import cpu.mem._
 
 class Top extends Module with ConfigInst {
+    val io = IO(new Bundle {
+        val pState = new StateIO
+        val pTrace = new TraceIO
+    })
+
     val mGPR = Module(new GPR)
     val mMem = Module(new MemDualFakeBB)
 
