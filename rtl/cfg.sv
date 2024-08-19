@@ -1,1 +1,0 @@
-`define ADDR_INIT 32'h8000_0000
