@@ -111,10 +111,14 @@ class EXU extends Module with ConfigInst with Build {
                         ExtenZero(wMemRdDataByt4, DATA_WIDTH)
                 )
             )
-            io.pGPRWr.bWrData := wMemRdData
+            io.pGPRWr.bWrData := Mux(io.pIDUData.bGPRRdAddr === GPRS_ZERO,
+                                     DATA_ZERO,
+                                     wMemRdData)
         }
         .otherwise {
-            io.pGPRWr.bWrData := wGPRWrData
+            io.pGPRWr.bWrData := Mux(io.pIDUData.bGPRRdAddr === GPRS_ZERO,
+                                     DATA_ZERO,
+                                     wGPRWrData)
         }
     }
     .otherwise {

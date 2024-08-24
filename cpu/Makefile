@@ -82,7 +82,7 @@ SRCSS_WHITELIST     = $(shell find $(SRCSS_DIR) -name "*.scala")
 SRCSS               = $(filter-out $(SRCSS_BLACKLIST), $(SRCSS_WHITELIST))
 
 SRCVS_DIR = $(METEOR_CPU_HOME)/rtl/srcv
-SRCVS_GEN = $(BUILD_DIR)/$(CFG_CFLAGS_TOP_NAME).v
+SRCVS_GEN = $(BUILD_DIR)/$(CFG_CFLAGS_TOP_NAME).sv
 SRCVS     = $(shell find $(SRCVS_DIR) -name "*.v")
 
 SRCCS_DIR = $(METEOR_ENV_HOME)/core/src
@@ -127,10 +127,10 @@ ifeq ($(findstring $(MAKECMDGOALS), config|clean),)
     ifeq ($(shell cat $(TEMP_SRCSS_BUILD_PATH) | grep $(CPU)),)
         $(shell rm -rf out)
         $(shell rm -rf test_run_dir)
-        $(shell rm -rf rtl/build)
+        # $(shell rm -rf rtl/build)
     endif
     ifeq ($(shell cat $(TEMP_SRCSS_TOPMAIN_PATH) | grep $(MEM_TIME_TYPE)),)
-        $(shell rm -rf rtl/build)
+        # $(shell rm -rf rtl/build)
     endif
 endif
 
