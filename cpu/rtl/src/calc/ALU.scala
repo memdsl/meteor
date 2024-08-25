@@ -39,14 +39,12 @@ class ALU extends Module with ConfigInst {
             ALU_TYPE_MULH   -> ((io.iRS1Data.asSInt * io.iRS2Data.asSInt) >> DATA_WIDTH).asUInt,
             ALU_TYPE_MULHSU -> ((io.iRS1Data.asSInt * io.iRS2Data.asUInt) >> DATA_WIDTH).asUInt,
             ALU_TYPE_MULHU  -> ((io.iRS1Data.asUInt * io.iRS2Data.asUInt) >> DATA_WIDTH).asUInt,
-            ALU_TYPE_DIV    ->  (io.iRS1Data.asSInt / io.iRS2Data.asSInt).asUInt,
-            ALU_TYPE_DIVU   ->  (io.iRS1Data.asUInt / io.iRS2Data.asUInt).asUInt,
-            ALU_TYPE_REM    ->  (io.iRS1Data.asSInt % io.iRS2Data.asSInt).asUInt,
-            ALU_TYPE_REMU   ->  (io.iRS1Data.asUInt % io.iRS2Data.asUInt).asUInt,
+            ALU_TYPE_DIV    ->  Mux(io.iRS2Data === DATA_ZERO, ~DATA_ZERO, (io.iRS1Data.asSInt / io.iRS2Data.asSInt).asUInt),
+            ALU_TYPE_DIVU   ->  Mux(io.iRS2Data === DATA_ZERO, ~DATA_ZERO, (io.iRS1Data.asUInt / io.iRS2Data.asUInt).asUInt),
+            ALU_TYPE_REM    ->  Mux(io.iRS2Data === DATA_ZERO, io.iRS1Data.asUInt, (io.iRS1Data.asSInt % io.iRS2Data.asSInt).asUInt),
+            ALU_TYPE_REMU   ->  Mux(io.iRS2Data === DATA_ZERO, io.iRS1Data.asUInt, (io.iRS1Data.asUInt % io.iRS2Data.asUInt).asUInt),
         )
     )
-
-    dontTouch(wOut)
 
     io.oZero := Mux(wOut === DATA_ZERO, 0.U, 1.U)
     io.oOut  := wOut
