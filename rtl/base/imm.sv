@@ -1,5 +1,4 @@
-`define INST_WIDTH 32
-`define DATA_WIDTH 32
+`include "./cfg.sv"
 
 module imm #(
     parameter DATA_WIDTH = `DATA_WIDTH

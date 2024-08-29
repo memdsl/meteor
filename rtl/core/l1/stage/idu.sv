@@ -1,62 +1,8 @@
-`define INST_WIDTH 32
-`define ADDR_WIDTH 32
-`define DATA_WIDTH 32
-
-`define ARGS_WIDTH 8
-`define GPRS_WIDTH 5
-
-`define ALU_TYPE_X     0
-`define ALU_TYPE_ADD   1
-`define ALU_TYPE_JALR  2
-`define ALU_TYPE_BEQ   3
-`define ALU_TYPE_BNE   4
-`define ALU_TYPE_BLT   5
-`define ALU_TYPE_BGE   6
-`define ALU_TYPE_BLTU  7
-`define ALU_TYPE_BGEU  8
-`define ALU_TYPE_SLT   9
-`define ALU_TYPE_SLTU 10
-`define ALU_TYPE_XOR  11
-`define ALU_TYPE_OR   12
-`define ALU_TYPE_AND  13
-`define ALU_TYPE_SLL  14
-`define ALU_TYPE_SRL  15
-`define ALU_TYPE_SRA  16
-`define ALU_TYPE_SUB  17
-
-`define ALU_RS1_X       0
-`define ALU_RS1_GPR     1
-`define ALU_RS1_PC      2
-
-`define ALU_RS2_X       0
-`define ALU_RS2_GPR     1
-`define ALU_RS2_IMM_I   2
-`define ALU_RS2_IMM_S   3
-`define ALU_RS2_IMM_B   4
-`define ALU_RS2_IMM_U   5
-`define ALU_RS2_IMM_J   6
-
-`define MEM_BYT_X       0
-`define MEM_BYT_1_U     1
-`define MEM_BYT_2_U     2
-`define MEM_BYT_4_U     3
-`define MEM_BYT_8_U     4
-`define MEM_BYT_1_S     5
-`define MEM_BYT_2_S     6
-`define MEM_BYT_4_S     7
-`define MEM_BYT_8_S     8
-
-`define REG_WR_SRC_X    0
-`define REG_WR_SRC_ALU  1
-`define REG_WR_SRC_MEM  2
-`define REG_WR_SRC_PC   3
-`define REG_WR_SRC_CSR  4
+`include "../../../base/cfg.sv"
 
 module idu #(
     parameter DATA_WIDTH = `DATA_WIDTH
 ) (
-    input  logic                       i_clk,
-    input  logic                       i_rst_n,
     input  logic                       i_ready,
     output logic                       o_valid,
 
@@ -67,8 +13,8 @@ module idu #(
     output logic [`ARGS_WIDTH - 1 : 0] o_alu_rs1,
     output logic [`ARGS_WIDTH - 1 : 0] o_alu_rs2,
     output logic                       o_jmp_en,
-    output logic                       o_mem_wr_en,
-    output logic [`ARGS_WIDTH - 1 : 0] o_mem_wr_byt,
+    output logic                       o_ram_wr_en,
+    output logic [`ARGS_WIDTH - 1 : 0] o_ram_wr_byt,
     output logic                       o_reg_wr_en,
     output logic [`ARGS_WIDTH - 1 : 0] o_reg_wr_src,
 
@@ -78,8 +24,8 @@ module idu #(
     output logic [`GPRS_WIDTH - 1 : 0] o_gpr_rs2_id,
     output logic [`GPRS_WIDTH - 1 : 0] o_gpr_rd_id,
 
-    output logic [ DATA_WIDTH - 1 : 0] o_rs1_data,
-    output logic [ DATA_WIDTH - 1 : 0] o_rs2_data
+    output logic [ DATA_WIDTH - 1 : 0] o_alu_rs1_data,
+    output logic [ DATA_WIDTH - 1 : 0] o_alu_rs2_data
 );
 
     assign o_valid = 1'h1;
@@ -111,8 +57,8 @@ module idu #(
     logic [`ARGS_WIDTH - 1 : 0] w_alu_rs1;
     logic [`ARGS_WIDTH - 1 : 0] w_alu_rs2;
     logic                       w_jmp_en;
-    logic                       w_mem_wr_en;
-    logic [`ARGS_WIDTH - 1 : 0] w_mem_byt;
+    logic                       w_ram_wr_en;
+    logic [`ARGS_WIDTH - 1 : 0] w_ram_byt;
     logic                       w_reg_wr_en;
     logic [`ARGS_WIDTH - 1 : 0] w_reg_wr_src;
 
@@ -124,10 +70,10 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_X;
                 w_alu_rs2    = `ALU_RS2_IMM_U;
                 w_jmp_en     = 1'h0;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = `MEM_BYT_X;
-                w_reg_wr_en  = 1'h0;
-                w_reg_wr_src = `REG_WR_SRC_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = `RAM_BYT_X;
+                w_reg_wr_en  = 1'h1;
+                w_reg_wr_src = `REG_WR_SRC_ALU;
             end
             // AUIPC
             7'b0010111: begin
@@ -135,10 +81,10 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_PC;
                 w_alu_rs2    = `ALU_RS2_IMM_U;
                 w_jmp_en     = 1'h0;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = `MEM_BYT_X;
-                w_reg_wr_en  = 1'h0;
-                w_reg_wr_src = `REG_WR_SRC_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = `RAM_BYT_X;
+                w_reg_wr_en  = 1'h1;
+                w_reg_wr_src = `REG_WR_SRC_ALU;
             end
             // JAL
             7'b1101111: begin
@@ -146,8 +92,8 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_PC;
                 w_alu_rs2    = `ALU_RS2_IMM_J;
                 w_jmp_en     = 1'h1;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = `MEM_BYT_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = `RAM_BYT_X;
                 w_reg_wr_en  = 1'h1;
                 w_reg_wr_src = `REG_WR_SRC_PC;
             end
@@ -157,8 +103,8 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_GPR;
                 w_alu_rs2    = `ALU_RS2_IMM_I;
                 w_jmp_en     = 1'h1;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = `MEM_BYT_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = `RAM_BYT_X;
                 w_reg_wr_en  = 1'h1;
                 w_reg_wr_src = `REG_WR_SRC_PC;
             end
@@ -174,8 +120,8 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_GPR;
                 w_alu_rs2    = `ALU_RS2_GPR;
                 w_jmp_en     = 1'h0;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = `MEM_BYT_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = `RAM_BYT_X;
                 w_reg_wr_en  = 1'h0;
                 w_reg_wr_src = `REG_WR_SRC_X;
             end
@@ -185,13 +131,13 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_GPR;
                 w_alu_rs2    = `ALU_RS2_IMM_I;
                 w_jmp_en     = 1'h0;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = (w_inst_funct3 === 3'b000) ? `MEM_BYT_1_S :
-                               (w_inst_funct3 === 3'b001) ? `MEM_BYT_2_S :
-                               (w_inst_funct3 === 3'b010) ? `MEM_BYT_4_S :
-                               (w_inst_funct3 === 3'b100) ? `MEM_BYT_1_U :
-                               (w_inst_funct3 === 3'b101) ? `MEM_BYT_2_U :
-                                                            `MEM_BYT_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = (w_inst_funct3 === 3'b000) ? `RAM_BYT_1_S :
+                               (w_inst_funct3 === 3'b001) ? `RAM_BYT_2_S :
+                               (w_inst_funct3 === 3'b010) ? `RAM_BYT_4_S :
+                               (w_inst_funct3 === 3'b100) ? `RAM_BYT_1_U :
+                               (w_inst_funct3 === 3'b101) ? `RAM_BYT_2_U :
+                                                            `RAM_BYT_X;
                 w_reg_wr_en  = 1'h1;
                 w_reg_wr_src = `REG_WR_SRC_MEM;
             end
@@ -201,11 +147,11 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_GPR;
                 w_alu_rs2    = `ALU_RS2_IMM_S;
                 w_jmp_en     = 1'h0;
-                w_mem_wr_en  = 1'h1;
-                w_mem_byt    = (w_inst_funct3 === 3'b000) ? `MEM_BYT_1_U :
-                               (w_inst_funct3 === 3'b001) ? `MEM_BYT_2_U :
-                               (w_inst_funct3 === 3'b010) ? `MEM_BYT_4_U :
-                                                            `MEM_BYT_X;
+                w_ram_wr_en  = 1'h1;
+                w_ram_byt    = (w_inst_funct3 === 3'b000) ? `RAM_BYT_1_U :
+                               (w_inst_funct3 === 3'b001) ? `RAM_BYT_2_U :
+                               (w_inst_funct3 === 3'b010) ? `RAM_BYT_4_U :
+                                                            `RAM_BYT_X;
                 w_reg_wr_en  = 1'h0;
                 w_reg_wr_src = `REG_WR_SRC_X;
             end
@@ -225,8 +171,8 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_GPR;
                 w_alu_rs2    = `ALU_RS2_IMM_I;
                 w_jmp_en     = 1'h0;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = `MEM_BYT_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = `RAM_BYT_X;
                 w_reg_wr_en  = 1'h1;
                 w_reg_wr_src = `REG_WR_SRC_ALU;
             end
@@ -248,8 +194,8 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_GPR;
                 w_alu_rs2    = `ALU_RS2_GPR;
                 w_jmp_en     = 1'h0;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = `MEM_BYT_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = `RAM_BYT_X;
                 w_reg_wr_en  = 1'h1;
                 w_reg_wr_src = `REG_WR_SRC_ALU;
             end
@@ -259,8 +205,8 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_X;
                 w_alu_rs2    = `ALU_RS2_X;
                 w_jmp_en     = 1'h0;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = `MEM_BYT_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = `RAM_BYT_X;
                 w_reg_wr_en  = 1'h0;
                 w_reg_wr_src = `REG_WR_SRC_X;
             end
@@ -270,8 +216,8 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_X;
                 w_alu_rs2    = `ALU_RS2_X;
                 w_jmp_en     = 1'h0;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = `MEM_BYT_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = `RAM_BYT_X;
                 w_reg_wr_en  = 1'h0;
                 w_reg_wr_src = `REG_WR_SRC_X;
             end
@@ -280,8 +226,8 @@ module idu #(
                 w_alu_rs1    = `ALU_RS1_X;
                 w_alu_rs2    = `ALU_RS2_X;
                 w_jmp_en     = 1'h0;
-                w_mem_wr_en  = 1'h0;
-                w_mem_byt    = `MEM_BYT_X;
+                w_ram_wr_en  = 1'h0;
+                w_ram_byt    = `RAM_BYT_X;
                 w_reg_wr_en  = 1'h0;
                 w_reg_wr_src = `REG_WR_SRC_X;
             end
@@ -292,8 +238,8 @@ module idu #(
     assign o_alu_rs1    = (o_valid && i_ready) ? w_alu_rs1    : `ALU_RS1_X;
     assign o_alu_rs2    = (o_valid && i_ready) ? w_alu_rs2    : `ALU_RS2_X;
     assign o_jmp_en     = (o_valid && i_ready) ? w_jmp_en     : 1'h0;
-    assign o_mem_wr_en  = (o_valid && i_ready) ? w_mem_wr_en  : 1'h0;
-    assign o_mem_wr_byt = (o_valid && i_ready) ? w_mem_byt    : `MEM_BYT_X;
+    assign o_ram_wr_en  = (o_valid && i_ready) ? w_ram_wr_en  : 1'h0;
+    assign o_ram_wr_byt = (o_valid && i_ready) ? w_ram_byt    : `RAM_BYT_X;
     assign o_reg_wr_en  = (o_valid && i_ready) ? w_reg_wr_en  : 1'h0;
     assign o_reg_wr_src = (o_valid && i_ready) ? w_reg_wr_src : `REG_WR_SRC_X;
 
@@ -303,20 +249,20 @@ module idu #(
 
     always_comb begin
         if (o_valid && i_ready) begin
-            o_rs1_data = (w_alu_rs1 === `ALU_RS1_GPR) ? i_gpr_rs1_data :
-                         (w_alu_rs1 === `ALU_RS1_PC)  ? i_pc :
-                                                        {{DATA_WIDTH{1'h0}}};
-            o_rs2_data = (w_alu_rs2 === `ALU_RS2_GPR)   ? i_gpr_rs2_data :
-                         (w_alu_rs2 === `ALU_RS2_IMM_I) ? w_inst_imm :
-                         (w_alu_rs2 === `ALU_RS2_IMM_S) ? w_inst_imm :
-                         (w_alu_rs2 === `ALU_RS2_IMM_B) ? w_inst_imm :
-                         (w_alu_rs2 === `ALU_RS2_IMM_U) ? w_inst_imm :
-                         (w_alu_rs2 === `ALU_RS2_IMM_J) ? w_inst_imm :
-                                                          {{DATA_WIDTH{1'h0}}};
+            o_alu_rs1_data = (w_alu_rs1 === `ALU_RS1_GPR) ? i_gpr_rs1_data :
+                             (w_alu_rs1 === `ALU_RS1_PC)  ? i_pc :
+                                                            {DATA_WIDTH{1'h0}};
+            o_alu_rs2_data = (w_alu_rs2 === `ALU_RS2_GPR)   ? i_gpr_rs2_data :
+                             (w_alu_rs2 === `ALU_RS2_IMM_I) ? w_inst_imm :
+                             (w_alu_rs2 === `ALU_RS2_IMM_S) ? w_inst_imm :
+                             (w_alu_rs2 === `ALU_RS2_IMM_B) ? w_inst_imm :
+                             (w_alu_rs2 === `ALU_RS2_IMM_U) ? w_inst_imm :
+                             (w_alu_rs2 === `ALU_RS2_IMM_J) ? w_inst_imm :
+                                                              {DATA_WIDTH{1'h0}};
         end
         else begin
-            o_rs1_data = {{DATA_WIDTH{1'h0}}};
-            o_rs2_data = {{DATA_WIDTH{1'h0}}};
+            o_alu_rs1_data = {DATA_WIDTH{1'h0}};
+            o_alu_rs2_data = {DATA_WIDTH{1'h0}};
         end
     end
 

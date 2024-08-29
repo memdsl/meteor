@@ -1,5 +1,4 @@
-`define ADDR_WIDTH 32
-`define ADDR_INIT  32'h8000_0000
+`include "../../../base/cfg.sv"
 
 module ifu #(
     parameter ADDR_WIDTH = `ADDR_WIDTH

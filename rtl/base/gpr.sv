@@ -1,5 +1,4 @@
-`define GPRS_WIDTH 5
-`define DATA_WIDTH 32
+`include "./cfg.sv"
 
 module GPR #(
     parameter DATA_WIDTH = `DATA_WIDTH

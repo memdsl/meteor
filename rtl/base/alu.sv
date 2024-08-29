@@ -1,24 +1,4 @@
-`define DATA_WIDTH 32
-`define ARGS_WIDTH 10
-
-`define ALU_TYPE_X     0
-`define ALU_TYPE_ADD   1
-`define ALU_TYPE_JALR  2
-`define ALU_TYPE_BEQ   3
-`define ALU_TYPE_BNE   4
-`define ALU_TYPE_BLT   5
-`define ALU_TYPE_BGE   6
-`define ALU_TYPE_BLTU  7
-`define ALU_TYPE_BGEU  8
-`define ALU_TYPE_SLT   9
-`define ALU_TYPE_SLTU 10
-`define ALU_TYPE_XOR  11
-`define ALU_TYPE_OR   12
-`define ALU_TYPE_AND  13
-`define ALU_TYPE_SLL  14
-`define ALU_TYPE_SRL  15
-`define ALU_TYPE_SRA  16
-`define ALU_TYPE_SUB  17
+`include "./cfg.sv"
 
 module alu #(
     parameter DATA_WIDTH = `DATA_WIDTH
@@ -26,11 +6,10 @@ module alu #(
     input  logic [`ARGS_WIDTH - 1 : 0] i_type,
     input  logic [ DATA_WIDTH - 1 : 0] i_rs1_data,
     input  logic [ DATA_WIDTH - 1 : 0] i_rs2_data,
-
     output logic [ DATA_WIDTH - 1 : 0] o_res,
     output logic                       o_zero,
     output logic                       o_over,
-    output logic                       o_nega,
+    output logic                       o_nega
 );
 
     logic [DATA_WIDTH - 1 : 0] w_mask;
