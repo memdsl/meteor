@@ -1,43 +1,32 @@
 `define INST_WIDTH 32
+`define ADDR_WIDTH 32
 `define DATA_WIDTH 32
 
 `define ARGS_WIDTH 8
 `define GPRS_WIDTH 5
 
-`define ALU_TYPE_X       0
-`define ALU_TYPE_SLL     1
-`define ALU_TYPE_SRL     2
-`define ALU_TYPE_SRA     3
-`define ALU_TYPE_ADD     4
-`define ALU_TYPE_SUB     5
-`define ALU_TYPE_XOR     6
-`define ALU_TYPE_OR      7
-`define ALU_TYPE_AND     8
-`define ALU_TYPE_SLT     9
-`define ALU_TYPE_SLTU   10
-`define ALU_TYPE_BEQ    11
-`define ALU_TYPE_BNE    12
-`define ALU_TYPE_BLT    13
-`define ALU_TYPE_BGE    14
-`define ALU_TYPE_BLTU   15
-`define ALU_TYPE_BGEU   16
-`define ALU_TYPE_JALR   17
-`define ALU_TYPE_MUL    18
-`define ALU_TYPE_MULH   19
-`define ALU_TYPE_MULHSU 20
-`define ALU_TYPE_MULHU  21
-`define ALU_TYPE_DIV    22
-`define ALU_TYPE_DIVU   23
-`define ALU_TYPE_REM    24
-`define ALU_TYPE_REMU   25
+`define ALU_TYPE_X     0
+`define ALU_TYPE_ADD   1
+`define ALU_TYPE_JALR  2
+`define ALU_TYPE_BEQ   3
+`define ALU_TYPE_BNE   4
+`define ALU_TYPE_BLT   5
+`define ALU_TYPE_BGE   6
+`define ALU_TYPE_BLTU  7
+`define ALU_TYPE_BGEU  8
+`define ALU_TYPE_SLT   9
+`define ALU_TYPE_SLTU 10
+`define ALU_TYPE_XOR  11
+`define ALU_TYPE_OR   12
+`define ALU_TYPE_AND  13
+`define ALU_TYPE_SLL  14
+`define ALU_TYPE_SRL  15
+`define ALU_TYPE_SRA  16
+`define ALU_TYPE_SUB  17
 
 `define ALU_RS1_X       0
-
-
-`define ALU_RS1_PC      1
-`define ALU_RS1_GPR     2
-`define ALU_RS1_IMM     3
-`define ALU_RS1_4       4
+`define ALU_RS1_GPR     1
+`define ALU_RS1_PC      2
 
 `define ALU_RS2_X       0
 `define ALU_RS2_GPR     1
@@ -46,7 +35,6 @@
 `define ALU_RS2_IMM_B   4
 `define ALU_RS2_IMM_U   5
 `define ALU_RS2_IMM_J   6
-`define ALU_RS2_4       7
 
 `define MEM_BYT_X       0
 `define MEM_BYT_1_U     1
@@ -72,6 +60,7 @@ module idu #(
     input  logic                       i_ready,
     output logic                       o_valid,
 
+    input  logic [`ADDR_WIDTH - 1 : 0] i_pc,
     input  logic [`INST_WIDTH - 1 : 0] i_inst,
 
     output logic [`ARGS_WIDTH - 1 : 0] o_alu_type,
@@ -83,9 +72,12 @@ module idu #(
     output logic                       o_reg_wr_en,
     output logic [`ARGS_WIDTH - 1 : 0] o_reg_wr_src,
 
-    output logic [`GPRS_WIDTH - 1 : 0] o_rs1_id,
-    output logic [`GPRS_WIDTH - 1 : 0] o_rs2_id,
-    output logic [`GPRS_WIDTH - 1 : 0] o_rd_id,
+    input  logic [ DATA_WIDTH - 1 : 0] i_gpr_rs1_data,
+    input  logic [ DATA_WIDTH - 1 : 0] i_gpr_rs2_data,
+    output logic [`GPRS_WIDTH - 1 : 0] o_gpr_rs1_id,
+    output logic [`GPRS_WIDTH - 1 : 0] o_gpr_rs2_id,
+    output logic [`GPRS_WIDTH - 1 : 0] o_gpr_rd_id,
+
     output logic [ DATA_WIDTH - 1 : 0] o_rs1_data,
     output logic [ DATA_WIDTH - 1 : 0] o_rs2_data
 );
@@ -296,17 +288,36 @@ module idu #(
         endcase
     end
 
-    assign o_alu_type   = w_alu_type;
-    assign o_alu_rs1    = w_alu_rs1;
-    assign o_alu_rs2    = w_alu_rs2;
-    assign o_jmp_en     = w_jmp_en;
-    assign o_mem_wr_en  = w_mem_wr_en;
-    assign o_mem_wr_byt = w_mem_byt;
-    assign o_reg_wr_en  = w_reg_wr_en ;
-    assign o_reg_wr_src = w_reg_wr_src;
+    assign o_alu_type   = (o_valid && i_ready) ? w_alu_type   : `ALU_TYPE_X;
+    assign o_alu_rs1    = (o_valid && i_ready) ? w_alu_rs1    : `ALU_RS1_X;
+    assign o_alu_rs2    = (o_valid && i_ready) ? w_alu_rs2    : `ALU_RS2_X;
+    assign o_jmp_en     = (o_valid && i_ready) ? w_jmp_en     : 1'h0;
+    assign o_mem_wr_en  = (o_valid && i_ready) ? w_mem_wr_en  : 1'h0;
+    assign o_mem_wr_byt = (o_valid && i_ready) ? w_mem_byt    : `MEM_BYT_X;
+    assign o_reg_wr_en  = (o_valid && i_ready) ? w_reg_wr_en  : 1'h0;
+    assign o_reg_wr_src = (o_valid && i_ready) ? w_reg_wr_src : `REG_WR_SRC_X;
 
-    assign o_rs1_id = w_inst_rs1_id;
-    assign o_rs2_id = w_inst_rs2_id;
-    assign o_rd_id  = w_inst_rd_id;
-    assign o_rs1_data = (w_alu_rs1 === `ALU_RS1_X)
+    assign o_gpr_rs1_id = (o_valid && i_ready) ? w_inst_rs1_id : 5'h0;
+    assign o_gpr_rs2_id = (o_valid && i_ready) ? w_inst_rs2_id : 5'h0;
+    assign o_gpr_rd_id  = (o_valid && i_ready) ? w_inst_rd_id  : 5'h0;
+
+    always_comb begin
+        if (o_valid && i_ready) begin
+            o_rs1_data = (w_alu_rs1 === `ALU_RS1_GPR) ? i_gpr_rs1_data :
+                         (w_alu_rs1 === `ALU_RS1_PC)  ? i_pc :
+                                                        {{DATA_WIDTH{1'h0}}};
+            o_rs2_data = (w_alu_rs2 === `ALU_RS2_GPR)   ? i_gpr_rs2_data :
+                         (w_alu_rs2 === `ALU_RS2_IMM_I) ? w_inst_imm :
+                         (w_alu_rs2 === `ALU_RS2_IMM_S) ? w_inst_imm :
+                         (w_alu_rs2 === `ALU_RS2_IMM_B) ? w_inst_imm :
+                         (w_alu_rs2 === `ALU_RS2_IMM_U) ? w_inst_imm :
+                         (w_alu_rs2 === `ALU_RS2_IMM_J) ? w_inst_imm :
+                                                          {{DATA_WIDTH{1'h0}}};
+        end
+        else begin
+            o_rs1_data = {{DATA_WIDTH{1'h0}}};
+            o_rs2_data = {{DATA_WIDTH{1'h0}}};
+        end
+    end
+
 endmodule

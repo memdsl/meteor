@@ -15,6 +15,8 @@ module ifu #(
     output logic [ADDR_WIDTH - 1 : 0] o_pc_next
 );
 
+    assign o_valid   = 1'h1;
+
     logic [ADDR_WIDTH - 1 : 0] r_pc;
     logic [ADDR_WIDTH - 1 : 0] w_pc_next;
 
@@ -36,6 +38,5 @@ module ifu #(
 
     assign o_pc      = r_pc;
     assign o_pc_next = w_pc_next;
-    assign o_valid   = 1'h1;
 
 endmodule
