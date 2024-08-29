@@ -6,7 +6,7 @@ module imm #(
 ) (
     input  logic [`INST_WIDTH -  1 : 0] i_inst,
     input  logic [`INST_WIDTH - 26 : 0] i_inst_opcode,
-    output logic [`DATA_WIDTH -  1 : 0] o_inst_imm
+    output logic [ DATA_WIDTH -  1 : 0] o_inst_imm
 );
 
     always_comb begin
@@ -33,7 +33,8 @@ module imm #(
             // U Type
             7'b0110111,
             7'b0010111:
-                o_inst_imm = {i_inst[31 : 12], 12'h0};
+                o_inst_imm = {{(DATA_WIDTH - 32){i_inst[31]}},
+                              i_inst[31 : 12], 12'h0};
             // J Type
             7'b1101111:
                 o_inst_imm = {{(DATA_WIDTH - 21){i_inst[31]}},
