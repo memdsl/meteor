@@ -3,6 +3,7 @@
 `define INST_WIDTH 32
 `define GPRS_WIDTH  5
 `define ARGS_WIDTH  8
+`define BYTE_WIDTH  8
 
 `define ADDR_INIT 32'h8000_0000
 
@@ -36,6 +37,11 @@
 `define ALU_RS2_IMM_B 4
 `define ALU_RS2_IMM_U 5
 `define ALU_RS2_IMM_J 6
+
+`define JMP_X 0
+`define JMP_J 1
+`define JMP_B 2
+`define JMP_E 3
 
 `define RAM_BYT_X   0
 `define RAM_BYT_1_U 1
