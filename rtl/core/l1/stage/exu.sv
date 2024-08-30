@@ -6,6 +6,8 @@ module exu #(
     input  logic                       i_ready,
     output logic                       o_valid,
 
+    input  logic [`ADDR_WIDTH - 1 : 0] i_pc,
+
     input  logic [`ARGS_WIDTH - 1 : 0] i_alu_type,
     input  logic [ DATA_WIDTH - 1 : 0] i_alu_rs1_data,
     input  logic [ DATA_WIDTH - 1 : 0] i_alu_rs2_data,
@@ -14,9 +16,10 @@ module exu #(
     output logic                       o_alu_over,
     output logic                       o_alu_nega,
 
-    input  logic                       i_ctr_jmp_en,
-    output logic                       o_jmp_en,
-    output logic [`ADDR_WIDTH - 1 : 0] o_jmp_pc
+    input  logic [`ARGS_WIDTH - 1 : 0] i_ctr_jmp_type,
+    input  logic [ DATA_WIDTH - 1 : 0] i_sys_jmp_or_gpr_data,
+    output logic                       o_sys_jmp_en,
+    output logic [`ADDR_WIDTH - 1 : 0] o_sys_jmp_pc
 );
 
     assign o_valid = 1'h1;
@@ -44,7 +47,30 @@ module exu #(
     assign o_alu_nega = (o_valid && i_ready) ? w_alu_nega : 1'h0;
 
     always_comb begin
-
+        case (i_ctr_jmp_type)
+            `JMP_J: begin
+                o_sys_jmp_en = 1'h1;
+                o_sys_jmp_pc = o_alu_res;
+            end
+            `JMP_B: begin
+                if (o_alu_res === 32'h1) begin
+                    o_sys_jmp_en = 1'h1;
+                    o_sys_jmp_pc = i_pc + i_sys_jmp_or_gpr_data;
+                end
+                else begin
+                    o_sys_jmp_en =  1'h0;
+                    o_sys_jmp_pc = 32'h0;
+                end
+            end
+            `JMP_E: begin
+                o_sys_jmp_en =  1'h1;
+                o_sys_jmp_pc = 32'h0;
+            end
+            default: begin
+                o_sys_jmp_en =  1'h0;
+                o_sys_jmp_pc = 32'h0;
+            end
+        endcase
     end
 
 endmodule
