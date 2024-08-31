@@ -3,11 +3,10 @@
 module idu #(
     parameter DATA_WIDTH = `DATA_WIDTH
 ) (
-    input  logic                       i_ready,
-    output logic                       o_valid,
+    input  logic                       i_sys_ready,
+    output logic                       i_sys_valid,
 
-    input  logic [`ADDR_WIDTH - 1 : 0] i_pc,
-    input  logic [`INST_WIDTH - 1 : 0] i_inst,
+    input  logic [`INST_WIDTH - 1 : 0] i_ram_inst,
 
     output logic [`ARGS_WIDTH - 1 : 0] o_ctr_alu_type,
     output logic [`ARGS_WIDTH - 1 : 0] o_ctr_alu_rs1,
@@ -24,13 +23,14 @@ module idu #(
     output logic [`GPRS_WIDTH - 1 : 0] o_gpr_rs2_id,
     output logic [`GPRS_WIDTH - 1 : 0] o_gpr_rd_id,
 
+    input  logic [`ADDR_WIDTH - 1 : 0] i_ifu_pc,
     output logic [ DATA_WIDTH - 1 : 0] o_alu_rs1_data,
     output logic [ DATA_WIDTH - 1 : 0] o_alu_rs2_data,
 
-    output logic [ DATA_WIDTH - 1 : 0] o_sys_jmp_or_reg_data
+    output logic [ DATA_WIDTH - 1 : 0] o_idu_jmp_or_reg_data
 );
 
-    assign o_valid = 1'h1;
+    assign i_sys_valid = 1'h1;
 
     logic [6 : 0]               w_inst_opcode;
     logic [2 : 0]               w_inst_funct3;
@@ -40,17 +40,17 @@ module idu #(
     logic [`GPRS_WIDTH - 1 : 0] w_inst_rd_id;
     logic [ DATA_WIDTH - 1 : 0] w_inst_imm;
 
-    assign w_inst_opcode = i_inst[ 6 :  0];
-    assign w_inst_funct3 = i_inst[14 : 12];
-    assign w_inst_funct7 = i_inst[31 : 25];
-    assign w_inst_rs1_id = i_inst[19 : 15];
-    assign w_inst_rs2_id = i_inst[24 : 20];
-    assign w_inst_rd_id  = i_inst[11 :  7];
+    assign w_inst_opcode = i_ram_inst[ 6 :  0];
+    assign w_inst_funct3 = i_ram_inst[14 : 12];
+    assign w_inst_funct7 = i_ram_inst[31 : 25];
+    assign w_inst_rs1_id = i_ram_inst[19 : 15];
+    assign w_inst_rs2_id = i_ram_inst[24 : 20];
+    assign w_inst_rd_id  = i_ram_inst[11 :  7];
 
     imm #(
         .DATA_WIDTH(DATA_WIDTH)
     ) imm_inst(
-        .i_inst       (i_inst),
+        .i_inst       (i_ram_inst),
         .i_inst_opcode(w_inst_opcode),
         .o_inst_imm   (w_inst_imm)
     );
@@ -236,23 +236,23 @@ module idu #(
         endcase
     end
 
-    assign o_ctr_alu_type   = (o_valid && i_ready) ? w_ctr_alu_type   : `ALU_TYPE_X;
-    assign o_ctr_alu_rs1    = (o_valid && i_ready) ? w_ctr_alu_rs1    : `ALU_RS1_X;
-    assign o_ctr_alu_rs2    = (o_valid && i_ready) ? w_ctr_alu_rs2    : `ALU_RS2_X;
-    assign o_ctr_jmp_type   = (o_valid && i_ready) ? w_ctr_jmp_type   : `JMP_X;
-    assign o_ctr_ram_wr_en  = (o_valid && i_ready) ? w_ctr_ram_wr_en  : 1'h0;
-    assign o_ctr_ram_wr_byt = (o_valid && i_ready) ? w_ctr_ram_byt    : `RAM_BYT_X;
-    assign o_ctr_reg_wr_en  = (o_valid && i_ready) ? w_ctr_reg_wr_en  : 1'h0;
-    assign o_ctr_reg_wr_src = (o_valid && i_ready) ? w_ctr_reg_wr_src : `REG_WR_SRC_X;
+    assign o_ctr_alu_type   = (i_sys_valid && i_sys_ready) ? w_ctr_alu_type   : `ALU_TYPE_X;
+    assign o_ctr_alu_rs1    = (i_sys_valid && i_sys_ready) ? w_ctr_alu_rs1    : `ALU_RS1_X;
+    assign o_ctr_alu_rs2    = (i_sys_valid && i_sys_ready) ? w_ctr_alu_rs2    : `ALU_RS2_X;
+    assign o_ctr_jmp_type   = (i_sys_valid && i_sys_ready) ? w_ctr_jmp_type   : `JMP_X;
+    assign o_ctr_ram_wr_en  = (i_sys_valid && i_sys_ready) ? w_ctr_ram_wr_en  : 1'h0;
+    assign o_ctr_ram_wr_byt = (i_sys_valid && i_sys_ready) ? w_ctr_ram_byt    : `RAM_BYT_X;
+    assign o_ctr_reg_wr_en  = (i_sys_valid && i_sys_ready) ? w_ctr_reg_wr_en  : 1'h0;
+    assign o_ctr_reg_wr_src = (i_sys_valid && i_sys_ready) ? w_ctr_reg_wr_src : `REG_WR_SRC_X;
 
-    assign o_gpr_rs1_id = (o_valid && i_ready) ? w_inst_rs1_id : 5'h0;
-    assign o_gpr_rs2_id = (o_valid && i_ready) ? w_inst_rs2_id : 5'h0;
-    assign o_gpr_rd_id  = (o_valid && i_ready) ? w_inst_rd_id  : 5'h0;
+    assign o_gpr_rs1_id = (i_sys_valid && i_sys_ready) ? w_inst_rs1_id : 5'h0;
+    assign o_gpr_rs2_id = (i_sys_valid && i_sys_ready) ? w_inst_rs2_id : 5'h0;
+    assign o_gpr_rd_id  = (i_sys_valid && i_sys_ready) ? w_inst_rd_id  : 5'h0;
 
     always_comb begin
-        if (o_valid && i_ready) begin
+        if (i_sys_valid && i_sys_ready) begin
             o_alu_rs1_data = (w_ctr_alu_rs1 === `ALU_RS1_GPR) ? i_gpr_rs1_data :
-                             (w_ctr_alu_rs1 === `ALU_RS1_PC)  ? i_pc :
+                             (w_ctr_alu_rs1 === `ALU_RS1_PC)  ? i_ifu_pc :
                                                                 {DATA_WIDTH{1'h0}};
             o_alu_rs2_data = (w_ctr_alu_rs2 === `ALU_RS2_GPR)   ? i_gpr_rs2_data :
                              (w_ctr_alu_rs2 === `ALU_RS2_IMM_I) ? w_inst_imm :
@@ -268,7 +268,7 @@ module idu #(
         end
     end
 
-    assign o_sys_jmp_or_reg_data = (o_valid && i_ready) ?
+    assign o_idu_jmp_or_reg_data = (i_sys_valid && i_sys_ready) ?
                                   ((w_ctr_jmp_type === `JMP_B) ? w_inst_imm : i_gpr_rs2_data) :
                                    {DATA_WIDTH{1'h0}};
 
