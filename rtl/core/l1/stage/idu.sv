@@ -49,10 +49,10 @@ module idu #(
 
     imm #(
         .DATA_WIDTH(DATA_WIDTH)
-    ) imm_inst(
-        .i_inst       (i_ram_inst),
-        .i_inst_opcode(w_inst_opcode),
-        .o_inst_imm   (w_inst_imm)
+    ) u_imm(
+        .i_imm_inst  (i_ram_inst),
+        .i_imm_opcode(w_inst_opcode),
+        .o_imm_data  (w_inst_imm)
     );
 
     logic [`ARGS_WIDTH - 1 : 0] w_ctr_alu_type;

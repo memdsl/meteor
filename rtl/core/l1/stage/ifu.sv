@@ -1,23 +1,21 @@
 `include "../../../base/cfg.sv"
 
-module ifu #(
-    parameter ADDR_WIDTH = `ADDR_WIDTH
-) (
-    input  logic                      i_sys_clk,
-    input  logic                      i_sys_rst_n,
-    input  logic                      i_sys_ready,
-    output logic                      o_sys_valid,
+module ifu(
+    input  logic                       i_sys_clk,
+    input  logic                       i_sys_rst_n,
+    input  logic                       i_sys_ready,
+    output logic                       o_sys_valid,
 
-    input  logic                      i_exu_jmp_en,
-    input  logic [ADDR_WIDTH - 1 : 0] i_exu_jmp_pc,
-    output logic [ADDR_WIDTH - 1 : 0] o_ifu_pc,
-    output logic [ADDR_WIDTH - 1 : 0] o_ifu_pc_next
+    input  logic                       i_exu_jmp_en,
+    input  logic [`ADDR_WIDTH - 1 : 0] i_exu_jmp_pc,
+    output logic [`ADDR_WIDTH - 1 : 0] o_ifu_pc,
+    output logic [`ADDR_WIDTH - 1 : 0] o_ifu_pc_next
 );
 
     assign o_sys_valid = 1'h1;
 
-    logic [ADDR_WIDTH - 1 : 0] r_ifu_pc;
-    logic [ADDR_WIDTH - 1 : 0] w_ifu_pc_next;
+    logic [`ADDR_WIDTH - 1 : 0] r_ifu_pc;
+    logic [`ADDR_WIDTH - 1 : 0] w_ifu_pc_next;
 
     always_ff @(posedge i_sys_clk) begin
         if (!i_sys_rst_n) begin
