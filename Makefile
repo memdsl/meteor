@@ -1,14 +1,15 @@
-.PHONY: FILE_MK run sim clean
+.PHONY: run sim clean
 
 CFG_TOP = ifu_tb
 CFG_CXX = g++-10
+
 VERILATOR      = verilator
-VERILATOR_ARGS = --cc                         \
-                 --exe                        \
-                 --Mdir build                 \
-                 --MMD                        \
-                 -o $(FILE_BIN)             \
-                 --timing                     \
+VERILATOR_ARGS = --cc                    \
+                 --exe                   \
+                 --Mdir build            \
+                 --MMD                   \
+                 -o $(FILE_BIN)          \
+                 --timing                \
                  --top-module $(CFG_TOP) \
                  --trace
 
