@@ -3,7 +3,7 @@
 module ifu_tb();
 
 initial begin
-    $dumpfile("build/ifu.vcd");
+    $dumpfile("build/ifu_tb.vcd");
     $dumpvars(0, ifu_tb);
 end
 
@@ -13,6 +13,7 @@ parameter ADDR_WIDTH = 32;
 logic                      w_clk;
 logic                      w_rst_n;
 logic                      w_ready;
+logic                      w_valid;
 logic                      w_jmp_en;
 logic [ADDR_WIDTH - 1 : 0] w_jmp_pc;
 
@@ -37,18 +38,16 @@ initial begin
     $finish;
 end
 
-ifu #(
-    .ADDR_WIDTH(ADDR_WIDTH)
-) ifu_inst(
-    .i_clk    (w_clk),
-    .i_rst_n  (w_rst_n),
-    .i_ready  (w_ready),
-    .o_valid  (),
+ifu ifu_inst(
+    .i_sys_clk    (w_clk),
+    .i_sys_rst_n  (w_rst_n),
+    .i_sys_ready  (w_ready),
+    .o_sys_valid  (),
 
-    .i_jmp_en (w_jmp_en),
-    .i_jmp_pc (w_jmp_pc),
-    .o_pc     (),
-    .o_pc_next()
+    .i_exu_jmp_en (w_jmp_en),
+    .i_exu_jmp_pc (w_jmp_pc),
+    .o_ifu_pc     (),
+    .o_ifu_pc_next()
 );
 
 endmodule

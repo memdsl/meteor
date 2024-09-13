@@ -1,4 +1,4 @@
-`include "../../../base/cfg.sv"
+`include "cfg.sv"
 
 module ifu(
     input  logic                       i_sys_clk,
