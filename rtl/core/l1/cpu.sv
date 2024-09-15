@@ -103,7 +103,7 @@ module cpu #(
         .DATA_WIDTH(DATA_WIDTH)
     ) u_idu(
         .i_sys_ready          (1'h1),
-        .i_sys_valid          (),
+        .o_sys_valid          (),
         .i_ram_inst           (w_ram_inst),
         .o_idu_ctr_alu_type   (w_idu_ctr_alu_type),
         .o_idu_ctr_alu_rs1    (w_idu_ctr_alu_rs1),
@@ -113,8 +113,8 @@ module cpu #(
         .o_idu_ctr_ram_byt    (w_idu_ctr_ram_byt),
         .o_idu_ctr_reg_wr_en  (w_idu_ctr_reg_wr_en),
         .o_idu_ctr_reg_wr_src (w_idu_ctr_reg_wr_src),
-        .i_idu_gpr_rs1_data   (w_gpr_rs1_data),
-        .i_idu_gpr_rs2_data   (w_gpr_rs2_data),
+        .i_gpr_rs1_data       (w_gpr_rs1_data),
+        .i_gpr_rs2_data       (w_gpr_rs2_data),
         .o_idu_gpr_rs1_id     (w_idu_gpr_rs1_id),
         .o_idu_gpr_rs2_id     (w_idu_gpr_rs2_id),
         .o_idu_gpr_rd_id      (w_idu_gpr_rd_id),

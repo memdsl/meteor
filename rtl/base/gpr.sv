@@ -1,6 +1,6 @@
 `include "./cfg.sv"
 
-module GPR #(
+module gpr #(
     parameter DATA_WIDTH = `DATA_WIDTH
 ) (
     input  logic                       i_sys_clk,

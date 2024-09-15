@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module reg_sync #(
     parameter DATA_WIDTH = 32,
     parameter RSTN_VALUE =  0
