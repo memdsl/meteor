@@ -54,7 +54,7 @@ INCS_CXX     = $(addprefix -I, $(shell find $(INCS_CXX_DIR) -name "*.h"))
 INCS         = $(INCS_SV) $(INCS_CXX)
 
 SRCS_SV_DIR           = $(METEOR_HOME)/rtl \
-                        $(METEOR_HOME)/tb/
+                        $(METEOR_HOME)/tb
 SRCS_SV_SRC_BLACKLIST =
 SRCS_SV_DIR_BLACKLIST = $(addprefix $(METEOR_HOME)/rtl/core/, $(CPU_BLACKLIST)) \
                         $(addprefix $(METEOR_HOME)/tb/,       $(CPU_BLACKLIST))
