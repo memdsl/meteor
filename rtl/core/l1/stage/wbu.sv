@@ -1,4 +1,4 @@
-`include "../../../base/cfg.sv"
+`include "cfg.sv"
 
 module wbu #(
     parameter DATA_WIDTH = `DATA_WIDTH

@@ -17,19 +17,16 @@ module ifu(
     logic [`ADDR_WIDTH - 1 : 0] r_ifu_pc;
     logic [`ADDR_WIDTH - 1 : 0] w_ifu_pc_next;
 
-    always_ff @(posedge i_sys_clk) begin
-        if (!i_sys_rst_n) begin
-            r_ifu_pc <= `ADDR_INIT;
-        end
-        else begin
-            if (i_sys_ready && o_sys_valid) begin
-                r_ifu_pc <= w_ifu_pc_next;
-            end
-            else begin
-                r_ifu_pc <= r_ifu_pc;
-            end
-        end
-    end
+    reg_sync_en #(
+        .DATA_WIDTH(32),
+        .RSTN_VALUE(`ADDR_INIT)
+    ) u_reg_sync_en(
+        .i_clk  (i_sys_clk),
+        .i_rst_n(i_sys_rst_n),
+        .i_en   (i_sys_ready && o_sys_valid),
+        .i_data (w_ifu_pc_next),
+        .o_data (r_ifu_pc)
+    );
 
     assign w_ifu_pc_next = i_exu_jmp_en ? i_exu_jmp_pc : (r_ifu_pc + 32'h4);
 
