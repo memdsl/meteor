@@ -7,29 +7,24 @@ ifeq ($(filter $(CPU_LIST), $(CPU)),)
 endif
 CPU_BLACKLIST = $(filter-out $(CPU), $(CPU_LIST))
 
+TEST     ?= ifu
+TEST_LIST = $(subst _tb,,$(basename $(shell ls $(METEOR_HOME)/tb/$(CPU))))
+ifeq ($(filter $(TEST_LIST), $(TEST)),)
+    ifeq ($(findstring $(MAKECMDGOALS), config|clean),)
+        $(error [error]: $$TEST is incorrect, optional values in [$(TEST_LIST)])
+    endif
+endif
 
-
-
-TEST ?= ifu
-
-
-
-
-
-
-
-CFG_TOP = ifu_tb
-
-
+TOP = $(TEST)_tb
 
 VERILATOR      = verilator
-VERILATOR_ARGS = --cc                    \
-                 --exe                   \
-                 --Mdir build            \
-                 --MMD                   \
-                 --o $(FILE_BIN)          \
-                 --timing                \
-                 --top-module $(CFG_TOP) \
+VERILATOR_ARGS = --cc                \
+                 --exe               \
+                 --Mdir build        \
+                 --MMD               \
+                 --o $(FILE_BIN)     \
+                 --timing            \
+                 --top-module $(TOP) \
                  --trace
 
 CXX = g++
@@ -66,9 +61,9 @@ SRCS_SV               = $(filter-out $(SRCS_SV_BLACKLIST), $(SRCS_SV_WHITELIST))
 SRCS_CXX = sim/sim.cpp
 SRCS     = $(SRCS_SV) $(SRCS_CXX)
 
-FILE_MK  = V$(CFG_TOP).mk
+FILE_MK  = V$(TOP).mk
 FILE_BIN = $(METEOR_HOME)/build/meteor
-FILE_VCD = $(METEOR_HOME)/build/$(CFG_TOP).vcd
+FILE_VCD = $(METEOR_HOME)/build/$(TOP).vcd
 
 $(FILE_MK):
 	$(VERILATOR) $(VERILATOR_ARGS)         \
@@ -81,7 +76,6 @@ $(FILE_BIN): $(FILE_MK)
 .PHONY: run sim clean
 
 run: $(FILE_BIN)
-	@echo $(CPU)
 	cd build && $(FILE_BIN)
 sim:
 	gtkwave $(FILE_VCD)
