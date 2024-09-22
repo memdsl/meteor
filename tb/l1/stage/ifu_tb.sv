@@ -27,13 +27,13 @@ initial begin
     w_jmp_en = 1'h0;
     w_jmp_pc = 32'h8000_0000;
     #(CYCLE * 1);
-    w_rst_n  = 1'b1;
-    w_jmp_en = 1'b0;
+    w_rst_n  = 1'h1;
+    w_jmp_en = 1'h0;
     #(CYCLE * 5);
-    w_jmp_en = 1'b1;
+    w_jmp_en = 1'h1;
     w_jmp_pc = 32'h9000_0000;
     #(CYCLE * 5);
-    w_jmp_en = 1'b0;
+    w_jmp_en = 1'h0;
     w_jmp_pc = 32'h8000_0000;
     #(CYCLE * 5);
     $finish;

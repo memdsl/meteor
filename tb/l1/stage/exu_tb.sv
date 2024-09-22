@@ -63,7 +63,7 @@ end
 exu #(
     .DATA_WIDTH(DATA_WIDTH)
 ) u_exu(
-    .i_sys_ready          (1'h1),
+    .i_sys_ready          ( 1'h1),
     .o_sys_valid          (),
     .i_ifu_pc             (32'h8000_0000),
     .i_idu_ctr_alu_type   (w_idu_ctr_alu_type),

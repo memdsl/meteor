@@ -57,7 +57,7 @@ end
 idu #(
     .DATA_WIDTH(DATA_WIDTH)
 ) u_idu(
-    .i_sys_ready          (1'h1),
+    .i_sys_ready          ( 1'h1),
     .o_sys_valid          (),
     .i_ram_inst           (w_ram_inst),
     .o_idu_ctr_alu_type   (),
