@@ -85,7 +85,7 @@ $(FILE_BIN): $(FILE_MK)
 
 run: $(FILE_BIN)
 	cd build && $(FILE_BIN)
-sim: $(FILE_BIN)
+sim: run
 	gtkwave $(FILE_VCD)
 clean:
 	rm -rf build
