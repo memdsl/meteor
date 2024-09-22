@@ -1,38 +1,26 @@
 #include <verilated.h>
 #include <verilated_vcd_c.h>
-#include "Vifu_tb.h"
+#include "sim.h"
+
+#include VTOP_H
 
 int main(int argc, char **argv) {
-    // VerilatedContext *contextp = new VerilatedContext;
-    // contextp->commandArgs(argc, argv);
-    // Vifu_tb *ifup = new Vifu_tb{ contextp };
+    VerilatedContext *p_ctxt = new VerilatedContext;
+    VerilatedVcdC    *p_wave = new VerilatedVcdC;
+    VTOP             *p_vtop = new VTOP;
 
-    // VerilatedVcdC *tfp = new VerilatedVcdC;
-    // contextp->traceEverOn(true);
-    // // ifup->trace(tfp, 0);
-    // // tfp->open("wave.vcd");
+    p_ctxt->traceEverOn(true);
+    p_vtop->trace(p_wave, 3);
+    p_wave->open(TOP_W);
 
-    // delete ifup;
-    // // tfp->close();
-    // delete contextp;
-    // return 0;
-
-    VerilatedContext *m_contextp = new VerilatedContext;
-    VerilatedVcdC    *m_tracep   = new VerilatedVcdC;
-    Vifu_tb          *m_duvp     = new Vifu_tb;
-
-    m_contextp->traceEverOn(true);
-    m_duvp->trace(m_tracep, 3);
-    m_tracep->open("ifu_tb.vcd");
-
-    while (!m_contextp->gotFinish()) {
-        m_duvp->eval();
-        m_tracep->dump(m_contextp->time());
-        m_contextp->timeInc(1);
+    while (!p_ctxt->gotFinish()) {
+        p_vtop->eval();
+        p_wave->dump(p_ctxt->time());
+        p_ctxt->timeInc(1);
     }
 
-    m_tracep->close();
+    p_wave->close();
 
-    delete m_duvp;
+    delete p_vtop;
     return 0;
 }

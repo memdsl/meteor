@@ -7,7 +7,7 @@ ifeq ($(filter $(CPU_LIST), $(CPU)),)
 endif
 CPU_BLACKLIST = $(filter-out $(CPU), $(CPU_LIST))
 
-TEST     ?= ifu
+TEST     ?=
 TEST_LIST = $(subst _tb,,$(basename $(shell ls $(METEOR_HOME)/tb/$(CPU))))
 ifeq ($(filter $(TEST_LIST), $(TEST)),)
     ifeq ($(findstring $(MAKECMDGOALS), config|clean),)
@@ -15,7 +15,8 @@ ifeq ($(filter $(TEST_LIST), $(TEST)),)
     endif
 endif
 
-TOP = $(TEST)_tb
+ TOP = $(TEST)_tb
+VTOP = V$(TOP)
 
 VERILATOR      = verilator
 VERILATOR_ARGS = --cc                \
@@ -36,17 +37,24 @@ ifeq ($(shell [ $(CXX_VERSION) -le 9 ] && echo yes || echo no), yes)
         $(error [error] g++ version must >=10, such as g++-10)
     endif
 endif
-CXX_CFLAGS  = -std=c++20 \
-              -fcoroutines
+
+INFO = "\#define VTOP_H \"$(VTOP).h\"\n\#define  TOP_W \"$(TOP).vcd\""
+
+CXX_CFLAGS  =  -std=c++20               \
+               -fcoroutines             \
+               -DTOP=$(TOP)             \
+              '-DTOP_W=\"$(TOP).vcd\"'  \
+               -DVTOP=$(VTOP)           \
+              '-DVTOP_H=\"$(VTOP).h\"'
 CXX_LDFLAGS =
 
 INCS_SV_DIR  = $(METEOR_HOME)/rtl/base     \
                $(METEOR_HOME)/rtl/base/reg \
                $(METEOR_HOME)/rtl/base/mux
 INCS_SV      = $(addprefix -I, $(INCS_SV_DIR))
-INCS_CXX_DIR =
+INCS_CXX_DIR = $(METEOR_HOME)/sim
 INCS_CXX     = $(addprefix -I, $(shell find $(INCS_CXX_DIR) -name "*.h"))
-INCS         = $(INCS_SV) $(INCS_CXX)
+INCS         = $(INCS_SV)
 
 SRCS_SV_DIR           = $(METEOR_HOME)/rtl \
                         $(METEOR_HOME)/tb
@@ -61,7 +69,7 @@ SRCS_SV               = $(filter-out $(SRCS_SV_BLACKLIST), $(SRCS_SV_WHITELIST))
 SRCS_CXX = sim/sim.cpp
 SRCS     = $(SRCS_SV) $(SRCS_CXX)
 
-FILE_MK  = V$(TOP).mk
+FILE_MK  = $(VTOP).mk
 FILE_BIN = $(METEOR_HOME)/build/meteor
 FILE_VCD = $(METEOR_HOME)/build/$(TOP).vcd
 
@@ -71,6 +79,8 @@ $(FILE_MK):
 	$(addprefix -CFLAGS ,  $(CXX_CFLAGS))  \
 	$(addprefix -LDFLAGS , $(CXX_LDFLAGS))
 $(FILE_BIN): $(FILE_MK)
+	cat sim/sim.h
+	grep -q $(TEST) sim/sim.h || echo $(INFO) > sim/sim.h
 	make -C build -f $(FILE_MK) CXX=$(CXX)
 
 .PHONY: run sim clean
