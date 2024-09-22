@@ -48,9 +48,7 @@ CXX_CFLAGS  =  -std=c++20               \
               '-DVTOP_H=\"$(VTOP).h\"'
 CXX_LDFLAGS =
 
-INCS_SV_DIR  = $(METEOR_HOME)/rtl/base     \
-               $(METEOR_HOME)/rtl/base/reg \
-               $(METEOR_HOME)/rtl/base/mux
+INCS_SV_DIR  = $(METEOR_HOME)/rtl/base
 INCS_SV      = $(addprefix -I, $(INCS_SV_DIR))
 INCS_CXX_DIR = $(METEOR_HOME)/sim
 INCS_CXX     = $(addprefix -I, $(shell find $(INCS_CXX_DIR) -name "*.h"))
