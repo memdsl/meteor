@@ -1,5 +1,5 @@
 CPU     ?= l1
-CPU_LIST = $(basename $(shell ls $(METEOR_HOME)/rtl/core))
+CPU_LIST = $(basename $(shell ls rtl/core))
 ifeq ($(filter $(CPU_LIST), $(CPU)),)
     ifeq ($(findstring $(MAKECMDGOALS), config|clean),)
         $(error [error]: $$CPU is incorrect, optional values in [$(CPU_LIST)])
@@ -8,7 +8,7 @@ endif
 CPU_BLACKLIST = $(filter-out $(CPU), $(CPU_LIST))
 
 TEST     ?=
-TEST_LIST = $(subst _tb,,$(basename $(shell ls $(METEOR_HOME)/tb/$(CPU))))
+TEST_LIST = $(shell find tb/$(CPU) -type f | sed "s|.*/||; s|_tb\.sv$$||")
 ifeq ($(filter $(TEST_LIST), $(TEST)),)
     ifeq ($(findstring $(MAKECMDGOALS), config|clean),)
         $(error [error]: $$TEST is incorrect, optional values in [$(TEST_LIST)])
@@ -48,14 +48,14 @@ CXX_CFLAGS  =  -std=c++20               \
               '-DVTOP_H=\"$(VTOP).h\"'
 CXX_LDFLAGS =
 
-INCS_SV_DIR  = $(METEOR_HOME)/rtl/base
+INCS_SV_DIR  = rtl/base
 INCS_SV      = $(addprefix -I, $(INCS_SV_DIR))
-INCS_CXX_DIR = $(METEOR_HOME)/sim
+INCS_CXX_DIR = sim
 INCS_CXX     = $(addprefix -I, $(shell find $(INCS_CXX_DIR) -name "*.h"))
 INCS         = $(INCS_SV)
 
-SRCS_SV_DIR           = $(METEOR_HOME)/rtl \
-                        $(METEOR_HOME)/tb
+SRCS_SV_DIR           = rtl \
+                        tb
 SRCS_SV_SRC_BLACKLIST =
 SRCS_SV_DIR_BLACKLIST = $(addprefix $(METEOR_HOME)/rtl/core/, $(CPU_BLACKLIST)) \
                         $(addprefix $(METEOR_HOME)/tb/,       $(CPU_BLACKLIST))
