@@ -38,7 +38,7 @@ ifeq ($(shell [ $(CXX_VERSION) -le 9 ] && echo yes || echo no), yes)
     endif
 endif
 
-INFO = "\#define VTOP_H \"$(VTOP).h\"\n\#define  TOP_W \"$(TOP).vcd\""
+CXX_SIM_H = "\#define VTOP_H \"$(VTOP).h\"\n\#define  TOP_W \"$(TOP).vcd\""
 
 CXX_CFLAGS  =  -std=c++20               \
                -fcoroutines             \
@@ -78,7 +78,7 @@ $(FILE_MK):
 	$(addprefix -LDFLAGS , $(CXX_LDFLAGS))
 $(FILE_BIN): $(FILE_MK)
 	cat sim/sim.h
-	grep -q $(TEST) sim/sim.h || echo $(INFO) > sim/sim.h
+	grep -q $(TEST) sim/sim.h || echo $(CXX_SIM_H) > sim/sim.h
 	make -C build -f $(FILE_MK) CXX=$(CXX)
 
 .PHONY: run sim clean
