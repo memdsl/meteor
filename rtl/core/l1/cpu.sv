@@ -62,7 +62,7 @@ module cpu #(
         .i_sys_rst_n      (i_sys_rst_n),
         .i_gpr_rd_rs1_id  (w_idu_gpr_rs1_id),
         .i_gpr_rd_rs2_id  (w_idu_gpr_rs2_id),
-        .i_gpr_rd_end_id  (32'ha),
+        .i_gpr_rd_end_id  (5'ha),
         .o_gpr_rd_rs1_data(w_gpr_rs1_data),
         .o_gpr_rd_rs2_data(w_gpr_rs2_data),
         .o_gpr_rd_end_data(),
@@ -73,7 +73,7 @@ module cpu #(
 
     ram #(
         .DATA_WIDTH(DATA_WIDTH)
-    ) u_gpr(
+    ) u_ram(
         .i_sys_clk         (i_sys_clk),
         .i_sys_rst_n       (i_sys_rst_n),
         .i_ram_rd_inst_en  (1'h1),
