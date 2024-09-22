@@ -15,14 +15,43 @@ parameter DATA_WIDTH = 32;
 logic [`INST_WIDTH - 1 : 0] w_ram_inst;
 
 initial begin
-
+    // lui x1, 10
+    w_ram_inst = 32'h0000_a0b7;
     #(CYCLE * 5);
+    // auipc x1, 10
+    w_ram_inst = 32'h0000_a097;
     #(CYCLE * 5);
+    // jal x1, 10
+    w_ram_inst = 32'h00a0_00ef;
     #(CYCLE * 5);
+    // jalr x1, 10(x2)
+    w_ram_inst = 32'h00a1_00e7;
     #(CYCLE * 5);
+    // beq x1, x2, 10
+    w_ram_inst = 32'h0020_8563;
+    #(CYCLE * 5);
+    // lb x1, 10(x2)
+    w_ram_inst = 32'h00a1_0083;
+    #(CYCLE * 5);
+    // sb x1, offset(x2)
+    w_ram_inst = 32'h0011_0023;
+    #(CYCLE * 5);
+    // addi x1, x2, 10
+    w_ram_inst = 32'h00a1_0093;
+    #(CYCLE * 5);
+    // add x1, x2, x3
+    w_ram_inst = 32'h0031_00b3;
+    #(CYCLE * 5);
+    // fence
+    w_ram_inst = 32'h0ff0_000f;
+    #(CYCLE * 5);
+    // ecall
+    w_ram_inst = 32'h0000_0073;
+    #(CYCLE * 5);
+    // ebreak
+    w_ram_inst = 32'h0010_0073;
     #(CYCLE * 5);
     $finish;
-
 end
 
 idu #(
