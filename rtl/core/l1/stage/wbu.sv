@@ -15,7 +15,6 @@ module wbu #(
     output logic                       o_wbu_gpr_wr_en,
     output logic [`GPRS_WIDTH - 1 : 0] o_wbu_gpr_wr_id,
     output logic [ DATA_WIDTH - 1 : 0] o_wbu_gpr_wr_data
-
 );
 
     assign o_sys_valid = 1'h1;
@@ -31,7 +30,7 @@ module wbu #(
                                                             {DATA_WIDTH{1'h0}};
         end
         else begin
-            o_gpr_wr_data = {DATA_WIDTH{1'h0}};
+            o_wbu_gpr_wr_data = {DATA_WIDTH{1'h0}};
         end
     end
 
