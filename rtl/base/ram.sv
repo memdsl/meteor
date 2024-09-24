@@ -21,12 +21,12 @@ module ram #(
 );
 
     // 32bit: 64KB, 64bit: 128KB
-    logic [DATA_WIDTH - 1 : 0] r_ram[2 ** 14 - 1: 0];
+    logic [DATA_WIDTH - 1 : 0] r_ram[2 ** 14 - 1 : 0];
 
     assign o_ram_rd_inst_data = (i_ram_rd_inst_en) ?
-                                r_ram[i_ram_rd_inst_addr[15 : 2]] : {DATA_WIDTH{1'h0}};
+                                r_ram[i_ram_rd_inst_addr[15 : DATA_WIDTH / 8 / 2]] : {DATA_WIDTH{1'h0}};
     assign o_ram_rd_data_data = (i_ram_rd_data_en) ?
-                                r_ram[i_ram_rd_data_addr[15 : 2]] : {DATA_WIDTH{1'h0}};
+                                r_ram[i_ram_rd_data_addr[15 : DATA_WIDTH / 8 / 2]] : {DATA_WIDTH{1'h0}};
 
     always_ff @(posedge i_sys_clk) begin
         if (!i_sys_rst_n) begin

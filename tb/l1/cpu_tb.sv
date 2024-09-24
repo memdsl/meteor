@@ -20,7 +20,8 @@ always #(CYCLE / 2) w_clk = ~w_clk;
 initial begin
     w_clk    = 1'h0;
     w_rst_n  = 1'h0;
-    #(CYCLE * 10);
+    #(CYCLE * 100);
+    $finish;
 end
 
 cpu #(
