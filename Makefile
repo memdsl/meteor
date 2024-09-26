@@ -18,12 +18,17 @@ endif
  TOP = $(TEST)_tb
 VTOP = V$(TOP)
 
+BUILD_DIR = $(METEOR_HOME)/build
+BUILD_MK  = $(VTOP).mk
+BUILD_BIN = $(BUILD_DIR)/meteor
+BUILD_VCD = $(BUILD_DIR)/$(TOP).vcd
+
 VERILATOR      = verilator
 VERILATOR_ARGS = --cc                \
                  --exe               \
                  --Mdir build        \
                  --MMD               \
-                 --o $(FILE_BIN)     \
+                 --o $(BUILD_BIN)    \
                  --timing            \
                  --top-module $(TOP) \
                  --trace
@@ -57,8 +62,8 @@ INCS         = $(INCS_SV)
 SRCS_SV_DIR           = rtl \
                         tb
 SRCS_SV_SRC_BLACKLIST =
-SRCS_SV_DIR_BLACKLIST = $(addprefix $(METEOR_HOME)/rtl/core/, $(CPU_BLACKLIST)) \
-                        $(addprefix $(METEOR_HOME)/tb/,       $(CPU_BLACKLIST))
+SRCS_SV_DIR_BLACKLIST = $(addprefix rtl/core/, $(CPU_BLACKLIST)) \
+                        $(addprefix tb/,       $(CPU_BLACKLIST))
 SRCS_SV_BLACKLIST     = $(SRCS_SV_SRC_BLACKLIST)                            \
                         $(shell find $(SRCS_SV_DIR_BLACKLIST) -name "*.sv")
 SRCS_SV_WHITELIST     = $(shell find $(SRCS_SV_DIR) -name "*.sv")
@@ -67,25 +72,21 @@ SRCS_SV               = $(filter-out $(SRCS_SV_BLACKLIST), $(SRCS_SV_WHITELIST))
 SRCS_CXX = sim/sim.cpp
 SRCS     = $(SRCS_SV) $(SRCS_CXX)
 
-FILE_MK  = $(VTOP).mk
-FILE_BIN = $(METEOR_HOME)/build/meteor
-FILE_VCD = $(METEOR_HOME)/build/$(TOP).vcd
-
-$(FILE_MK):
+$(BUILD_MK):
 	$(VERILATOR) $(VERILATOR_ARGS)         \
 	$(INCS) $(SRCS)                        \
 	$(addprefix -CFLAGS ,  $(CXX_CFLAGS))  \
 	$(addprefix -LDFLAGS , $(CXX_LDFLAGS))
-$(FILE_BIN): $(FILE_MK)
+$(BUILD_BIN): $(BUILD_MK)
 	cat sim/sim.h
 	grep -q $(TEST) sim/sim.h || echo $(CXX_SIM_H) > sim/sim.h
-	make -C build -f $(FILE_MK) CXX=$(CXX)
+	make -C build -f $(BUILD_MK) CXX=$(CXX)
 
-.PHONY: run sim clean
+.PHONY:  cleanrun sim
 
-run: $(FILE_BIN)
-	cd build && $(FILE_BIN)
+run: $(BUILD_BIN)
+	$(BUILD_BIN)
 sim: run
-	gtkwave $(FILE_VCD)
+	gtkwave $(BUILD_VCD)
 clean:
 	rm -rf build
