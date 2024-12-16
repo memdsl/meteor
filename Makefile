@@ -1,8 +1,13 @@
+TOOL_EMPTY :=
+TOOL_SPACE := $(TOOL_EMPTY) $(TOOL_EMPTY)
+TOOL_COMMA := ,$(TOOL_SPACE)
+
 CPU     ?= l1
 CPU_LIST = $(basename $(shell ls rtl/core))
 ifeq ($(filter $(CPU_LIST), $(CPU)),)
     ifeq ($(findstring $(MAKECMDGOALS), config|clean),)
-        $(error [error]: $$CPU is incorrect, optional values in [$(CPU_LIST)])
+        $(error [error]: $$CPU is incorrect, optional values in \
+       [$(subst $(TOOL_SPACE),$(TOOL_COMMA),$(CPU_LIST))])
     endif
 endif
 CPU_BLACKLIST = $(filter-out $(CPU), $(CPU_LIST))
@@ -11,7 +16,8 @@ TEST     ?=
 TEST_LIST = $(shell find tb/$(CPU) -type f | sed "s|.*/||; s|_tb\.sv$$||")
 ifeq ($(filter $(TEST_LIST), $(TEST)),)
     ifeq ($(findstring $(MAKECMDGOALS), config|clean),)
-        $(error [error]: $$TEST is incorrect, optional values in [$(TEST_LIST)])
+        $(error [error]: $$TEST is incorrect, optional values in \
+       [$(subst $(TOOL_SPACE),$(TOOL_COMMA),$(TEST_LIST))])
     endif
 endif
 
