@@ -51,11 +51,11 @@ endif
 
 CXX_SIM_H = "\#define VTOP_H \"$(VTOP).h\"\n\#define  TOP_W \"$(TOP).vcd\""
 
-CXX_CFLAGS  =  -std=c++20               \
-               -fcoroutines             \
-               -DTOP=$(TOP)             \
-              '-DTOP_W=\"$(TOP).vcd\"'  \
-               -DVTOP=$(VTOP)           \
+CXX_CFLAGS  =  -std=c++20              \
+               -fcoroutines            \
+               -DTOP=$(TOP)            \
+              '-DTOP_W=\"$(TOP).vcd\"' \
+               -DVTOP=$(VTOP)          \
               '-DVTOP_H=\"$(VTOP).h\"'
 CXX_LDFLAGS =
 
