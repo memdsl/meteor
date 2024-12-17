@@ -82,7 +82,7 @@ $(BUILD_BIN): $(BUILD_MK)
 	grep -q $(TEST) sim/sim.h || echo $(CXX_SIM_H) > sim/sim.h
 	make -C build -f $(BUILD_MK) CXX=$(CXX)
 
-.PHONY:  cleanrun sim
+.PHONY:  clean run sim
 
 run: $(BUILD_BIN)
 	$(BUILD_BIN)
