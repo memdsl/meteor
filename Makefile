@@ -49,14 +49,12 @@ ifeq ($(shell [ $(CXX_VERSION) -le 9 ] && echo yes || echo no), yes)
     endif
 endif
 
-CXX_SIM_H = "\#define VTOP_H \"$(VTOP).h\"\n\#define  TOP_W \"$(TOP).vcd\""
+CXX_SIM_H = "\#define VTOP_H \"$(VTOP).h\""
 
-CXX_CFLAGS  =  -std=c++20              \
-               -fcoroutines            \
-               -DTOP=$(TOP)            \
-              '-DTOP_W=\"$(TOP).vcd\"' \
-               -DVTOP=$(VTOP)          \
-              '-DVTOP_H=\"$(VTOP).h\"'
+CXX_CFLAGS  =  -std=c++20                    \
+               -fcoroutines                  \
+              '-DTOP_W=\"build/$(TOP).vcd\"' \
+               -DVTOP=$(VTOP)
 CXX_LDFLAGS =
 
 INCS_SV_DIR  = rtl/base
@@ -84,7 +82,7 @@ $(BUILD_MK):
 	$(addprefix -CFLAGS ,  $(CXX_CFLAGS))  \
 	$(addprefix -LDFLAGS , $(CXX_LDFLAGS))
 $(BUILD_BIN): $(BUILD_MK)
-	cat sim/sim.h
+	touch sim/sim.h
 	grep -q $(TEST) sim/sim.h || echo $(CXX_SIM_H) > sim/sim.h
 	make -C build -f $(BUILD_MK) CXX=$(CXX)
 
