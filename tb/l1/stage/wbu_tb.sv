@@ -12,14 +12,14 @@ end
 parameter CYCLE      = 10;
 parameter DATA_WIDTH = 32;
 
-logic [`ARGS_WIDTH - 1 : 0] w_idu_ctr_reg_wr_src;
+logic [`ARGS_WIDTH - 1 : 0] r_idu_ctr_reg_wr_src;
 
 initial begin
-    w_idu_ctr_reg_wr_src = `REG_WR_SRC_ALU;
+    r_idu_ctr_reg_wr_src = `REG_WR_SRC_ALU;
     #(CYCLE * 5);
-    w_idu_ctr_reg_wr_src = `REG_WR_SRC_MEM;
+    r_idu_ctr_reg_wr_src = `REG_WR_SRC_MEM;
     #(CYCLE * 5);
-    w_idu_ctr_reg_wr_src = `REG_WR_SRC_PC;
+    r_idu_ctr_reg_wr_src = `REG_WR_SRC_PC;
     #(CYCLE * 5);
     $finish;
 end
@@ -30,7 +30,7 @@ wbu #(
     .i_sys_ready         ( 1'h1),
     .o_sys_valid         (),
     .i_idu_ctr_reg_wr_en ( 1'h1),
-    .i_idu_ctr_reg_wr_src(w_idu_ctr_reg_wr_src),
+    .i_idu_ctr_reg_wr_src(r_idu_ctr_reg_wr_src),
     .i_ifu_pc            (32'h8000_0000),
     .i_exu_res           (32'h1),
     .i_ram_res           (32'h2),

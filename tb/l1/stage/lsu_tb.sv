@@ -12,20 +12,20 @@ end
 parameter CYCLE      = 10;
 parameter DATA_WIDTH = 32;
 
-logic [`ARGS_WIDTH - 1 : 0] w_idu_ctr_ram_byt;
+logic [`ARGS_WIDTH - 1 : 0] r_idu_ctr_ram_byt;
 
 initial begin
-    w_idu_ctr_ram_byt = `RAM_BYT_1_S;
+    r_idu_ctr_ram_byt = `RAM_BYT_1_S;
     #(CYCLE * 5);
-    w_idu_ctr_ram_byt = `RAM_BYT_1_U;
+    r_idu_ctr_ram_byt = `RAM_BYT_1_U;
     #(CYCLE * 5);
-    w_idu_ctr_ram_byt = `RAM_BYT_2_S;
+    r_idu_ctr_ram_byt = `RAM_BYT_2_S;
     #(CYCLE * 5);
-    w_idu_ctr_ram_byt = `RAM_BYT_2_U;
+    r_idu_ctr_ram_byt = `RAM_BYT_2_U;
     #(CYCLE * 5);
-    w_idu_ctr_ram_byt = `RAM_BYT_4_S;
+    r_idu_ctr_ram_byt = `RAM_BYT_4_S;
     #(CYCLE * 5);
-    w_idu_ctr_ram_byt = `RAM_BYT_4_U;
+    r_idu_ctr_ram_byt = `RAM_BYT_4_U;
     #(CYCLE * 5);
     $finish;
 end
@@ -35,7 +35,7 @@ lsu #(
 ) u_lsu(
     .i_sys_ready        ( 1'h1),
     .o_sys_valid        (),
-    .i_idu_ctr_ram_byt  (w_idu_ctr_ram_byt),
+    .i_idu_ctr_ram_byt  (r_idu_ctr_ram_byt),
     .i_exu_res          (32'h1),
     .i_ram_rd_data      (32'hffff_ffff),
     .o_lsu_ram_rd_en    (),

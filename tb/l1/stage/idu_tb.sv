@@ -12,44 +12,44 @@ end
 parameter CYCLE      = 10;
 parameter DATA_WIDTH = 32;
 
-logic [`INST_WIDTH - 1 : 0] w_ram_inst;
+logic [`INST_WIDTH - 1 : 0] r_ram_inst;
 
 initial begin
     // lui x1, 10
-    w_ram_inst = 32'h0000_a0b7;
+    r_ram_inst = 32'h0000_a0b7;
     #(CYCLE * 5);
     // auipc x1, 10
-    w_ram_inst = 32'h0000_a097;
+    r_ram_inst = 32'h0000_a097;
     #(CYCLE * 5);
     // jal x1, 10
-    w_ram_inst = 32'h00a0_00ef;
+    r_ram_inst = 32'h00a0_00ef;
     #(CYCLE * 5);
     // jalr x1, 10(x2)
-    w_ram_inst = 32'h00a1_00e7;
+    r_ram_inst = 32'h00a1_00e7;
     #(CYCLE * 5);
     // beq x1, x2, 10
-    w_ram_inst = 32'h0020_8563;
+    r_ram_inst = 32'h0020_8563;
     #(CYCLE * 5);
     // lb x1, 10(x2)
-    w_ram_inst = 32'h00a1_0083;
+    r_ram_inst = 32'h00a1_0083;
     #(CYCLE * 5);
     // sb x1, offset(x2)
-    w_ram_inst = 32'h0011_0023;
+    r_ram_inst = 32'h0011_0023;
     #(CYCLE * 5);
     // addi x1, x2, 10
-    w_ram_inst = 32'h00a1_0093;
+    r_ram_inst = 32'h00a1_0093;
     #(CYCLE * 5);
     // add x1, x2, x3
-    w_ram_inst = 32'h0031_00b3;
+    r_ram_inst = 32'h0031_00b3;
     #(CYCLE * 5);
     // fence
-    w_ram_inst = 32'h0ff0_000f;
+    r_ram_inst = 32'h0ff0_000f;
     #(CYCLE * 5);
     // ecall
-    w_ram_inst = 32'h0000_0073;
+    r_ram_inst = 32'h0000_0073;
     #(CYCLE * 5);
     // ebreak
-    w_ram_inst = 32'h0010_0073;
+    r_ram_inst = 32'h0010_0073;
     #(CYCLE * 5);
     $finish;
 end
@@ -59,7 +59,7 @@ idu #(
 ) u_idu(
     .i_sys_ready          ( 1'h1),
     .o_sys_valid          (),
-    .i_ram_inst           (w_ram_inst),
+    .i_ram_inst           (r_ram_inst),
     .o_idu_ctr_alu_type   (),
     .o_idu_ctr_alu_rs1    (),
     .o_idu_ctr_alu_rs2    (),

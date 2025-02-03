@@ -12,50 +12,50 @@ end
 parameter CYCLE      = 10;
 parameter DATA_WIDTH = 32;
 
-logic [`ARGS_WIDTH - 1 : 0] w_idu_ctr_alu_type;
-logic [`ARGS_WIDTH - 1 : 0] w_idu_ctr_jmp_type;
+logic [`ARGS_WIDTH - 1 : 0] r_idu_ctr_alu_type;
+logic [`ARGS_WIDTH - 1 : 0] r_idu_ctr_jmp_type;
 
 initial begin
-    w_idu_ctr_alu_type = `ALU_TYPE_SLL;
+    r_idu_ctr_alu_type = `ALU_TYPE_SLL;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_SRL;
+    r_idu_ctr_alu_type = `ALU_TYPE_SRL;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_SRA;
+    r_idu_ctr_alu_type = `ALU_TYPE_SRA;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_ADD;
+    r_idu_ctr_alu_type = `ALU_TYPE_ADD;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_SUB;
+    r_idu_ctr_alu_type = `ALU_TYPE_SUB;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_XOR;
+    r_idu_ctr_alu_type = `ALU_TYPE_XOR;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_OR;
+    r_idu_ctr_alu_type = `ALU_TYPE_OR;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_AND;
+    r_idu_ctr_alu_type = `ALU_TYPE_AND;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_SLT;
+    r_idu_ctr_alu_type = `ALU_TYPE_SLT;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_SLTU;
+    r_idu_ctr_alu_type = `ALU_TYPE_SLTU;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_BEQ;
+    r_idu_ctr_alu_type = `ALU_TYPE_BEQ;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_BNE;
+    r_idu_ctr_alu_type = `ALU_TYPE_BNE;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_BLT;
+    r_idu_ctr_alu_type = `ALU_TYPE_BLT;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_BGE;
+    r_idu_ctr_alu_type = `ALU_TYPE_BGE;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_BLTU;
+    r_idu_ctr_alu_type = `ALU_TYPE_BLTU;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_BGEU;
+    r_idu_ctr_alu_type = `ALU_TYPE_BGEU;
     #(CYCLE * 5);
-    w_idu_ctr_alu_type = `ALU_TYPE_JALR;
+    r_idu_ctr_alu_type = `ALU_TYPE_JALR;
     #(CYCLE * 5);
 
-    w_idu_ctr_jmp_type = `JMP_J;
+    r_idu_ctr_jmp_type = `JMP_J;
     #(CYCLE * 5);
-    w_idu_ctr_jmp_type = `JMP_B;
+    r_idu_ctr_jmp_type = `JMP_B;
     #(CYCLE * 5);
-    w_idu_ctr_jmp_type = `JMP_E;
+    r_idu_ctr_jmp_type = `JMP_E;
     #(CYCLE * 5);
     $finish;
 end
@@ -66,14 +66,14 @@ exu #(
     .i_sys_ready          ( 1'h1),
     .o_sys_valid          (),
     .i_ifu_pc             (32'h8000_0000),
-    .i_idu_ctr_alu_type   (w_idu_ctr_alu_type),
+    .i_idu_ctr_alu_type   (r_idu_ctr_alu_type),
     .i_idu_rs1_data       (32'h1),
     .i_idu_rs2_data       (32'h2),
     .o_exu_res            (),
     .o_exu_zero           (),
     .o_exu_over           (),
     .o_exu_neg            (),
-    .i_idu_ctr_jmp_type   (w_idu_ctr_jmp_type),
+    .i_idu_ctr_jmp_type   (r_idu_ctr_jmp_type),
     .i_idu_jmp_or_reg_data(32'h3),
     .o_exu_jmp_en         (),
     .o_exu_jmp_pc         ()
