@@ -1,4 +1,4 @@
-`include "./cfg.sv"
+`include "cfg.sv"
 
 module ram #(
     parameter DATA_WIDTH = `DATA_WIDTH

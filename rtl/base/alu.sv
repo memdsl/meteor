@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-`include "./cfg.sv"
+`include "cfg.sv"
 
 module alu #(
     parameter DATA_WIDTH = `DATA_WIDTH
