@@ -4,11 +4,6 @@
 
 module exu_tb();
 
-initial begin
-    $dumpfile("build/exu_tb.vcd");
-    $dumpvars(0, exu_tb);
-end
-
 parameter CYCLE      = 10;
 parameter DATA_WIDTH = 32;
 

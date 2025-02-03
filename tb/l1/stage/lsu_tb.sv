@@ -4,11 +4,6 @@
 
 module lsu_tb();
 
-initial begin
-    $dumpfile("build/lsu_tb.vcd");
-    $dumpvars(0, lsu_tb);
-end
-
 parameter CYCLE      = 10;
 parameter DATA_WIDTH = 32;
 

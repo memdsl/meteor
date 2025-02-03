@@ -4,11 +4,6 @@
 
 module ifu_tb();
 
-initial begin
-    $dumpfile("build/ifu_tb.vcd");
-    $dumpvars(0, ifu_tb);
-end
-
 parameter CYCLE = 10;
 
 logic                       r_clk;

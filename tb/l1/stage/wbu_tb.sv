@@ -4,11 +4,6 @@
 
 module wbu_tb();
 
-initial begin
-    $dumpfile("build/wbu_tb.vcd");
-    $dumpvars(0, wbu_tb);
-end
-
 parameter CYCLE      = 10;
 parameter DATA_WIDTH = 32;
 

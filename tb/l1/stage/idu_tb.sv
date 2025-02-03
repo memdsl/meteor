@@ -4,11 +4,6 @@
 
 module idu_tb();
 
-initial begin
-    $dumpfile("build/idu_tb.vcd");
-    $dumpvars(0, idu_tb);
-end
-
 parameter CYCLE      = 10;
 parameter DATA_WIDTH = 32;
 
