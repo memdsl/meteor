@@ -32,9 +32,9 @@ module idu #(
 
     assign o_sys_valid = 1'h1;
 
-    logic [6 : 0]               w_inst_opcode;
-    logic [2 : 0]               w_inst_funct3;
-    logic [6 : 0]               w_inst_funct7;
+    logic [              6 : 0] w_inst_opcode;
+    logic [              2 : 0] w_inst_funct3;
+    logic [              6 : 0] w_inst_funct7;
     logic [`GPRS_WIDTH - 1 : 0] w_inst_rs1_id;
     logic [`GPRS_WIDTH - 1 : 0] w_inst_rs2_id;
     logic [`GPRS_WIDTH - 1 : 0] w_inst_rd_id;

@@ -3,8 +3,8 @@
 module cpu #(
     parameter DATA_WIDTH = `DATA_WIDTH
 ) (
-    input logic i_sys_clk,
-    input logic i_sys_rst_n
+    input  logic i_sys_clk,
+    input  logic i_sys_rst_n
 );
 
     // IFU wires
