@@ -7,7 +7,6 @@ module ram (
     input  logic                           i_ram_rd_en,
     input  logic [`ADDR_WIDTH     - 1 : 0] i_ram_rd_addr,
     output logic [`DATA_WIDTH     - 1 : 0] o_ram_rd_data,
-
     input  logic                           i_ram_wr_en,
     input  logic [`ADDR_WIDTH     - 1 : 0] i_ram_wr_addr,
     input  logic [`DATA_WIDTH     - 1 : 0] i_ram_wr_data,

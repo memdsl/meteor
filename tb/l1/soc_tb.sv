@@ -2,7 +2,7 @@
 
 `include "cfg.sv"
 
-module cpu_tb();
+module soc_tb();
 
 parameter CYCLE      = 10;
 parameter DATA_WIDTH = 32;
@@ -13,7 +13,7 @@ logic                           r_rst_n;
 always #(CYCLE / 2) r_clk = ~r_clk;
 
 initial begin
-    $readmemh("data/inst.hex", u_cpu.u_ram.r_ram);
+    $readmemh("data/inst.hex", u_soc.u_rom.r_rom);
 end
 
 initial begin
@@ -25,9 +25,7 @@ initial begin
     $finish;
 end
 
-cpu #(
-    .DATA_WIDTH(DATA_WIDTH)
-) u_cpu(
+soc u_soc(
     .i_sys_clk  (r_clk),
     .i_sys_rst_n(r_rst_n)
 );

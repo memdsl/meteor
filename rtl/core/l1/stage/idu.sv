@@ -1,8 +1,6 @@
 `include "cfg.sv"
 
-module idu #(
-    parameter DATA_WIDTH = `DATA_WIDTH
-) (
+module idu(
     input  logic                       i_sys_ready,
     output logic                       o_sys_valid,
 
@@ -17,17 +15,17 @@ module idu #(
     output logic                       o_idu_ctr_reg_wr_en,
     output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_reg_wr_src,
 
-    input  logic [ DATA_WIDTH - 1 : 0] i_gpr_rs1_data,
-    input  logic [ DATA_WIDTH - 1 : 0] i_gpr_rs2_data,
+    input  logic [`DATA_WIDTH - 1 : 0] i_gpr_rs1_data,
+    input  logic [`DATA_WIDTH - 1 : 0] i_gpr_rs2_data,
     output logic [`GPRS_WIDTH - 1 : 0] o_idu_gpr_rs1_id,
     output logic [`GPRS_WIDTH - 1 : 0] o_idu_gpr_rs2_id,
     output logic [`GPRS_WIDTH - 1 : 0] o_idu_gpr_rd_id,
 
     input  logic [`ADDR_WIDTH - 1 : 0] i_ifu_pc,
-    output logic [ DATA_WIDTH - 1 : 0] o_idu_rs1_data,
-    output logic [ DATA_WIDTH - 1 : 0] o_idu_rs2_data,
+    output logic [`DATA_WIDTH - 1 : 0] o_idu_rs1_data,
+    output logic [`DATA_WIDTH - 1 : 0] o_idu_rs2_data,
 
-    output logic [ DATA_WIDTH - 1 : 0] o_idu_jmp_or_reg_data
+    output logic [`DATA_WIDTH - 1 : 0] o_idu_jmp_or_reg_data
 );
 
     assign o_sys_valid = 1'h1;
@@ -38,7 +36,7 @@ module idu #(
     logic [`GPRS_WIDTH - 1 : 0] w_inst_rs1_id;
     logic [`GPRS_WIDTH - 1 : 0] w_inst_rs2_id;
     logic [`GPRS_WIDTH - 1 : 0] w_inst_rd_id;
-    logic [ DATA_WIDTH - 1 : 0] w_inst_imm;
+    logic [`DATA_WIDTH - 1 : 0] w_inst_imm;
 
     assign w_inst_opcode = i_ram_inst[ 6 :  0];
     assign w_inst_funct3 = i_ram_inst[14 : 12];
@@ -47,9 +45,7 @@ module idu #(
     assign w_inst_rs2_id = i_ram_inst[24 : 20];
     assign w_inst_rd_id  = i_ram_inst[11 :  7];
 
-    imm #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) u_imm(
+    imm u_imm(
         .i_imm_inst  (i_ram_inst),
         .i_imm_opcode(w_inst_opcode),
         .o_imm_data  (w_inst_imm)
@@ -253,23 +249,23 @@ module idu #(
         if (o_sys_valid && i_sys_ready) begin
             o_idu_rs1_data = (w_ctr_alu_rs1 === `ALU_RS1_GPR) ? i_gpr_rs1_data :
                              (w_ctr_alu_rs1 === `ALU_RS1_PC)  ? i_ifu_pc :
-                                                                {DATA_WIDTH{1'h0}};
+                                                                `DATA_ZERO;
             o_idu_rs2_data = (w_ctr_alu_rs2 === `ALU_RS2_GPR)   ? i_gpr_rs2_data :
                              (w_ctr_alu_rs2 === `ALU_RS2_IMM_I) ? w_inst_imm :
                              (w_ctr_alu_rs2 === `ALU_RS2_IMM_S) ? w_inst_imm :
                              (w_ctr_alu_rs2 === `ALU_RS2_IMM_B) ? w_inst_imm :
                              (w_ctr_alu_rs2 === `ALU_RS2_IMM_U) ? w_inst_imm :
                              (w_ctr_alu_rs2 === `ALU_RS2_IMM_J) ? w_inst_imm :
-                                                                  {DATA_WIDTH{1'h0}};
+                                                                  `DATA_ZERO;
         end
         else begin
-            o_idu_rs1_data = {DATA_WIDTH{1'h0}};
-            o_idu_rs2_data = {DATA_WIDTH{1'h0}};
+            o_idu_rs1_data = `DATA_ZERO;
+            o_idu_rs2_data = `DATA_ZERO;
         end
     end
 
     assign o_idu_jmp_or_reg_data = (o_sys_valid && i_sys_ready) ?
                                   ((w_ctr_jmp_type === `JMP_B) ? w_inst_imm : i_gpr_rs2_data) :
-                                   {DATA_WIDTH{1'h0}};
+                                   `DATA_ZERO;
 
 endmodule

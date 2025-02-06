@@ -1,37 +1,33 @@
 `include "cfg.sv"
 
-module exu #(
-    parameter DATA_WIDTH = `DATA_WIDTH
-) (
+module exu(
     input  logic                       i_sys_ready,
     output logic                       o_sys_valid,
 
     input  logic [`ADDR_WIDTH - 1 : 0] i_ifu_pc,
 
     input  logic [`ARGS_WIDTH - 1 : 0] i_idu_ctr_alu_type,
-    input  logic [ DATA_WIDTH - 1 : 0] i_idu_rs1_data,
-    input  logic [ DATA_WIDTH - 1 : 0] i_idu_rs2_data,
-    output logic [ DATA_WIDTH - 1 : 0] o_exu_res,
+    input  logic [`DATA_WIDTH - 1 : 0] i_idu_rs1_data,
+    input  logic [`DATA_WIDTH - 1 : 0] i_idu_rs2_data,
+    output logic [`DATA_WIDTH - 1 : 0] o_exu_res,
     output logic                       o_exu_zero,
     output logic                       o_exu_over,
     output logic                       o_exu_neg,
 
     input  logic [`ARGS_WIDTH - 1 : 0] i_idu_ctr_jmp_type,
-    input  logic [ DATA_WIDTH - 1 : 0] i_idu_jmp_or_reg_data,
+    input  logic [`DATA_WIDTH - 1 : 0] i_idu_jmp_or_reg_data,
     output logic                       o_exu_jmp_en,
     output logic [`ADDR_WIDTH - 1 : 0] o_exu_jmp_pc
 );
 
     assign o_sys_valid = 1'h1;
 
-    logic [DATA_WIDTH - 1 : 0] w_exu_res;
-    logic                      w_exu_zero;
-    logic                      w_exu_over;
-    logic                      w_exu_neg;
+    logic [`DATA_WIDTH - 1 : 0] w_exu_res;
+    logic                       w_exu_zero;
+    logic                       w_exu_over;
+    logic                       w_exu_neg;
 
-    alu #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) u_alu(
+    alu u_alu(
         .i_alu_type    (i_idu_ctr_alu_type),
         .i_alu_rs1_data(i_idu_rs1_data),
         .i_alu_rs2_data(i_idu_rs2_data),
@@ -41,10 +37,10 @@ module exu #(
         .o_alu_neg     (w_exu_neg)
     );
 
-    assign o_exu_res  = (o_sys_valid && i_sys_ready) ? w_exu_res  : {DATA_WIDTH{1'h0}};
-    assign o_exu_zero = (o_sys_valid && i_sys_ready) ? w_exu_zero : 1'h0;
-    assign o_exu_over = (o_sys_valid && i_sys_ready) ? w_exu_over : 1'h0;
-    assign o_exu_neg  = (o_sys_valid && i_sys_ready) ? w_exu_neg  : 1'h0;
+    assign o_exu_res  = (o_sys_valid && i_sys_ready) ? w_exu_res  : `DATA_ZERO;
+    assign o_exu_zero = (o_sys_valid && i_sys_ready) ? w_exu_zero : `DATA_ZERO;
+    assign o_exu_over = (o_sys_valid && i_sys_ready) ? w_exu_over : `DATA_ZERO;
+    assign o_exu_neg  = (o_sys_valid && i_sys_ready) ? w_exu_neg  : `DATA_ZERO;
 
     always_comb begin
         case (i_idu_ctr_jmp_type)

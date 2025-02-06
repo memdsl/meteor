@@ -1,10 +1,22 @@
+`timescale 1ns / 1ps
+
 `include "cfg.sv"
 
-module cpu #(
-    parameter DATA_WIDTH = `DATA_WIDTH
-) (
-    input  logic i_sys_clk,
-    input  logic i_sys_rst_n
+module cpu(
+    input  logic                           i_sys_clk,
+    input  logic                           i_sys_rst_n,
+
+    input  logic [`INST_WIDTH     - 1 : 0] i_rom_rd_data,
+    output logic                           o_rom_rd_en,
+    output logic [`ADDR_WIDTH     - 1 : 0] o_rom_rd_addr,
+
+    input  logic [`DATA_WIDTH     - 1 : 0] i_ram_rd_data,
+    output logic                           o_ram_rd_en,
+    output logic [`ADDR_WIDTH     - 1 : 0] o_ram_rd_addr,
+    output logic                           o_ram_wr_en,
+    output logic [`ADDR_WIDTH     - 1 : 0] o_ram_wr_addr,
+    output logic [`DATA_WIDTH     - 1 : 0] o_ram_wr_data,
+    output logic [`DATA_WIDTH / 8 - 1 : 0] o_ram_wr_mask
 );
 
     // IFU wires
@@ -23,41 +35,39 @@ module cpu #(
     logic [`ARGS_WIDTH - 1 : 0] w_idu_ctr_ram_byt;
     logic                       w_idu_ctr_reg_wr_en;
     logic [`ARGS_WIDTH - 1 : 0] w_idu_ctr_reg_wr_src;
-    logic [ DATA_WIDTH - 1 : 0] w_gpr_rs1_data;
-    logic [ DATA_WIDTH - 1 : 0] w_gpr_rs2_data;
+    logic [`DATA_WIDTH - 1 : 0] w_gpr_rs1_data;
+    logic [`DATA_WIDTH - 1 : 0] w_gpr_rs2_data;
     logic [`GPRS_WIDTH - 1 : 0] w_idu_gpr_rs1_id;
     logic [`GPRS_WIDTH - 1 : 0] w_idu_gpr_rs2_id;
     logic [`GPRS_WIDTH - 1 : 0] w_idu_gpr_rd_id;
-    logic [ DATA_WIDTH - 1 : 0] w_idu_rs1_data;
-    logic [ DATA_WIDTH - 1 : 0] w_idu_rs2_data;
-    logic [ DATA_WIDTH - 1 : 0] w_idu_jmp_or_reg_data;
+    logic [`DATA_WIDTH - 1 : 0] w_idu_rs1_data;
+    logic [`DATA_WIDTH - 1 : 0] w_idu_rs2_data;
+    logic [`DATA_WIDTH - 1 : 0] w_idu_jmp_or_reg_data;
 
     // EXU wires
-    logic [ DATA_WIDTH - 1 : 0] w_exu_res;
+    logic [`DATA_WIDTH - 1 : 0] w_exu_res;
     logic                       w_exu_zero;
     logic                       w_exu_over;
     logic                       w_exu_neg;
 
     // LSU wires
-    logic [ DATA_WIDTH     - 1 : 0] w_ram_rd_data;
+    logic [`DATA_WIDTH     - 1 : 0] w_ram_rd_data;
     logic                           w_lsu_ram_rd_en;
     logic [`ADDR_WIDTH     - 1 : 0] w_lsu_ram_rd_addr;
-    logic [ DATA_WIDTH     - 1 : 0] w_lsu_gpr_wr_data;
+    logic [`DATA_WIDTH     - 1 : 0] w_lsu_gpr_wr_data;
     logic                           w_lsu_ram_wr_en;
     logic [`ADDR_WIDTH     - 1 : 0] w_lsu_ram_wr_addr;
-    logic [ DATA_WIDTH     - 1 : 0] w_lsu_ram_wr_data;
-    logic [ DATA_WIDTH / 8 - 1 : 0] w_lsu_ram_wr_mask;
+    logic [`DATA_WIDTH     - 1 : 0] w_lsu_ram_wr_data;
+    logic [`DATA_WIDTH / 8 - 1 : 0] w_lsu_ram_wr_mask;
 
     // WBU wires
-    logic [ DATA_WIDTH - 1 : 0] w_ram_res;
+    logic [`DATA_WIDTH - 1 : 0] w_ram_res;
     logic [`GPRS_WIDTH - 1 : 0] w_gpr_wr_id;
     logic                       w_wbu_gpr_wr_en;
     logic [`GPRS_WIDTH - 1 : 0] w_wbu_gpr_wr_id;
-    logic [ DATA_WIDTH - 1 : 0] w_wbu_gpr_wr_data;
+    logic [`DATA_WIDTH - 1 : 0] w_wbu_gpr_wr_data;
 
-    gpr #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) u_gpr(
+    gpr u_gpr(
         .i_sys_clk        (i_sys_clk),
         .i_sys_rst_n      (i_sys_rst_n),
         .i_gpr_rd_rs1_id  (w_idu_gpr_rs1_id),
@@ -71,20 +81,6 @@ module cpu #(
         .i_gpr_wr_data    (w_wbu_gpr_wr_data)
     );
 
-    ram #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) u_ram(
-        .i_sys_clk    (i_sys_clk),
-        .i_sys_rst_n  (i_sys_rst_n),
-        .i_ram_rd_en  (w_lsu_ram_rd_en),
-        .i_ram_rd_addr(w_lsu_ram_rd_addr),
-        .o_ram_rd_data(w_ram_rd_data),
-        .i_ram_wr_en  (w_lsu_ram_wr_en),
-        .i_ram_wr_addr(w_lsu_ram_wr_addr),
-        .i_ram_wr_data(w_lsu_ram_wr_data),
-        .i_ram_wr_mask(w_lsu_ram_wr_mask)
-    );
-
     ifu u_ifu(
         .i_sys_clk    (i_sys_clk),
         .i_sys_rst_n  (i_sys_rst_n),
@@ -96,9 +92,7 @@ module cpu #(
         .o_ifu_pc_next(w_ifu_pc_next)
     );
 
-    idu #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) u_idu(
+    idu u_idu(
         .i_sys_ready          (1'h1),
         .o_sys_valid          (),
         .i_ram_inst           (w_ram_inst),
@@ -121,9 +115,7 @@ module cpu #(
         .o_idu_jmp_or_reg_data(w_idu_jmp_or_reg_data)
     );
 
-    exu #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) u_exu(
+    exu u_exu(
         .i_sys_ready          (1'h1),
         .o_sys_valid          (),
         .i_ifu_pc             (w_ifu_pc),
@@ -140,9 +132,7 @@ module cpu #(
         .o_exu_jmp_pc         (w_exu_jmp_pc)
     );
 
-    lsu #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) u_lsu(
+    lsu u_lsu(
         .i_sys_ready        (1'h1),
         .o_sys_valid        (),
         .i_idu_ctr_ram_byt  (w_idu_ctr_ram_byt),
@@ -159,9 +149,7 @@ module cpu #(
         .o_lsu_ram_wr_mask  (w_lsu_ram_wr_mask)
     );
 
-    wbu #(
-        .DATA_WIDTH(DATA_WIDTH)
-    ) u_wbu(
+    wbu u_wbu(
         .i_sys_ready         (1'h1),
         .o_sys_valid         (),
         .i_idu_ctr_reg_wr_en (w_idu_ctr_reg_wr_en),

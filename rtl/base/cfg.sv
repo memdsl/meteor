@@ -9,8 +9,8 @@
 `define DATA_ZERO 0
 
 // 32bit: 16KB
-`define ROM_BITS_12 12
-`define ROM_SIZE_12  2 << ROM_BITS_12
+`define ROM_BITS_12  12
+`define ROM_SIZE_12   1 << `ROM_BITS_12
 
 `define ALU_TYPE_X     0
 `define ALU_TYPE_ADD   1
