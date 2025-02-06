@@ -6,6 +6,11 @@
 `define BYTE_WIDTH  8
 
 `define ADDR_INIT 32'h8000_0000
+`define DATA_ZERO 0
+
+// 32bit: 16KB
+`define ROM_BITS_12 12
+`define ROM_SIZE_12  2 << ROM_BITS_12
 
 `define ALU_TYPE_X     0
 `define ALU_TYPE_ADD   1

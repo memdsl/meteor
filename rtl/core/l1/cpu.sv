@@ -74,18 +74,15 @@ module cpu #(
     ram #(
         .DATA_WIDTH(DATA_WIDTH)
     ) u_ram(
-        .i_sys_clk         (i_sys_clk),
-        .i_sys_rst_n       (i_sys_rst_n),
-        .i_ram_rd_inst_en  (1'h1),
-        .i_ram_rd_inst_addr(w_ifu_pc),
-        .o_ram_rd_inst_data(w_ram_inst),
-        .i_ram_rd_data_en  (w_lsu_ram_rd_en),
-        .i_ram_rd_data_addr(w_lsu_ram_rd_addr),
-        .o_ram_rd_data_data(w_ram_rd_data),
-        .i_ram_wr_data_en  (w_lsu_ram_wr_en),
-        .i_ram_wr_data_addr(w_lsu_ram_wr_addr),
-        .i_ram_wr_data_data(w_lsu_ram_wr_data),
-        .i_ram_wr_data_mask(w_lsu_ram_wr_mask)
+        .i_sys_clk    (i_sys_clk),
+        .i_sys_rst_n  (i_sys_rst_n),
+        .i_ram_rd_en  (w_lsu_ram_rd_en),
+        .i_ram_rd_addr(w_lsu_ram_rd_addr),
+        .o_ram_rd_data(w_ram_rd_data),
+        .i_ram_wr_en  (w_lsu_ram_wr_en),
+        .i_ram_wr_addr(w_lsu_ram_wr_addr),
+        .i_ram_wr_data(w_lsu_ram_wr_data),
+        .i_ram_wr_mask(w_lsu_ram_wr_mask)
     );
 
     ifu u_ifu(

@@ -1,45 +1,58 @@
 `include "cfg.sv"
 
-module ram #(
-    parameter DATA_WIDTH = `DATA_WIDTH
-) (
+module ram (
     input  logic                           i_sys_clk,
     input  logic                           i_sys_rst_n,
 
-    input  logic                           i_ram_rd_inst_en,
-    input  logic [`ADDR_WIDTH     - 1 : 0] i_ram_rd_inst_addr,
-    output logic [ DATA_WIDTH     - 1 : 0] o_ram_rd_inst_data,
+    input  logic                           i_ram_rd_en,
+    input  logic [`ADDR_WIDTH     - 1 : 0] i_ram_rd_addr,
+    output logic [`DATA_WIDTH     - 1 : 0] o_ram_rd_data,
 
-    input  logic                           i_ram_rd_data_en,
-    input  logic [`ADDR_WIDTH     - 1 : 0] i_ram_rd_data_addr,
-    output logic [ DATA_WIDTH     - 1 : 0] o_ram_rd_data_data,
-
-    input  logic                           i_ram_wr_data_en,
-    input  logic [`ADDR_WIDTH     - 1 : 0] i_ram_wr_data_addr,
-    input  logic [ DATA_WIDTH     - 1 : 0] i_ram_wr_data_data,
-    input  logic [ DATA_WIDTH / 8 - 1 : 0] i_ram_wr_data_mask
+    input  logic                           i_ram_wr_en,
+    input  logic [`ADDR_WIDTH     - 1 : 0] i_ram_wr_addr,
+    input  logic [`DATA_WIDTH     - 1 : 0] i_ram_wr_data,
+    input  logic [`DATA_WIDTH / 8 - 1 : 0] i_ram_wr_mask
 );
 
-    // 32bit: 64KB, 64bit: 128KB
-    logic [DATA_WIDTH - 1 : 0] r_ram[2 ** 14 - 1 : 0];
+    logic [`BYTE_WIDTH - 1 : 0] r_ram_bank_0[`ROM_SIZE_12 - 1 : 0];
+    logic [`BYTE_WIDTH - 1 : 0] r_ram_bank_1[`ROM_SIZE_12 - 1 : 0];
+    logic [`BYTE_WIDTH - 1 : 0] r_ram_bank_2[`ROM_SIZE_12 - 1 : 0];
+    logic [`BYTE_WIDTH - 1 : 0] r_ram_bank_3[`ROM_SIZE_12 - 1 : 0];
 
-    assign o_ram_rd_inst_data = (i_ram_rd_inst_en) ?
-                                r_ram[(i_ram_rd_inst_addr - `ADDR_INIT) / 4] : {DATA_WIDTH{1'h0}};
-    assign o_ram_rd_data_data = (i_ram_rd_data_en) ?
-                                r_ram[(i_ram_rd_data_addr - `ADDR_INIT) / (DATA_WIDTH / 8)] : {DATA_WIDTH{1'h0}};
+    logic [`ADDR_WIDTH - 1 : 0] w_ram_rd_addr_t;
+    logic [`ADDR_WIDTH - 1 : 0] w_ram_wr_addr_t;
 
-    always_ff @(posedge i_sys_clk) begin
-        if (!i_sys_rst_n) begin
+    assign w_ram_rd_addr_t = i_ram_rd_addr - `ADDR_INIT;
+    assign w_ram_wr_addr_t = i_ram_wr_addr - `ADDR_INIT;
+
+    logic [`ROM_BITS_12 - 1 : 0] w_ram_rd_addr = w_ram_rd_addr_t[`ROM_BITS_12 + 1 : 2];
+    logic [`ROM_BITS_12 - 1 : 0] w_ram_wr_addr = w_ram_wr_addr_t[`ROM_BITS_12 + 1 : 2];
+
+    always_comb begin
+        if (!i_ram_rd_en) begin
+            o_ram_rd_data = `DATA_ZERO;
         end
         else begin
-            if (i_ram_wr_data_en) begin
-                for (int i = 0; i < DATA_WIDTH / 8; i = i + 1) begin
-                    if (i_ram_wr_data_mask[i]) begin
-                        r_ram[(i_ram_wr_data_addr - `ADDR_INIT) / (DATA_WIDTH / 8)][i * 8 +: 8] <= i_ram_wr_data_data[i * 8 +: 8];
-                    end
-                end
+            o_ram_rd_data = {r_ram_bank_3[w_ram_rd_addr],
+                             r_ram_bank_2[w_ram_rd_addr],
+                             r_ram_bank_1[w_ram_rd_addr],
+                             r_ram_bank_0[w_ram_rd_addr]};
+        end
+    end
+
+    always_ff @(posedge i_sys_clk) begin
+        if (i_ram_wr_en) begin
+            if (i_ram_wr_mask[3]) begin
+                r_ram_bank_3[w_ram_wr_addr] <= i_ram_wr_data[31 : 24];
             end
-            else begin
+            if (i_ram_wr_mask[2]) begin
+                r_ram_bank_2[w_ram_wr_addr] <= i_ram_wr_data[23 : 16];
+            end
+            if (i_ram_wr_mask[1]) begin
+                r_ram_bank_1[w_ram_wr_addr] <= i_ram_wr_data[15 : 08];
+            end
+            if (i_ram_wr_mask[0]) begin
+                r_ram_bank_0[w_ram_wr_addr] <= i_ram_wr_data[07 : 00];
             end
         end
     end
