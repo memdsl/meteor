@@ -28,7 +28,7 @@ wbu #(
     .i_idu_ctr_reg_wr_src(r_idu_ctr_reg_wr_src),
     .i_ifu_pc            (32'h8000_0000),
     .i_exu_res           (32'h1),
-    .i_ram_res           (32'h2),
+    .i_lsu_res           (32'h2),
     .i_gpr_wr_id         ( 5'h1),
     .o_wbu_gpr_wr_en     (),
     .o_wbu_gpr_wr_id     (),
