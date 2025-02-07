@@ -5,14 +5,14 @@ module soc(
     input logic i_sys_rst_n
 );
 
-    logic                           w_rom_rd_en  ;
+    logic                           w_rom_rd_en;
     logic [`ADDR_WIDTH     - 1 : 0] w_rom_rd_addr;
     logic [`INST_WIDTH     - 1 : 0] w_rom_rd_data;
 
-    logic                           w_ram_rd_en  ;
+    logic                           w_ram_rd_en;
     logic [`ADDR_WIDTH     - 1 : 0] w_ram_rd_addr;
     logic [`DATA_WIDTH     - 1 : 0] w_ram_rd_data;
-    logic                           w_ram_wr_en  ;
+    logic                           w_ram_wr_en;
     logic [`ADDR_WIDTH     - 1 : 0] w_ram_wr_addr;
     logic [`DATA_WIDTH     - 1 : 0] w_ram_wr_data;
     logic [`DATA_WIDTH / 8 - 1 : 0] w_ram_wr_mask;

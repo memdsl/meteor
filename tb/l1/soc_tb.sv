@@ -13,7 +13,9 @@ logic                           r_rst_n;
 always #(CYCLE / 2) r_clk = ~r_clk;
 
 initial begin
-    $readmemh("data/inst.hex", u_soc.u_rom.r_rom);
+    $readmemh("data/ori.data", u_soc.u_rom.r_rom);
+    $display("rom[0]: %x", u_soc.u_rom.r_rom[0]);
+    $display("rom[1]: %x", u_soc.u_rom.r_rom[1]);
 end
 
 initial begin

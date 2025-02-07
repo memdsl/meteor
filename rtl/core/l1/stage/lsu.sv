@@ -57,7 +57,6 @@ module lsu(
     assign w_ram_wr_mask_1 = {{(`DATA_WIDTH / 8 - 1){1'b0}}, 1'h1};
     assign w_ram_wr_mask_2 = {{(`DATA_WIDTH / 8 - 2){1'b0}}, 2'h3};
     assign w_ram_wr_mask_4 = {{(`DATA_WIDTH / 8 - 4){1'b0}}, 4'hf};
-    assign w_ram_wr_mask_8 = {{(`DATA_WIDTH / 8 - 0){1'b1}}      };
 
     assign o_lsu_ram_wr_en   = (o_sys_valid && i_sys_ready) ? i_idu_ctr_ram_wr_en :  1'b0;
     assign o_lsu_ram_wr_addr = (o_sys_valid && i_sys_ready) ? i_exu_res[31 : 0]   : 32'h0;
@@ -66,7 +65,6 @@ module lsu(
                               ((i_idu_ctr_ram_byt === `RAM_BYT_1_U) ? w_ram_wr_mask_1  :
                                (i_idu_ctr_ram_byt === `RAM_BYT_2_U) ? w_ram_wr_mask_2  :
                                (i_idu_ctr_ram_byt === `RAM_BYT_4_U) ? w_ram_wr_mask_4  :
-                               (i_idu_ctr_ram_byt === `RAM_BYT_8_U) ? w_ram_wr_mask_8  :
-                                                                      w_ram_wr_mask_1) : w_ram_wr_mask_1;
+                                                                      w_ram_wr_mask_4) : w_ram_wr_mask_4;
 
 endmodule

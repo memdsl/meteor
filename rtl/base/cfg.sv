@@ -5,12 +5,12 @@
 `define ARGS_WIDTH  8
 `define BYTE_WIDTH  8
 
-`define ADDR_INIT 32'h8000_0000
+`define ADDR_INIT 32'h0000_0000
 `define DATA_ZERO 0
 
-// 32bit: 16KB
-`define ROM_BITS_12  12
-`define ROM_SIZE_12   1 << `ROM_BITS_12
+// 32bit: 4KB
+`define ROM_BITS 10
+`define ROM_SIZE  1 << `ROM_BITS
 
 `define ALU_TYPE_X     0
 `define ALU_TYPE_ADD   1
@@ -52,11 +52,9 @@
 `define RAM_BYT_1_U 1
 `define RAM_BYT_2_U 2
 `define RAM_BYT_4_U 3
-`define RAM_BYT_8_U 4
 `define RAM_BYT_1_S 5
 `define RAM_BYT_2_S 6
 `define RAM_BYT_4_S 7
-`define RAM_BYT_8_S 8
 
 `define REG_WR_SRC_X   0
 `define REG_WR_SRC_ALU 1
