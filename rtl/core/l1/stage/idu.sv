@@ -28,7 +28,7 @@ module idu(
     output logic [`DATA_WIDTH - 1 : 0] o_idu_jmp_or_reg_data
 );
 
-    assign o_sys_valid = 1'h1;
+    assign o_sys_valid = 1'b1;
 
     logic [              6 : 0] w_inst_opcode;
     logic [              2 : 0] w_inst_funct3;
@@ -46,9 +46,9 @@ module idu(
     assign w_inst_rd_id  = i_ram_inst[11 :  7];
 
     imm u_imm(
-        .i_imm_inst  (i_ram_inst),
+        .i_imm_inst  (i_ram_inst   ),
         .i_imm_opcode(w_inst_opcode),
-        .o_imm_data  (w_inst_imm)
+        .o_imm_data  (w_inst_imm   )
     );
 
     logic [`ARGS_WIDTH - 1 : 0] w_ctr_alu_type;
@@ -68,9 +68,9 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_X;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_U;
                 w_ctr_jmp_type   = `JMP_X;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h1;
+                w_ctr_reg_wr_en  = 1'b1;
                 w_ctr_reg_wr_src = `REG_WR_SRC_ALU;
             end
             // AUIPC
@@ -79,9 +79,9 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_PC;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_U;
                 w_ctr_jmp_type   = `JMP_X;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h1;
+                w_ctr_reg_wr_en  = 1'b1;
                 w_ctr_reg_wr_src = `REG_WR_SRC_ALU;
             end
             // JAL
@@ -90,9 +90,9 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_PC;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_J;
                 w_ctr_jmp_type   = `JMP_J;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h1;
+                w_ctr_reg_wr_en  = 1'b1;
                 w_ctr_reg_wr_src = `REG_WR_SRC_PC;
             end
             // JALR
@@ -101,9 +101,9 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_I;
                 w_ctr_jmp_type   = `JMP_J;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h1;
+                w_ctr_reg_wr_en  = 1'b1;
                 w_ctr_reg_wr_src = `REG_WR_SRC_PC;
             end
             // BEQ, BNE, BLT, BGE, BLTU, BGEU
@@ -118,9 +118,9 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_GPR;
                 w_ctr_jmp_type   = `JMP_B;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h0;
+                w_ctr_reg_wr_en  = 1'b0;
                 w_ctr_reg_wr_src = `REG_WR_SRC_X;
             end
             // LB, LH, LW, LBU, LHU
@@ -129,14 +129,14 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_I;
                 w_ctr_jmp_type   = `JMP_X;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = (w_inst_funct3 === 3'b000) ? `RAM_BYT_1_S :
                                    (w_inst_funct3 === 3'b001) ? `RAM_BYT_2_S :
                                    (w_inst_funct3 === 3'b010) ? `RAM_BYT_4_S :
                                    (w_inst_funct3 === 3'b100) ? `RAM_BYT_1_U :
                                    (w_inst_funct3 === 3'b101) ? `RAM_BYT_2_U :
                                                                 `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h1;
+                w_ctr_reg_wr_en  = 1'b1;
                 w_ctr_reg_wr_src = `REG_WR_SRC_MEM;
             end
             // SB, SH, SW
@@ -145,12 +145,12 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_S;
                 w_ctr_jmp_type   = `JMP_X;
-                w_ctr_ram_wr_en  = 1'h1;
+                w_ctr_ram_wr_en  = 1'b1;
                 w_ctr_ram_byt    = (w_inst_funct3 === 3'b000) ? `RAM_BYT_1_U :
                                    (w_inst_funct3 === 3'b001) ? `RAM_BYT_2_U :
                                    (w_inst_funct3 === 3'b010) ? `RAM_BYT_4_U :
                                                                 `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h0;
+                w_ctr_reg_wr_en  = 1'b0;
                 w_ctr_reg_wr_src = `REG_WR_SRC_X;
             end
             // ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI
@@ -169,9 +169,9 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_I;
                 w_ctr_jmp_type   = `JMP_X;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h1;
+                w_ctr_reg_wr_en  = 1'b1;
                 w_ctr_reg_wr_src = `REG_WR_SRC_ALU;
             end
             // ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND
@@ -192,9 +192,9 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_GPR;
                 w_ctr_jmp_type   = `JMP_X;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h1;
+                w_ctr_reg_wr_en  = 1'b1;
                 w_ctr_reg_wr_src = `REG_WR_SRC_ALU;
             end
             // FENCE
@@ -203,9 +203,9 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_X;
                 w_ctr_alu_rs2    = `ALU_RS2_X;
                 w_ctr_jmp_type   = `JMP_E;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h0;
+                w_ctr_reg_wr_en  = 1'b0;
                 w_ctr_reg_wr_src = `REG_WR_SRC_X;
             end
             // ECALL, EBREAK
@@ -214,9 +214,9 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_X;
                 w_ctr_alu_rs2    = `ALU_RS2_X;
                 w_ctr_jmp_type   = `JMP_X;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h0;
+                w_ctr_reg_wr_en  = 1'b0;
                 w_ctr_reg_wr_src = `REG_WR_SRC_X;
             end
             default: begin
@@ -224,9 +224,9 @@ module idu(
                 w_ctr_alu_rs1    = `ALU_RS1_X;
                 w_ctr_alu_rs2    = `ALU_RS2_X;
                 w_ctr_jmp_type   = `JMP_X;
-                w_ctr_ram_wr_en  = 1'h0;
+                w_ctr_ram_wr_en  = 1'b0;
                 w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'h0;
+                w_ctr_reg_wr_en  = 1'b0;
                 w_ctr_reg_wr_src = `REG_WR_SRC_X;
             end
         endcase
@@ -236,9 +236,9 @@ module idu(
     assign o_idu_ctr_alu_rs1    = (o_sys_valid && i_sys_ready) ? w_ctr_alu_rs1    : `ALU_RS1_X;
     assign o_idu_ctr_alu_rs2    = (o_sys_valid && i_sys_ready) ? w_ctr_alu_rs2    : `ALU_RS2_X;
     assign o_idu_ctr_jmp_type   = (o_sys_valid && i_sys_ready) ? w_ctr_jmp_type   : `JMP_X;
-    assign o_idu_ctr_ram_wr_en  = (o_sys_valid && i_sys_ready) ? w_ctr_ram_wr_en  : 1'h0;
+    assign o_idu_ctr_ram_wr_en  = (o_sys_valid && i_sys_ready) ? w_ctr_ram_wr_en  : 1'b0;
     assign o_idu_ctr_ram_byt    = (o_sys_valid && i_sys_ready) ? w_ctr_ram_byt    : `RAM_BYT_X;
-    assign o_idu_ctr_reg_wr_en  = (o_sys_valid && i_sys_ready) ? w_ctr_reg_wr_en  : 1'h0;
+    assign o_idu_ctr_reg_wr_en  = (o_sys_valid && i_sys_ready) ? w_ctr_reg_wr_en  : 1'b0;
     assign o_idu_ctr_reg_wr_src = (o_sys_valid && i_sys_ready) ? w_ctr_reg_wr_src : `REG_WR_SRC_X;
 
     assign o_idu_gpr_rs1_id = (o_sys_valid && i_sys_ready) ? w_inst_rs1_id : 5'h0;
@@ -248,15 +248,15 @@ module idu(
     always_comb begin
         if (o_sys_valid && i_sys_ready) begin
             o_idu_rs1_data = (w_ctr_alu_rs1 === `ALU_RS1_GPR) ? i_gpr_rs1_data :
-                             (w_ctr_alu_rs1 === `ALU_RS1_PC)  ? i_ifu_pc :
-                                                                `DATA_ZERO;
-            o_idu_rs2_data = (w_ctr_alu_rs2 === `ALU_RS2_GPR)   ? i_gpr_rs2_data :
-                             (w_ctr_alu_rs2 === `ALU_RS2_IMM_I) ? w_inst_imm :
-                             (w_ctr_alu_rs2 === `ALU_RS2_IMM_S) ? w_inst_imm :
-                             (w_ctr_alu_rs2 === `ALU_RS2_IMM_B) ? w_inst_imm :
-                             (w_ctr_alu_rs2 === `ALU_RS2_IMM_U) ? w_inst_imm :
-                             (w_ctr_alu_rs2 === `ALU_RS2_IMM_J) ? w_inst_imm :
-                                                                  `DATA_ZERO;
+                             (w_ctr_alu_rs1 === `ALU_RS1_PC ) ? i_ifu_pc       :
+                                                               `DATA_ZERO;
+            o_idu_rs2_data = (w_ctr_alu_rs2 === `ALU_RS2_GPR  ) ? i_gpr_rs2_data :
+                             (w_ctr_alu_rs2 === `ALU_RS2_IMM_I) ? w_inst_imm     :
+                             (w_ctr_alu_rs2 === `ALU_RS2_IMM_S) ? w_inst_imm     :
+                             (w_ctr_alu_rs2 === `ALU_RS2_IMM_B) ? w_inst_imm     :
+                             (w_ctr_alu_rs2 === `ALU_RS2_IMM_U) ? w_inst_imm     :
+                             (w_ctr_alu_rs2 === `ALU_RS2_IMM_J) ? w_inst_imm     :
+                                                                 `DATA_ZERO;
         end
         else begin
             o_idu_rs1_data = `DATA_ZERO;
@@ -265,7 +265,7 @@ module idu(
     end
 
     assign o_idu_jmp_or_reg_data = (o_sys_valid && i_sys_ready) ?
-                                  ((w_ctr_jmp_type === `JMP_B) ? w_inst_imm : i_gpr_rs2_data) :
-                                   `DATA_ZERO;
+                                  ((w_ctr_jmp_type === `JMP_B ) ? w_inst_imm      :
+                                                                  i_gpr_rs2_data) : `DATA_ZERO;
 
 endmodule

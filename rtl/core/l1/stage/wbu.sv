@@ -15,21 +15,14 @@ module wbu(
     output logic [`DATA_WIDTH - 1 : 0] o_wbu_gpr_wr_data
 );
 
-    assign o_sys_valid = 1'h1;
+    assign o_sys_valid = 1'b1;
 
-    assign o_wbu_gpr_wr_en = (o_sys_valid && i_sys_ready) ? i_idu_ctr_reg_wr_en : 1'h0;
-    assign o_wbu_gpr_wr_id = (o_sys_valid && i_sys_ready) ? i_gpr_wr_id : 5'h0;
-    always_comb begin
-        if (o_sys_valid && i_sys_ready) begin
-            o_wbu_gpr_wr_data =
-                (i_idu_ctr_reg_wr_src === `REG_WR_SRC_ALU) ? i_exu_res :
-                (i_idu_ctr_reg_wr_src === `REG_WR_SRC_MEM) ? i_ram_res :
-                (i_idu_ctr_reg_wr_src === `REG_WR_SRC_PC)  ? i_ifu_pc  :
-                                                            `DATA_ZERO;
-        end
-        else begin
-            o_wbu_gpr_wr_data = `DATA_ZERO;
-        end
-    end
+    assign o_wbu_gpr_wr_en   = (o_sys_valid && i_sys_ready) ? i_idu_ctr_reg_wr_en : 1'b0;
+    assign o_wbu_gpr_wr_id   = (o_sys_valid && i_sys_ready) ? i_gpr_wr_id         : 5'h0;
+    assign o_wbu_gpr_wr_data = (o_sys_valid && i_sys_ready) ?
+                              ((i_idu_ctr_reg_wr_src === `REG_WR_SRC_ALU) ? i_exu_res  :
+                               (i_idu_ctr_reg_wr_src === `REG_WR_SRC_MEM) ? i_ram_res  :
+                               (i_idu_ctr_reg_wr_src === `REG_WR_SRC_PC ) ? i_ifu_pc   :
+                                                                           `DATA_ZERO) : `DATA_ZERO;
 
 endmodule
