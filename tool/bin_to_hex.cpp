@@ -17,7 +17,7 @@ class BinToHex {
     private:
         string   c_file_srcs;
         string   c_file_dest;
-        string   c_file_deft = "inst.data";
+        string   c_file_deft = "inst.hex";
         ifstream c_fint;
         ofstream c_fout;
 };
