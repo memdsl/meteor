@@ -163,7 +163,7 @@ module cpu(
         .i_ifu_pc            (w_ifu_pc            ),
         .i_exu_res           (w_exu_res           ),
         .i_lsu_res           (w_lsu_gpr_wr_data   ),
-        .i_gpr_wr_id         (w_gpr_wr_id         ),
+        .i_gpr_wr_id         (w_idu_gpr_rd_id     ),
         .o_wbu_gpr_wr_en     (w_wbu_gpr_wr_en     ),
         .o_wbu_gpr_wr_id     (w_wbu_gpr_wr_id     ),
         .o_wbu_gpr_wr_data   (w_wbu_gpr_wr_data   )

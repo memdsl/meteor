@@ -23,7 +23,7 @@ module gpr(
     assign o_gpr_rd_end_data = r_gpr[i_gpr_rd_end_id];
 
     always_ff @(posedge i_sys_clk) begin
-        if (i_sys_rst_n) begin
+        if (!i_sys_rst_n) begin
             for (int i = 0; i < 32; i++) begin
                 r_gpr[i] = `DATA_ZERO;
             end
