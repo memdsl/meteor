@@ -25,7 +25,8 @@ module idu(
     output logic [`DATA_WIDTH - 1 : 0] o_idu_rs1_data,
     output logic [`DATA_WIDTH - 1 : 0] o_idu_rs2_data,
 
-    output logic [`DATA_WIDTH - 1 : 0] o_idu_jmp_or_reg_data
+    output logic [`DATA_WIDTH - 1 : 0] o_idu_jmp_or_reg_data,
+    output logic                       o_idu_end_flag
 );
 
     assign o_sys_valid = 1'b1;
@@ -208,17 +209,9 @@ module idu(
                 w_ctr_reg_wr_en  = 1'b0;
                 w_ctr_reg_wr_src = `REG_WR_SRC_X;
             end
-            // ECALL, EBREAK
-            7'b1110011: begin
-                w_ctr_alu_type   = `ALU_TYPE_X;
-                w_ctr_alu_rs1    = `ALU_RS1_X;
-                w_ctr_alu_rs2    = `ALU_RS2_X;
-                w_ctr_jmp_type   = `JMP_X;
-                w_ctr_ram_wr_en  = 1'b0;
-                w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'b0;
-                w_ctr_reg_wr_src = `REG_WR_SRC_X;
-            end
+            // // ECALL, EBREAK
+            // 7'b1110011: begin
+            // end
             default: begin
                 w_ctr_alu_type   = `ALU_TYPE_X;
                 w_ctr_alu_rs1    = `ALU_RS1_X;
@@ -267,5 +260,7 @@ module idu(
     assign o_idu_jmp_or_reg_data = (o_sys_valid && i_sys_ready) ?
                                   ((w_ctr_jmp_type === `JMP_B ) ? w_inst_imm      :
                                                                   i_gpr_rs2_data) : `DATA_ZERO;
+    assign o_idu_end_flag  = (w_inst_opcode == 7'b1110011 &&
+                              i_ram_inst[31 : 20] == 12'h0001) ? 1'b1 : 1'b0;
 
 endmodule

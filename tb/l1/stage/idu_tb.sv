@@ -49,9 +49,7 @@ initial begin
     $finish;
 end
 
-idu #(
-    .DATA_WIDTH(DATA_WIDTH)
-) u_idu(
+idu u_idu(
     .i_sys_ready          ( 1'h1),
     .o_sys_valid          (),
     .i_ram_inst           (r_ram_inst),
@@ -71,7 +69,8 @@ idu #(
     .i_ifu_pc             (32'h8000_0000),
     .o_idu_rs1_data       (),
     .o_idu_rs2_data       (),
-    .o_idu_jmp_or_reg_data()
+    .o_idu_jmp_or_reg_data(),
+    .o_idu_end_flag       ()
 );
 
 endmodule

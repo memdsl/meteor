@@ -16,7 +16,10 @@ module cpu(
     output logic                           o_ram_wr_en,
     output logic [`ADDR_WIDTH     - 1 : 0] o_ram_wr_addr,
     output logic [`DATA_WIDTH     - 1 : 0] o_ram_wr_data,
-    output logic [`DATA_WIDTH / 8 - 1 : 0] o_ram_wr_mask
+    output logic [`DATA_WIDTH / 8 - 1 : 0] o_ram_wr_mask,
+
+    output logic                           o_end_flag,
+    output logic [`DATA_WIDTH     - 1 : 0] o_end_data
 );
 
     // IFU
@@ -36,12 +39,14 @@ module cpu(
     logic [`ARGS_WIDTH - 1 : 0] w_idu_ctr_reg_wr_src;
     logic [`DATA_WIDTH - 1 : 0] w_gpr_rs1_data;
     logic [`DATA_WIDTH - 1 : 0] w_gpr_rs2_data;
+    logic [`DATA_WIDTH - 1 : 0] w_gpr_end_data;
     logic [`GPRS_WIDTH - 1 : 0] w_idu_gpr_rs1_id;
     logic [`GPRS_WIDTH - 1 : 0] w_idu_gpr_rs2_id;
     logic [`GPRS_WIDTH - 1 : 0] w_idu_gpr_rd_id;
     logic [`DATA_WIDTH - 1 : 0] w_idu_rs1_data;
     logic [`DATA_WIDTH - 1 : 0] w_idu_rs2_data;
     logic [`DATA_WIDTH - 1 : 0] w_idu_jmp_or_reg_data;
+    logic                       w_idu_end_flag;
 
     // EXU
     logic [`DATA_WIDTH - 1 : 0] w_exu_res;
@@ -73,6 +78,9 @@ module cpu(
     assign o_ram_wr_data = w_lsu_ram_wr_data;
     assign o_ram_wr_mask = w_lsu_ram_wr_mask;
 
+    assign o_end_flag    = w_idu_end_flag;
+    assign o_end_data    = w_gpr_end_data;
+
     gpr u_gpr(
         .i_sys_clk        (i_sys_clk        ),
         .i_sys_rst_n      (i_sys_rst_n      ),
@@ -81,7 +89,7 @@ module cpu(
         .i_gpr_rd_end_id  (5'ha             ),
         .o_gpr_rd_rs1_data(w_gpr_rs1_data   ),
         .o_gpr_rd_rs2_data(w_gpr_rs2_data   ),
-        .o_gpr_rd_end_data(                 ),
+        .o_gpr_rd_end_data(w_gpr_end_data   ),
         .i_gpr_wr_en      (w_wbu_gpr_wr_en  ),
         .i_gpr_wr_id      (w_wbu_gpr_wr_id  ),
         .i_gpr_wr_data    (w_wbu_gpr_wr_data)
@@ -118,7 +126,8 @@ module cpu(
         .i_ifu_pc             (w_ifu_pc             ),
         .o_idu_rs1_data       (w_idu_rs1_data       ),
         .o_idu_rs2_data       (w_idu_rs2_data       ),
-        .o_idu_jmp_or_reg_data(w_idu_jmp_or_reg_data)
+        .o_idu_jmp_or_reg_data(w_idu_jmp_or_reg_data),
+        .o_idu_end_flag       (w_idu_end_flag       )
     );
 
     exu u_exu(

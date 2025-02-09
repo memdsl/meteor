@@ -1,8 +1,11 @@
 `timescale 1ns / 1ps
 
 module soc(
-    input logic i_sys_clk,
-    input logic i_sys_rst_n
+    input logic                            i_sys_clk,
+    input logic                            i_sys_rst_n,
+
+    output logic                           o_end_flag,
+    output logic [`DATA_WIDTH     - 1 : 0] o_end_data
 );
 
     logic                           w_rom_rd_en;
@@ -47,7 +50,9 @@ module soc(
         .o_ram_wr_en  (w_ram_wr_en  ),
         .o_ram_wr_addr(w_ram_wr_addr),
         .o_ram_wr_data(w_ram_wr_data),
-        .o_ram_wr_mask(w_ram_wr_mask)
+        .o_ram_wr_mask(w_ram_wr_mask),
+        .o_end_flag   (o_end_flag   ),
+        .o_end_data   (o_end_data   )
     );
 
 endmodule
