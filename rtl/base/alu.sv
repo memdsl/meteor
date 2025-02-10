@@ -40,12 +40,12 @@ module alu(
             `ALU_TYPE_XOR : o_alu_res = w_u_rs1_data ^   w_u_rs2_data;
             `ALU_TYPE_OR  : o_alu_res = w_u_rs1_data |   w_u_rs2_data;
             `ALU_TYPE_AND : o_alu_res = w_u_rs1_data &   w_u_rs2_data;
-            `ALU_TYPE_SLT : o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, (w_s_rs1_data <   w_s_rs2_data)};
+            `ALU_TYPE_SLT : o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, ($signed(i_alu_rs1_data) <   $signed(i_alu_rs2_data))};
             `ALU_TYPE_SLTU: o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, (w_u_rs1_data <   w_u_rs2_data)};
             `ALU_TYPE_BEQ : o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, (w_u_rs1_data === w_u_rs2_data)};
             `ALU_TYPE_BNE : o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, (w_u_rs1_data !== w_u_rs2_data)};
-            `ALU_TYPE_BLT : o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, (w_s_rs1_data <   w_s_rs2_data)};
-            `ALU_TYPE_BGE : o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, (w_s_rs1_data >=  w_s_rs2_data)};
+            `ALU_TYPE_BLT : o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, ($signed(i_alu_rs1_data) <   $signed(i_alu_rs2_data))};
+            `ALU_TYPE_BGE : o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, ($signed(i_alu_rs1_data) >=  $signed(i_alu_rs2_data))};
             `ALU_TYPE_BLTU: o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, (w_u_rs1_data <   w_u_rs2_data)};
             `ALU_TYPE_BGEU: o_alu_res = {{(`DATA_WIDTH - 1){1'b0}}, (w_u_rs1_data >=  w_u_rs2_data)};
             `ALU_TYPE_JALR: o_alu_res = (w_u_rs1_data +  w_u_rs2_data) + w_mask;
