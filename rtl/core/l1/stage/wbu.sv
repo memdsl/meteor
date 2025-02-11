@@ -20,9 +20,9 @@ module wbu(
     assign o_wbu_gpr_wr_en   = (o_sys_valid && i_sys_ready) ? i_idu_ctr_reg_wr_en : 1'b0;
     assign o_wbu_gpr_wr_id   = (o_sys_valid && i_sys_ready) ? i_gpr_wr_id         : 5'h0;
     assign o_wbu_gpr_wr_data = (o_sys_valid && i_sys_ready) ?
-                              ((i_idu_ctr_reg_wr_src === `REG_WR_SRC_ALU) ? i_exu_res  :
-                               (i_idu_ctr_reg_wr_src === `REG_WR_SRC_MEM) ? i_lsu_res  :
-                               (i_idu_ctr_reg_wr_src === `REG_WR_SRC_PC ) ? i_ifu_pc   :
-                                                                           `DATA_ZERO) : `DATA_ZERO;
+                              ((i_idu_ctr_reg_wr_src === `REG_WR_SRC_ALU) ? i_exu_res         :
+                               (i_idu_ctr_reg_wr_src === `REG_WR_SRC_MEM) ? i_lsu_res         :
+                               (i_idu_ctr_reg_wr_src === `REG_WR_SRC_PC ) ? i_ifu_pc  + 32'h4 :
+                                                                           `DATA_ZERO)        : `DATA_ZERO;
 
 endmodule
