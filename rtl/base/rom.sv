@@ -9,7 +9,7 @@ module rom(
     logic [`INST_WIDTH - 1 : 0] r_rom[`ROM_SIZE - 1 : 0];
     logic [`ADDR_WIDTH - 1 : 0] w_rom_rd_addr;
 
-    assign w_rom_rd_addr = i_rom_rd_addr - `ADDR_INIT;
+    assign w_rom_rd_addr = i_rom_rd_addr;
 
     always_comb begin
         if (!i_rom_rd_en) begin

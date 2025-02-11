@@ -15,6 +15,7 @@ always #(CYCLE / 2) r_clk = ~r_clk;
 
 initial begin
     $readmemh("inst.hex", u_soc.u_rom.r_rom);
+    $readmemh("inst.hex", u_soc.u_ram.r_ram);
 end
 
 initial begin
