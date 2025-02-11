@@ -50,9 +50,6 @@ module cpu(
 
     // EXU
     logic [`DATA_WIDTH - 1 : 0] w_exu_res;
-    logic                       w_exu_zero;
-    logic                       w_exu_over;
-    logic                       w_exu_neg;
 
     // LSU
     logic                           w_lsu_ram_rd_en;
@@ -138,9 +135,6 @@ module cpu(
         .i_idu_rs1_data       (w_idu_rs1_data       ),
         .i_idu_rs2_data       (w_idu_rs2_data       ),
         .o_exu_res            (w_exu_res            ),
-        .o_exu_zero           (w_exu_zero           ),
-        .o_exu_over           (w_exu_over           ),
-        .o_exu_neg            (w_exu_neg            ),
         .i_idu_ctr_jmp_type   (w_idu_ctr_jmp_type   ),
         .i_idu_jmp_or_reg_data(w_idu_jmp_or_reg_data),
         .o_exu_jmp_en         (w_exu_jmp_en         ),

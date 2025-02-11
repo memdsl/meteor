@@ -1,22 +1,21 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Mon Feb 10 06:48:17 2025
+[*] Tue Feb 11 03:38:01 2025
 [*]
 [dumpfile] "/home/myyerrol/Workspaces/memdsl-new/meteor/build/soc_tb.vcd"
-[dumpfile_mtime] "Mon Feb 10 06:36:14 2025"
-[dumpfile_size] 3321600
+[dumpfile_mtime] "Tue Feb 11 03:23:17 2025"
+[dumpfile_size] 3806248
 [savefile] "/home/myyerrol/Workspaces/memdsl-new/meteor/wave/l1/soc_tb.gtkw"
-[timestart] 346360
+[timestart] 323200
 [size] 1428 819
-[pos] 29 -106
-*-14.000000 365000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[pos] 0 1
+*-15.000000 395000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] TOP.
 [treeopen] TOP.soc_tb.
 [treeopen] TOP.soc_tb.u_soc.
 [treeopen] TOP.soc_tb.u_soc.u_cpu.
-[treeopen] TOP.soc_tb.u_soc.u_cpu.u_gpr.
-[sst_width] 309
-[signals_width] 246
+[sst_width] 244
+[signals_width] 278
 [sst_expanded] 1
 [sst_vpaned_height] 216
 @200
@@ -90,11 +89,93 @@ TOP.soc_tb.u_soc.u_cpu.u_exu.o_exu_jmp_en
 [color] 2
 TOP.soc_tb.u_soc.u_cpu.u_exu.o_exu_jmp_pc[31:0]
 @200
+-LSU
+@22
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_lsu.i_idu_ctr_ram_byt[7:0]
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_lsu.i_exu_res[31:0]
+[color] 2
+TOP.soc_tb.u_soc.u_cpu.u_lsu.i_ram_rd_data[31:0]
+@28
+[color] 2
+TOP.soc_tb.u_soc.u_cpu.u_lsu.o_lsu_ram_rd_en
+@22
+[color] 2
+TOP.soc_tb.u_soc.u_cpu.u_lsu.o_lsu_ram_rd_addr[31:0]
+[color] 2
+TOP.soc_tb.u_soc.u_cpu.u_lsu.o_lsu_gpr_wr_data[31:0]
+@28
+TOP.soc_tb.u_soc.u_cpu.u_lsu.i_idu_ctr_ram_wr_en
+@22
+TOP.soc_tb.u_soc.u_cpu.u_lsu.i_gpr_rs2_data[31:0]
+@28
+TOP.soc_tb.u_soc.u_cpu.u_lsu.o_lsu_ram_wr_en
+@22
+TOP.soc_tb.u_soc.u_cpu.u_lsu.o_lsu_ram_wr_addr[31:0]
+TOP.soc_tb.u_soc.u_cpu.u_lsu.o_lsu_ram_wr_data[31:0]
+TOP.soc_tb.u_soc.u_cpu.u_lsu.o_lsu_ram_wr_mask[3:0]
+@200
+-WBU
+@28
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_wbu.i_idu_ctr_reg_wr_en
+@22
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_wbu.i_idu_ctr_reg_wr_src[7:0]
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_wbu.i_ifu_pc[31:0]
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_wbu.i_exu_res[31:0]
+@23
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_wbu.i_lsu_res[31:0]
+@22
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_wbu.i_gpr_wr_id[4:0]
+@28
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_wbu.o_wbu_gpr_wr_en
+@22
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_wbu.o_wbu_gpr_wr_id[4:0]
+[color] 1
+TOP.soc_tb.u_soc.u_cpu.u_wbu.o_wbu_gpr_wr_data[31:0]
+@200
 -GPR
 @28
+[color] 1
 TOP.soc_tb.u_soc.u_cpu.u_gpr.i_gpr_wr_en
 @22
+[color] 1
 TOP.soc_tb.u_soc.u_cpu.u_gpr.i_gpr_wr_id[4:0]
+[color] 1
 TOP.soc_tb.u_soc.u_cpu.u_gpr.i_gpr_wr_data[31:0]
+@200
+-RAM
+@28
+[color] 1
+TOP.soc_tb.u_soc.u_ram.i_ram_rd_en
+@22
+[color] 1
+TOP.soc_tb.u_soc.u_ram.i_ram_rd_addr[31:0]
+[color] 1
+TOP.soc_tb.u_soc.u_ram.o_ram_rd_data[31:0]
+[color] 1
+TOP.soc_tb.u_soc.u_ram.w_ram_rd_addr_t[31:0]
+[color] 1
+TOP.soc_tb.u_soc.u_ram.w_ram_rd_addr[9:0]
+@28
+[color] 2
+TOP.soc_tb.u_soc.u_ram.i_ram_wr_en
+@22
+[color] 2
+TOP.soc_tb.u_soc.u_ram.i_ram_wr_addr[31:0]
+[color] 2
+TOP.soc_tb.u_soc.u_ram.i_ram_wr_data[31:0]
+[color] 2
+TOP.soc_tb.u_soc.u_ram.i_ram_wr_mask[3:0]
+TOP.soc_tb.u_soc.u_ram.w_ram_wr_addr_t[31:0]
+TOP.soc_tb.u_soc.u_ram.w_ram_wr_addr[9:0]
 [pattern_trace] 1
 [pattern_trace] 0
