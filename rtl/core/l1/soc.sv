@@ -30,7 +30,7 @@ module soc(
         .i_sys_clk    (i_sys_clk    ),
         .i_sys_rst_n  (i_sys_rst_n  ),
         .i_ram_rd_en  (w_rom_rd_en  ),
-        .i_ram_rd_addr(w_rom_rd_addr),
+        .i_ram_rd_addr(w_ram_rd_addr),
         .o_ram_rd_data(w_ram_rd_data),
         .i_ram_wr_en  (w_ram_wr_en  ),
         .i_ram_wr_addr(w_ram_wr_addr),
