@@ -198,17 +198,6 @@ module idu(
                 w_ctr_reg_wr_en  = 1'b1;
                 w_ctr_reg_wr_src = `REG_WR_SRC_ALU;
             end
-            // FENCE
-            7'b0001111: begin
-                w_ctr_alu_type   = `ALU_TYPE_X;
-                w_ctr_alu_rs1    = `ALU_RS1_X;
-                w_ctr_alu_rs2    = `ALU_RS2_X;
-                w_ctr_jmp_type   = `JMP_E;
-                w_ctr_ram_wr_en  = 1'b0;
-                w_ctr_ram_byt    = `RAM_BYT_X;
-                w_ctr_reg_wr_en  = 1'b0;
-                w_ctr_reg_wr_src = `REG_WR_SRC_X;
-            end
             default: begin
                 w_ctr_alu_type   = `ALU_TYPE_X;
                 w_ctr_alu_rs1    = `ALU_RS1_X;
