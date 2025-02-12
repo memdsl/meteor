@@ -35,10 +35,50 @@ module lsu(
     always_comb begin
         if (o_sys_valid && i_sys_ready) begin
             case (i_idu_ctr_ram_byt)
-                `RAM_BYT_1_S: o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  8){w_ram_rd_data_byt_1[ 7]}}, w_ram_rd_data_byt_1};
-                `RAM_BYT_1_U: o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  8){                   1'b0}}, w_ram_rd_data_byt_1};
-                `RAM_BYT_2_S: o_lsu_gpr_wr_data = {{(`DATA_WIDTH - 16){w_ram_rd_data_byt_2[15]}}, w_ram_rd_data_byt_2};
-                `RAM_BYT_2_U: o_lsu_gpr_wr_data = {{(`DATA_WIDTH - 16){                   1'b0}}, w_ram_rd_data_byt_2};
+                `RAM_BYT_1_S: begin
+                    if (o_lsu_ram_rd_addr[1 : 0] == 2'b01) begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  8){i_ram_rd_data[15]}}, i_ram_rd_data[15 :  8]};
+                    end
+                    else if (o_lsu_ram_rd_addr[1 : 0] == 2'b10) begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  8){i_ram_rd_data[23]}}, i_ram_rd_data[23 : 16]};
+                    end
+                    else if (o_lsu_ram_rd_addr[1 : 0] == 2'b11) begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  8){i_ram_rd_data[31]}}, i_ram_rd_data[31 : 24]};
+                    end
+                    else begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  8){i_ram_rd_data[ 7]}}, i_ram_rd_data[ 7 :  0]};
+                    end
+                end
+                `RAM_BYT_1_U: begin
+                    if (o_lsu_ram_rd_addr[1 : 0] == 2'b01) begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  8){1'b0}}, i_ram_rd_data[15 :  8]};
+                    end
+                    else if (o_lsu_ram_rd_addr[1 : 0] == 2'b10) begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  8){1'b0}}, i_ram_rd_data[23 : 16]};
+                    end
+                    else if (o_lsu_ram_rd_addr[1 : 0] == 2'b11) begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  8){1'b0}}, i_ram_rd_data[31 : 24]};
+                    end
+                    else begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  8){1'b0}}, i_ram_rd_data[ 7 :  0]};
+                    end
+                end
+                `RAM_BYT_2_S: begin
+                    if (o_lsu_ram_rd_addr[1 : 0] == 2'b10) begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  16){i_ram_rd_data[31]}}, i_ram_rd_data[31 :  16]};
+                    end
+                    else begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  16){i_ram_rd_data[15]}}, i_ram_rd_data[15 :   0]};
+                    end
+                end
+                `RAM_BYT_2_U: begin
+                    if (o_lsu_ram_rd_addr[1 : 0] == 2'b10) begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  16){1'b0}}, i_ram_rd_data[31 :  16]};
+                    end
+                    else begin
+                        o_lsu_gpr_wr_data = {{(`DATA_WIDTH -  16){1'b0}}, i_ram_rd_data[15 :   0]};
+                    end
+                end
                 `RAM_BYT_4_S: o_lsu_gpr_wr_data = {{(`DATA_WIDTH - 32){w_ram_rd_data_byt_4[31]}}, w_ram_rd_data_byt_4};
                 `RAM_BYT_4_U: o_lsu_gpr_wr_data = {{(`DATA_WIDTH - 32){                   1'b0}}, w_ram_rd_data_byt_4};
                 default:      o_lsu_gpr_wr_data = i_ram_rd_data;
@@ -52,7 +92,6 @@ module lsu(
     logic [`DATA_WIDTH / 8 - 1 : 0] w_ram_wr_mask_1;
     logic [`DATA_WIDTH / 8 - 1 : 0] w_ram_wr_mask_2;
     logic [`DATA_WIDTH / 8 - 1 : 0] w_ram_wr_mask_4;
-    logic [`DATA_WIDTH / 8 - 1 : 0] w_ram_wr_mask_8;
 
     assign w_ram_wr_mask_1 = {{(`DATA_WIDTH / 8 - 1){1'b0}}, 1'h1};
     assign w_ram_wr_mask_2 = {{(`DATA_WIDTH / 8 - 2){1'b0}}, 2'h3};
@@ -66,5 +105,44 @@ module lsu(
                                (i_idu_ctr_ram_byt === `RAM_BYT_2_U) ? w_ram_wr_mask_2  :
                                (i_idu_ctr_ram_byt === `RAM_BYT_4_U) ? w_ram_wr_mask_4  :
                                                                       w_ram_wr_mask_4) : w_ram_wr_mask_4;
+
+
+
+
+
+    // always_comb begin
+    //     if (o_sys_valid && i_sys_ready) begin
+    //         case (i_idu_ctr_ram_byt)
+    //             `RAM_BYT_1_U: begin
+    //                 if (o_lsu_ram_wr_addr[1 : 0] == 2'b01) begin
+    //                     o_lsu_ram_wr_mask = 4'b0010;
+    //                 end
+    //                 else if (o_lsu_ram_wr_addr[1 : 0] == 2'b10) begin
+    //                     o_lsu_ram_wr_mask = 4'b0100;
+    //                 end
+    //                 else if (o_lsu_ram_wr_addr[1 : 0] == 2'b11) begin
+    //                     o_lsu_ram_wr_mask = 4'b1000;
+    //                 end
+    //                 else begin
+    //                     o_lsu_ram_wr_mask = 4'b0001;
+    //                 end
+    //             end
+    //             `RAM_BYT_2_U: begin
+    //                 if (o_lsu_ram_wr_addr[1 : 0] == 2'b10) begin
+    //                     o_lsu_ram_wr_mask = 4'b1100;
+    //                 end
+    //                 else begin
+    //                     o_lsu_ram_wr_mask = 4'b0011;
+    //                 end
+    //             end
+    //             `RAM_BYT_4_U: begin
+    //                 o_lsu_ram_wr_mask = 4'b1111;
+    //             end
+    //         endcase
+    //     end
+    //     else begin
+    //         o_lsu_ram_wr_mask = 4'b1111;
+    //     end
+    // end
 
 endmodule

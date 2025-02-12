@@ -24,6 +24,11 @@ endif
  TOP = $(TEST)_tb
 VTOP = V$(TOP)
 
+GTKW = $(shell pwd)/wave/$(CPU)/$(TOP).gtkw
+ifeq ($(shell find $(GTKW) -type f > /dev/null 2>&1 && echo yes || echo no), no)
+    GTKW =
+endif
+
 BUILD_DIR = $(METEOR_HOME)/build
 BUILD_MK  = $(VTOP).mk
 BUILD_BIN = $(BUILD_DIR)/meteor
@@ -91,6 +96,6 @@ $(BUILD_BIN): $(BUILD_MK)
 run: $(BUILD_BIN)
 	$(BUILD_BIN)
 sim: run
-	gtkwave $(BUILD_VCD)
+	gtkwave $(BUILD_VCD) $(GTKW)
 clean:
 	rm -rf build
