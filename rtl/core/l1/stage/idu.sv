@@ -209,9 +209,6 @@ module idu(
                 w_ctr_reg_wr_en  = 1'b0;
                 w_ctr_reg_wr_src = `REG_WR_SRC_X;
             end
-            // // ECALL, EBREAK
-            // 7'b1110011: begin
-            // end
             default: begin
                 w_ctr_alu_type   = `ALU_TYPE_X;
                 w_ctr_alu_rs1    = `ALU_RS1_X;
