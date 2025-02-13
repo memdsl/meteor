@@ -20,7 +20,6 @@ module soc(
     logic                           w_ram_wr_en;
     logic [`ADDR_WIDTH     - 1 : 0] w_ram_wr_addr;
     logic [`DATA_WIDTH     - 1 : 0] w_ram_wr_data;
-    logic [`DATA_WIDTH / 8 - 1 : 0] w_ram_wr_mask;
 
     rom u_rom(
         .i_rom_rd_en  (w_rom_rd_en  ),
@@ -36,8 +35,7 @@ module soc(
         .o_ram_rd_data(w_ram_rd_data),
         .i_ram_wr_en  (w_ram_wr_en  ),
         .i_ram_wr_addr(w_ram_wr_addr),
-        .i_ram_wr_data(w_ram_wr_data),
-        .i_ram_wr_mask(w_ram_wr_mask)
+        .i_ram_wr_data(w_ram_wr_data)
     );
 
     cpu u_cpu(
@@ -52,7 +50,6 @@ module soc(
         .o_ram_wr_en  (w_ram_wr_en  ),
         .o_ram_wr_addr(w_ram_wr_addr),
         .o_ram_wr_data(w_ram_wr_data),
-        .o_ram_wr_mask(w_ram_wr_mask),
         .o_end_flag   (o_end_flag   ),
         .o_end_data   (o_end_data   )
     );

@@ -16,7 +16,6 @@ module cpu(
     output logic                           o_ram_wr_en,
     output logic [`ADDR_WIDTH     - 1 : 0] o_ram_wr_addr,
     output logic [`DATA_WIDTH     - 1 : 0] o_ram_wr_data,
-    output logic [`DATA_WIDTH / 8 - 1 : 0] o_ram_wr_mask,
 
     output logic                           o_end_flag,
     output logic [`DATA_WIDTH     - 1 : 0] o_end_data
@@ -58,7 +57,6 @@ module cpu(
     logic                           w_lsu_ram_wr_en;
     logic [`ADDR_WIDTH     - 1 : 0] w_lsu_ram_wr_addr;
     logic [`DATA_WIDTH     - 1 : 0] w_lsu_ram_wr_data;
-    logic [`DATA_WIDTH / 8 - 1 : 0] w_lsu_ram_wr_mask;
 
     // WBU
     logic [`GPRS_WIDTH - 1 : 0] w_gpr_wr_id;
@@ -73,7 +71,6 @@ module cpu(
     assign o_ram_wr_en   = w_lsu_ram_wr_en;
     assign o_ram_wr_addr = w_lsu_ram_wr_addr;
     assign o_ram_wr_data = w_lsu_ram_wr_data;
-    assign o_ram_wr_mask = w_lsu_ram_wr_mask;
 
     assign o_end_flag    = w_idu_end_flag;
     assign o_end_data    = w_gpr_end_data;
@@ -154,8 +151,7 @@ module cpu(
         .i_gpr_rs2_data     (w_gpr_rs2_data     ),
         .o_lsu_ram_wr_en    (w_lsu_ram_wr_en    ),
         .o_lsu_ram_wr_addr  (w_lsu_ram_wr_addr  ),
-        .o_lsu_ram_wr_data  (w_lsu_ram_wr_data  ),
-        .o_lsu_ram_wr_mask  (w_lsu_ram_wr_mask  )
+        .o_lsu_ram_wr_data  (w_lsu_ram_wr_data  )
     );
 
     wbu u_wbu(

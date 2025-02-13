@@ -61,3 +61,8 @@
 `define REG_WR_SRC_MEM 2
 `define REG_WR_SRC_PC  3
 `define REG_WR_SRC_CSR 4
+
+`define SIGN_EXTEND(data, width) \
+    {{(width - $bits(data)){data[$bits(data) - 1]}}, data}
+`define ZERO_EXTEND(data, width) \
+    {{(width - $bits(data)){                 1'b0}}, data}
