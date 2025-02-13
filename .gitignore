@@ -1,4 +1,6 @@
 build
+test
 
 sim.h
 *.vcd
+*.hex
