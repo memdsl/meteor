@@ -1,5 +1,3 @@
-`include "cfg.sv"
-
 module rom(
     input  logic                       i_rom_rd_en,
     input  logic [`ADDR_WIDTH - 1 : 0] i_rom_rd_addr,

@@ -1,5 +1,3 @@
-`include "cfg.sv"
-
 module idu(
     input  logic                       i_sys_ready,
     output logic                       o_sys_valid,

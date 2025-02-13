@@ -1,5 +1,3 @@
-`include "cfg.sv"
-
 module imm(
     input  logic [`INST_WIDTH -  1 : 0] i_imm_inst,
     input  logic [`INST_WIDTH - 26 : 0] i_imm_opcode,

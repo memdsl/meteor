@@ -1,5 +1,3 @@
-`include "cfg.sv"
-
 module gpr(
     input  logic                       i_sys_clk,
     input  logic                       i_sys_rst_n,

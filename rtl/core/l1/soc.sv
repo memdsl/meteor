@@ -1,7 +1,5 @@
 `timescale 1ns / 1ps
 
-`include "cfg.sv"
-
 module soc(
     input logic                            i_sys_clk,
     input logic                            i_sys_rst_n,

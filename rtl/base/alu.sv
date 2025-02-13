@@ -1,7 +1,5 @@
 `timescale 1ns / 1ps
 
-`include "cfg.sv"
-
 module alu(
     input  logic [`ARGS_WIDTH - 1 : 0] i_alu_type,
     input  logic [`DATA_WIDTH - 1 : 0] i_alu_rs1_data,

@@ -1,5 +1,3 @@
-`include "cfg.sv"
-
 module lsu(
     input  logic                           i_sys_ready,
     output logic                           o_sys_valid,
