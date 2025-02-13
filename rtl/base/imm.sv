@@ -12,34 +12,34 @@ module imm(
             7'b1100111,
             7'b0000011,
             7'b0010011:
-                o_imm_data = {{(`DATA_WIDTH - 12){i_imm_inst[31]}},
-                              i_imm_inst[31 : 20]};
+                o_imm_data = `SIGN_EXTEND(i_imm_inst[31 : 20],
+                                         `DATA_WIDTH);
             // S Type
             7'b0100011:
-                o_imm_data = {{(`DATA_WIDTH - 12){i_imm_inst[31]}},
-                              i_imm_inst[31 : 25],
-                              i_imm_inst[11 :  7]};
+                o_imm_data = `SIGN_EXTEND({i_imm_inst[31 : 25],
+                                           i_imm_inst[11 :  7]},
+                                          `DATA_WIDTH);
             // B Type
             7'b1100011:
-                o_imm_data = {{(`DATA_WIDTH - 13){i_imm_inst[31]}},
-                              i_imm_inst[31     ],
-                              i_imm_inst[ 7     ],
-                              i_imm_inst[30 : 25],
-                              i_imm_inst[11 :  8],
-                              1'h0};
+                o_imm_data = `SIGN_EXTEND({i_imm_inst[31     ],
+                                           i_imm_inst[ 7     ],
+                                           i_imm_inst[30 : 25],
+                                           i_imm_inst[11 :  8],
+                                           1'h0},
+                                          `DATA_WIDTH);
             // U Type
             7'b0110111,
             7'b0010111:
-                o_imm_data = {{(`DATA_WIDTH - 32){i_imm_inst[31]}},
-                              i_imm_inst[31 : 12], 12'h0};
+                o_imm_data = `SIGN_EXTEND({i_imm_inst[31 : 12], 12'h0},
+                                          `DATA_WIDTH);
             // J Type
             7'b1101111:
-                o_imm_data = {{(`DATA_WIDTH - 21){i_imm_inst[31]}},
-                              i_imm_inst[31     ],
-                              i_imm_inst[19 : 12],
-                              i_imm_inst[20     ],
-                              i_imm_inst[30 : 21],
-                              1'h0};
+                o_imm_data = `SIGN_EXTEND({i_imm_inst[31     ],
+                                           i_imm_inst[19 : 12],
+                                           i_imm_inst[20     ],
+                                           i_imm_inst[30 : 21],
+                                           1'h0},
+                                          `DATA_WIDTH);
             default:
                 o_imm_data = `DATA_ZERO;
         endcase
