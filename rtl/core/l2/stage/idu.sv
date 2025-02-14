@@ -51,6 +51,7 @@ module idu(
         .o_imm_data  (w_inst_imm   )
     );
 
+    logic [`ARGS_WIDTH - 1 : 0] w_ctr_inst_name;
     logic [`ARGS_WIDTH - 1 : 0] w_ctr_alu_type;
     logic [`ARGS_WIDTH - 1 : 0] w_ctr_alu_rs1;
     logic [`ARGS_WIDTH - 1 : 0] w_ctr_alu_rs2;
@@ -64,6 +65,7 @@ module idu(
         case (w_inst_opcode)
             // LUI
             7'b0110111: begin
+                w_ctr_inst_name  = `INST_NAME_LUI;
                 w_ctr_alu_type   = `ALU_TYPE_ADD;
                 w_ctr_alu_rs1    = `ALU_RS1_X;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_U;
@@ -75,6 +77,7 @@ module idu(
             end
             // AUIPC
             7'b0010111: begin
+                w_ctr_inst_name  = `INST_NAME_AUIPC;
                 w_ctr_alu_type   = `ALU_TYPE_ADD;
                 w_ctr_alu_rs1    = `ALU_RS1_PC;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_U;
@@ -86,6 +89,7 @@ module idu(
             end
             // JAL
             7'b1101111: begin
+                w_ctr_inst_name  = `INST_NAME_JAL;
                 w_ctr_alu_type   = `ALU_TYPE_ADD;
                 w_ctr_alu_rs1    = `ALU_RS1_PC;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_J;
@@ -97,6 +101,7 @@ module idu(
             end
             // JALR
             7'b1100111: begin
+                w_ctr_inst_name  = `INST_NAME_JALR;
                 w_ctr_alu_type   = `ALU_TYPE_JALR;
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_I;
@@ -108,13 +113,36 @@ module idu(
             end
             // BEQ, BNE, BLT, BGE, BLTU, BGEU
             7'b1100011: begin
-                w_ctr_alu_type   = (w_inst_funct3 === 3'b000) ? `ALU_TYPE_BEQ  :
-                                   (w_inst_funct3 === 3'b001) ? `ALU_TYPE_BNE  :
-                                   (w_inst_funct3 === 3'b100) ? `ALU_TYPE_BLT  :
-                                   (w_inst_funct3 === 3'b101) ? `ALU_TYPE_BGE  :
-                                   (w_inst_funct3 === 3'b110) ? `ALU_TYPE_BLTU :
-                                   (w_inst_funct3 === 3'b111) ? `ALU_TYPE_BGEU :
-                                                                `ALU_TYPE_X;
+                case (w_inst_funct3)
+                    3'b000: begin
+                        w_ctr_inst_name = `INST_NAME_BEQ;
+                        w_ctr_alu_type  = `ALU_TYPE_BEQ;
+                    end
+                    3'b001: begin
+                        w_ctr_inst_name = `INST_NAME_BNE;
+                        w_ctr_alu_type  = `ALU_TYPE_BNE;
+                    end
+                    3'b100: begin
+                        w_ctr_inst_name = `INST_NAME_BLT;
+                        w_ctr_alu_type  = `ALU_TYPE_BLT;
+                    end
+                    3'b101: begin
+                        w_ctr_inst_name = `INST_NAME_BGE;
+                        w_ctr_alu_type  = `ALU_TYPE_BGE;
+                    end
+                    3'b110: begin
+                        w_ctr_inst_name = `INST_NAME_BLTU;
+                        w_ctr_alu_type  = `ALU_TYPE_BLTU;
+                    end
+                    3'b111: begin
+                        w_ctr_inst_name = `INST_NAME_BGEU;
+                        w_ctr_alu_type  = `ALU_TYPE_BGEU;
+                    end
+                    default: begin
+                        w_ctr_inst_name = `INST_NAME_X;
+                        w_ctr_alu_type  = `ALU_TYPE_X;
+                    end
+                endcase
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_GPR;
                 w_ctr_jmp_type   = `JMP_B;
@@ -125,47 +153,114 @@ module idu(
             end
             // LB, LH, LW, LBU, LHU
             7'b0000011: begin
+                case (w_inst_funct3)
+                    3'b000: begin
+                        w_ctr_inst_name = `INST_NAME_LB;
+                        w_ctr_ram_byt   = `RAM_BYT_1_S;
+                    end
+                    3'b001: begin
+                        w_ctr_inst_name = `INST_NAME_LH;
+                        w_ctr_ram_byt   = `RAM_BYT_2_S;
+                    end
+                    3'b010: begin
+                        w_ctr_inst_name = `INST_NAME_LW;
+                        w_ctr_ram_byt   = `RAM_BYT_4_S;
+                    end
+                    3'b100: begin
+                        w_ctr_inst_name = `INST_NAME_LBU;
+                        w_ctr_ram_byt   = `RAM_BYT_1_U;
+                    end
+                    3'b101: begin
+                        w_ctr_inst_name = `INST_NAME_LHU
+                        w_ctr_ram_byt   = `RAM_BYT_2_U;
+                    end
+                    default: begin
+                        w_ctr_inst_name = `INST_NAME_X;
+                        w_ctr_ram_byt   = `RAM_BYT_X;
+                    end
+                endcase
                 w_ctr_alu_type   = `ALU_TYPE_ADD;
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_I;
                 w_ctr_jmp_type   = `JMP_X;
                 w_ctr_ram_wr_en  = 1'b0;
-                w_ctr_ram_byt    = (w_inst_funct3 === 3'b000) ? `RAM_BYT_1_S :
-                                   (w_inst_funct3 === 3'b001) ? `RAM_BYT_2_S :
-                                   (w_inst_funct3 === 3'b010) ? `RAM_BYT_4_S :
-                                   (w_inst_funct3 === 3'b100) ? `RAM_BYT_1_U :
-                                   (w_inst_funct3 === 3'b101) ? `RAM_BYT_2_U :
-                                                                `RAM_BYT_X;
                 w_ctr_reg_wr_en  = 1'b1;
                 w_ctr_reg_wr_src = `REG_WR_SRC_MEM;
             end
             // SB, SH, SW
             7'b0100011: begin
+                case (w_inst_funct3)
+                    3'b000: begin
+                        w_ctr_inst_name = `INST_NAME_SB;
+                        w_ctr_ram_byt   = `RAM_BYT_1_U;
+                    end
+                    3'b001: begin
+                        w_ctr_inst_name = `INST_NAME_SH;
+                        w_ctr_ram_byt   = `RAM_BYT_2_U;
+                    end
+                    3'b010: begin
+                        w_ctr_inst_name = `INST_NAME_SW;
+                        w_ctr_ram_byt   = `RAM_BYT_4_U;
+                    end
+                    default: begin
+                        w_ctr_inst_name = `INST_NAME_X;
+                        w_ctr_ram_byt   = `RAM_BYT_X;
+                    end
+                endcase
                 w_ctr_alu_type   = `ALU_TYPE_ADD;
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_S;
                 w_ctr_jmp_type   = `JMP_X;
                 w_ctr_ram_wr_en  = 1'b1;
-                w_ctr_ram_byt    = (w_inst_funct3 === 3'b000) ? `RAM_BYT_1_U :
-                                   (w_inst_funct3 === 3'b001) ? `RAM_BYT_2_U :
-                                   (w_inst_funct3 === 3'b010) ? `RAM_BYT_4_U :
-                                                                `RAM_BYT_X;
                 w_ctr_reg_wr_en  = 1'b0;
                 w_ctr_reg_wr_src = `REG_WR_SRC_X;
             end
             // ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI
             7'b0010011: begin
-                w_ctr_alu_type   = (w_inst_funct3 === 3'b000    ) ? `ALU_TYPE_ADD  :
-                                   (w_inst_funct3 === 3'b010    ) ? `ALU_TYPE_SLT  :
-                                   (w_inst_funct3 === 3'b011    ) ? `ALU_TYPE_SLTU :
-                                   (w_inst_funct3 === 3'b100    ) ? `ALU_TYPE_XOR  :
-                                   (w_inst_funct3 === 3'b110    ) ? `ALU_TYPE_OR   :
-                                   (w_inst_funct3 === 3'b111    ) ? `ALU_TYPE_AND  :
-                                   (w_inst_funct3 === 3'b001    ) ? `ALU_TYPE_SLL  :
-                                   (w_inst_funct3 === 3'b101    ) ?
-                                  ((w_inst_funct7 === 7'b0000000) ? `ALU_TYPE_SRL  :
-                                                                    `ALU_TYPE_SRA) :
-                                                                    `ALU_TYPE_X;
+                case (w_inst_funct3)
+                    3'b000: begin
+                        w_ctr_inst_name = `INST_NAME_ADDI;
+                        w_ctr_alu_type  = `ALU_TYPE_ADD;
+                    end;
+                    3'b010: begin
+                        w_ctr_inst_name = `INST_NAME_SLTI;
+                        w_ctr_alu_type  = `ALU_TYPE_SLT;
+                    end
+                    3'b011: begin
+                        w_ctr_inst_name = `INST_NAME_SLTIU;
+                        w_ctr_alu_type  = `ALU_TYPE_SLTU;
+                    end
+                    3'b100: begin
+                        w_ctr_inst_name = `INST_NAME_XORI;
+                        w_ctr_alu_type  = `ALU_TYPE_XOR;
+                    end
+                    3'b110: begin
+                        w_ctr_inst_name = `INST_NAME_ORI;
+                        w_ctr_alu_type  = `ALU_TYPE_OR;
+                    end
+                    3'b111: begin
+                        w_ctr_inst_name = `INST_NAME_ANDI;
+                        w_ctr_alu_type  = `ALU_TYPE_AND;
+                    end
+                    3'b001: begin
+                        w_ctr_inst_name = `INST_NAME_SLLI;
+                        w_ctr_alu_type  = `ALU_TYPE_SLL;
+                    end
+                    3'b101: begin
+                        if (w_inst_funct7 === 7'b0000000) begin
+                            w_ctr_inst_name = `INST_NAME_SRLI;
+                            w_ctr_alu_type  = `ALU_TYPE_SRL;
+                        end
+                        else begin
+                            w_ctr_inst_name = `INST_NAME_SRAI;
+                            w_ctr_alu_type  = `ALU_TYPE_SRA;
+                        end
+                    end
+                    default: begin
+                        w_ctr_inst_name = `INST_NAME_X;
+                        w_ctr_alu_type  = `ALU_TYPE_X;
+                    end
+                endcase
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_I;
                 w_ctr_jmp_type   = `JMP_X;
@@ -176,19 +271,57 @@ module idu(
             end
             // ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND
             7'b0110011: begin
-                w_ctr_alu_type   = (w_inst_funct3 === 3'b000    ) ?
-                                  ((w_inst_funct7 === 7'b0000000) ? `ALU_TYPE_ADD  :
-                                                                    `ALU_TYPE_SUB) :
-                                   (w_inst_funct3 === 3'b001    ) ? `ALU_TYPE_SLL  :
-                                   (w_inst_funct3 === 3'b010    ) ? `ALU_TYPE_SLT  :
-                                   (w_inst_funct3 === 3'b011    ) ? `ALU_TYPE_SLTU :
-                                   (w_inst_funct3 === 3'b100    ) ? `ALU_TYPE_XOR  :
-                                   (w_inst_funct3 === 3'b101    ) ?
-                                  ((w_inst_funct7 === 7'b0000000) ? `ALU_TYPE_SRL  :
-                                                                    `ALU_TYPE_SRA) :
-                                   (w_inst_funct3 === 3'b110    ) ? `ALU_TYPE_OR   :
-                                   (w_inst_funct3 === 3'b111    ) ? `ALU_TYPE_AND  :
-                                                                    `ALU_TYPE_X;
+
+                case (w_inst_funct3)
+                    3'b000: begin
+                        if (w_inst_funct7 === 7'b0000000) begin
+                            w_ctr_inst_name = `INST_NAME_ADD;
+                            w_ctr_alu_type  = `ALU_TYPE_ADD;
+                        end
+                        else begin
+                            w_ctr_inst_name = `INST_NAME_SUB;
+                            w_ctr_alu_type  = `ALU_TYPE_SUB;
+                        end
+                    end
+                    3'b001: begin
+                        w_ctr_inst_name = `INST_NAME_SLL;
+                        w_ctr_alu_type  = `ALU_TYPE_SLL;
+                    end
+                    3'b010: begin
+                        w_ctr_inst_name = `INST_NAME_SLT;
+                        w_ctr_alu_type  = `ALU_TYPE_SLT;
+                    end
+                    3'b011: begin
+                        w_ctr_inst_name = `INST_NAME_SLTU;
+                        w_ctr_alu_type  = `ALU_TYPE_SLTU;
+                    end
+                    3'b100: begin
+                        w_ctr_inst_name = `INST_NAME_XOR;
+                        w_ctr_alu_type  = `ALU_TYPE_XOR;
+                    end
+                    3'b101: begin
+                        if (w_inst_funct7 === 7'b0000000) begin
+                            w_ctr_inst_name = `INST_NAME_SRL;
+                            w_ctr_alu_type  = `ALU_TYPE_SRL;
+                        end
+                        else begin
+                            w_ctr_inst_name = `INST_NAME_SRA;
+                            w_ctr_alu_type  = `ALU_TYPE_SRA;
+                        end
+                    end
+                    3'b110: begin
+                        w_ctr_inst_name = `INST_NAME_OR;
+                        w_ctr_alu_type  = `ALU_TYPE_OR;
+                    end
+                    3'b111: begin
+                        w_ctr_inst_name = `INST_NAME_AND;
+                        w_ctr_alu_type  = `ALU_TYPE_AND;
+                    end
+                    default: begin
+                        w_ctr_inst_name = `INST_NAME_X;
+                        w_ctr_alu_type  = `ALU_TYPE_X;
+                    end
+                endcase
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_GPR;
                 w_ctr_jmp_type   = `JMP_X;
@@ -198,6 +331,7 @@ module idu(
                 w_ctr_reg_wr_src = `REG_WR_SRC_ALU;
             end
             default: begin
+                w_ctr_inst_name  = `INST_NAME_X;
                 w_ctr_alu_type   = `ALU_TYPE_X;
                 w_ctr_alu_rs1    = `ALU_RS1_X;
                 w_ctr_alu_rs2    = `ALU_RS2_X;
