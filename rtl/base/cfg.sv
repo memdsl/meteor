@@ -62,6 +62,54 @@
 `define REG_WR_SRC_PC  3
 `define REG_WR_SRC_CSR 4
 
+`define INST_NAME_LUI     0
+`define INST_NAME_AUIPC   1
+`define INST_NAME_JAL     2
+`define INST_NAME_JALR    3
+`define INST_NAME_BEQ     4
+`define INST_NAME_BNE     5
+`define INST_NAME_BLT     6
+`define INST_NAME_BGE     7
+`define INST_NAME_BLTU    8
+`define INST_NAME_BEGU    9
+`define INST_NAME_LB     10
+`define INST_NAME_LH     11
+`define INST_NAME_LW     12
+`define INST_NAME_LBU    13
+`define INST_NAME_LHU    14
+`define INST_NAME_SB     15
+`define INST_NAME_SH     16
+`define INST_NAME_SW     17
+`define INST_NAME_ADDI   18
+`define INST_NAME_SLTI   19
+`define INST_NAME_SLTIU  20
+`define INST_NAME_XORI   21
+`define INST_NAME_ORI    22
+`define INST_NAME_ANDI   23
+`define INST_NAME_SLLI   24
+`define INST_NAME_SRLI   25
+`define INST_NAME_SRAI   26
+`define INST_NAME_ADD    27
+`define INST_NAME_SUB    28
+`define INST_NAME_SLL    29
+`define INST_NAME_SLT    30
+`define INST_NAME_SLTU   31
+`define INST_NAME_XOR    32
+`define INST_NAME_SRL    33
+`define INST_NAME_SRA    34
+`define INST_NAME_OR     35
+`define INST_NAME_AND    36
+`define INST_NAME_FENCE  37
+`define INST_NAME_FENCEI 38
+`define INST_NAME_ECALL  39
+`define INST_NAME_EBREAK 40
+`define INST_NAME_CSRRW  41
+`define INST_NAME_CSRRS  42
+`define INST_NAME_CSRRC  43
+`define INST_NAME_CSRRWI 44
+`define INST_NAME_CSRRSI 45
+`define INST_NAME_CSRRCI 46
+
 `define SIGN_EXTEND(data, width) \
     {{(width - $bits(data)){data[$bits(data) - 1]}}, data}
 `define ZERO_EXTEND(data, width) \
