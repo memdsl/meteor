@@ -10,6 +10,8 @@ module ifu2idu(
     output logic [`ADDR_WIDTH - 1 : 0] o_ifu_pc_next
 );
 
+    assign o_sys_valid = 1'b1;
+
     logic [`ADDR_WIDTH - 1 : 0] r_ifu_pc;
     logic [`ADDR_WIDTH - 1 : 0] r_ifu_pc_next;
 

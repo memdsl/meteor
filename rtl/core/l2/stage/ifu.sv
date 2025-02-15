@@ -2,11 +2,11 @@ module ifu(
     input  logic                       i_sys_clk,
     input  logic                       i_sys_rst_n,
     input  logic                       i_sys_ready,
-    input  logic                       i_sys_en,
     output logic                       o_sys_valid,
 
     input  logic                       i_exu_jmp_en,
     input  logic [`ADDR_WIDTH - 1 : 0] i_exu_jmp_pc,
+    input  logic                       i_ifu_pc_en,
     output logic [`ADDR_WIDTH - 1 : 0] o_ifu_pc,
     output logic [`ADDR_WIDTH - 1 : 0] o_ifu_pc_next
 );
@@ -20,7 +20,7 @@ module ifu(
         if (!i_sys_rst_n) begin
             r_ifu_pc <= `ADDR_INIT;
         end
-        else if (i_sys_ready && o_sys_valid && i_sys_en) begin
+        else if (i_sys_ready && o_sys_valid && i_ifu_pc_en) begin
             r_ifu_pc <= w_ifu_pc_next;
         end
         else begin

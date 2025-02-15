@@ -281,7 +281,6 @@ module idu(
             end
             // ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND
             7'b0110011: begin
-
                 case (w_inst_funct3)
                     3'b000: begin
                         if (w_inst_funct7 === 7'b0000000) begin

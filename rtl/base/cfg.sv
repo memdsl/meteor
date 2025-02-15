@@ -6,7 +6,8 @@
 `define BYTE_WIDTH  8
 
 `define ADDR_INIT 32'h0000_0000
-`define DATA_ZERO 0
+`define DATA_ZERO `DATA_WIDTH{1'b0}
+`define GPRS_ZERO `GPRS_WIDTH{1'b0}
 
 // 32bit: 4KB
 `define ROM_BITS 10
