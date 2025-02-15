@@ -2,7 +2,7 @@ module exu(
     input  logic                       i_sys_ready,
     output logic                       o_sys_valid,
 
-    input  logic [`ADDR_WIDTH - 1 : 0] i_ifu_pc,
+    input  logic [`ADDR_WIDTH - 1 : 0] i_idu_pc,
 
     input  logic [`ARGS_WIDTH - 1 : 0] i_idu_ctr_alu_type,
     input  logic [`DATA_WIDTH - 1 : 0] i_idu_rs1_data,
@@ -40,7 +40,7 @@ module exu(
             `JMP_B: begin
                 if (o_exu_res === 32'h1) begin
                     o_exu_jmp_en = 1'b1;
-                    o_exu_jmp_pc = i_ifu_pc + i_idu_jmp_or_reg_data;
+                    o_exu_jmp_pc = i_idu_pc + i_idu_jmp_or_reg_data;
                 end
                 else begin
                     o_exu_jmp_en =  1'b0;

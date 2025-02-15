@@ -4,8 +4,8 @@ module idu2exu(
     input  logic                       i_sys_ready,
     output logic                       o_sys_valid,
 
-    input  logic [`ADDR_WIDTH - 1 : 0] i_ifu_pc,
-    output logic [`ADDR_WIDTH - 1 : 0] o_ifu_pc,
+    input  logic [`ADDR_WIDTH - 1 : 0] i_idu_pc,
+    output logic [`ADDR_WIDTH - 1 : 0] o_idu_pc,
 
     input  logic [`ARGS_WIDTH - 1 : 0] i_idu_ctr_inst_type,
     input  logic [`ARGS_WIDTH - 1 : 0] i_idu_ctr_inst_name,
@@ -39,8 +39,7 @@ module idu2exu(
 
     assign o_sys_valid = 1'b1;
 
-    logic [`ADDR_WIDTH - 1 : 0] r_ifu_pc;
-
+    logic [`ADDR_WIDTH - 1 : 0] r_idu_pc;
     logic [`ARGS_WIDTH - 1 : 0] r_idu_ctr_inst_type;
     logic [`ARGS_WIDTH - 1 : 0] r_idu_ctr_inst_name;
     logic [`ARGS_WIDTH - 1 : 0] r_idu_ctr_alu_type;
@@ -51,21 +50,19 @@ module idu2exu(
     logic [`ARGS_WIDTH - 1 : 0] r_idu_ctr_ram_byt;
     logic                       r_idu_ctr_reg_wr_en;
     logic [`ARGS_WIDTH - 1 : 0] r_idu_ctr_reg_wr_src;
-
     logic [`DATA_WIDTH - 1 : 0] r_idu_rs1_data;
     logic [`DATA_WIDTH - 1 : 0] r_idu_rs2_data;
-
     logic [`DATA_WIDTH - 1 : 0] r_idu_jmp_or_reg_data;
 
     always_ff @(posedge i_sys_clk) begin
         if (!i_sys_rst_n) begin
-            r_ifu_pc <= `ADDR_INIT;
+            r_idu_pc <= `ADDR_INIT;
         end
         else if (o_sys_valid && i_sys_ready) begin
-            r_ifu_pc <= i_ifu_pc;
+            r_idu_pc <= i_idu_pc;
         end
         else begin
-            r_ifu_pc <= r_ifu_pc;
+            r_idu_pc <= r_idu_pc;
         end
     end
 
@@ -135,7 +132,7 @@ module idu2exu(
         end
     end
 
-    assign o_ifu_pc              = r_ifu_pc;
+    assign o_idu_pc              = r_idu_pc;
     assign o_idu_ctr_inst_type   = r_idu_ctr_inst_type;
     assign o_idu_ctr_inst_name   = r_idu_ctr_inst_name;
     assign o_idu_ctr_alu_type    = r_idu_ctr_alu_type;
