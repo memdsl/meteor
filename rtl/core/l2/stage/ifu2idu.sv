@@ -18,9 +18,13 @@ module ifu2idu(
             r_ifu_pc      <= `ADDR_INIT;
             r_ifu_pc_next <= `ADDR_INIT;
         end
-        else begin
+        else if (o_sys_valid && i_sys_ready) begin
             r_ifu_pc      <= i_ifu_pc;
             r_ifu_pc_next <= i_ifu_pc_next;
+        end
+        else begin
+            r_ifu_pc      <= r_ifu_pc;
+            r_ifu_pc_next <= r_ifu_pc_next;
         end
     end
 

@@ -4,7 +4,8 @@ module idu(
 
     input  logic [`INST_WIDTH - 1 : 0] i_ram_inst,
 
-    output logic [`ARGS_WIDTH - 1 : 0] o_alu_ctr_name,
+    output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_inst_type,
+    output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_inst_name,
     output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_alu_type,
     output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_alu_rs1,
     output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_alu_rs2,
@@ -51,6 +52,7 @@ module idu(
         .o_imm_data  (w_inst_imm   )
     );
 
+    logic [`ARGS_WIDTH - 1 : 0] w_ctr_inst_type;
     logic [`ARGS_WIDTH - 1 : 0] w_ctr_inst_name;
     logic [`ARGS_WIDTH - 1 : 0] w_ctr_alu_type;
     logic [`ARGS_WIDTH - 1 : 0] w_ctr_alu_rs1;
@@ -65,6 +67,7 @@ module idu(
         case (w_inst_opcode)
             // LUI
             7'b0110111: begin
+                w_ctr_inst_type  = `INST_TYPE_LUI;
                 w_ctr_inst_name  = `INST_NAME_LUI;
                 w_ctr_alu_type   = `ALU_TYPE_ADD;
                 w_ctr_alu_rs1    = `ALU_RS1_X;
@@ -77,6 +80,7 @@ module idu(
             end
             // AUIPC
             7'b0010111: begin
+                w_ctr_inst_type  = `INST_TYPE_AUIPC;
                 w_ctr_inst_name  = `INST_NAME_AUIPC;
                 w_ctr_alu_type   = `ALU_TYPE_ADD;
                 w_ctr_alu_rs1    = `ALU_RS1_PC;
@@ -89,6 +93,7 @@ module idu(
             end
             // JAL
             7'b1101111: begin
+                w_ctr_inst_type  = `INST_TYPE_JMP;
                 w_ctr_inst_name  = `INST_NAME_JAL;
                 w_ctr_alu_type   = `ALU_TYPE_ADD;
                 w_ctr_alu_rs1    = `ALU_RS1_PC;
@@ -101,6 +106,7 @@ module idu(
             end
             // JALR
             7'b1100111: begin
+                w_ctr_inst_type  = `INST_TYPE_JMP;
                 w_ctr_inst_name  = `INST_NAME_JALR;
                 w_ctr_alu_type   = `ALU_TYPE_JALR;
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
@@ -143,6 +149,7 @@ module idu(
                         w_ctr_alu_type  = `ALU_TYPE_X;
                     end
                 endcase
+                w_ctr_inst_type  = `INST_TYPE_BRH;
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_GPR;
                 w_ctr_jmp_type   = `JMP_B;
@@ -179,6 +186,7 @@ module idu(
                         w_ctr_ram_byt   = `RAM_BYT_X;
                     end
                 endcase
+                w_ctr_inst_type  = `INST_TYPE_LOAD;
                 w_ctr_alu_type   = `ALU_TYPE_ADD;
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_I;
@@ -207,6 +215,7 @@ module idu(
                         w_ctr_ram_byt   = `RAM_BYT_X;
                     end
                 endcase
+                w_ctr_inst_type  = `INST_TYPE_STOR;
                 w_ctr_alu_type   = `ALU_TYPE_ADD;
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_S;
@@ -261,6 +270,7 @@ module idu(
                         w_ctr_alu_type  = `ALU_TYPE_X;
                     end
                 endcase
+                w_ctr_inst_type  = `INST_TYPE_R_I;
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_IMM_I;
                 w_ctr_jmp_type   = `JMP_X;
@@ -322,6 +332,7 @@ module idu(
                         w_ctr_alu_type  = `ALU_TYPE_X;
                     end
                 endcase
+                w_ctr_inst_type  = `INST_TYPE_R_R;
                 w_ctr_alu_rs1    = `ALU_RS1_GPR;
                 w_ctr_alu_rs2    = `ALU_RS2_GPR;
                 w_ctr_jmp_type   = `JMP_X;
@@ -331,6 +342,7 @@ module idu(
                 w_ctr_reg_wr_src = `REG_WR_SRC_ALU;
             end
             default: begin
+                w_ctr_inst_type  = `INST_TYPE_X;
                 w_ctr_inst_name  = `INST_NAME_X;
                 w_ctr_alu_type   = `ALU_TYPE_X;
                 w_ctr_alu_rs1    = `ALU_RS1_X;
@@ -344,6 +356,8 @@ module idu(
         endcase
     end
 
+    assign o_idu_ctr_inst_type  = (o_sys_valid && i_sys_ready) ? w_ctr_inst_type  : `INST_TYPE_X;
+    assign o_idu_ctr_inst_name  = (o_sys_valid && i_sys_ready) ? w_ctr_inst_name  : `INST_NAME_X;
     assign o_idu_ctr_alu_type   = (o_sys_valid && i_sys_ready) ? w_ctr_alu_type   : `ALU_TYPE_X;
     assign o_idu_ctr_alu_rs1    = (o_sys_valid && i_sys_ready) ? w_ctr_alu_rs1    : `ALU_RS1_X;
     assign o_idu_ctr_alu_rs2    = (o_sys_valid && i_sys_ready) ? w_ctr_alu_rs2    : `ALU_RS2_X;

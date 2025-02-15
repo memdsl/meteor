@@ -111,6 +111,16 @@
 `define INST_NAME_CSRRSI 46
 `define INST_NAME_CSRRCI 47
 
+`define INST_TYPE_X     0
+`define INST_TYPE_LUI   1
+`define INST_TYPE_AUIPC 2
+`define INST_TYPE_JMP   3
+`define INST_TYPE_BRH   4
+`define INST_TYPE_LOAD  5
+`define INST_TYPE_STOR  6
+`define INST_TYPE_R_I   7
+`define INST_TYPE_R_R   8
+
 `define SIGN_EXTEND(data, width) \
     {{(width - $bits(data)){data[$bits(data) - 1]}}, data}
 `define ZERO_EXTEND(data, width) \
