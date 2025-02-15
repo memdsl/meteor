@@ -1,4 +1,4 @@
-module ifu_to_idu(
+module ifu2idu(
     input  logic                       i_sys_clk,
     input  logic                       i_sys_rst_n,
     input  logic                       i_sys_ready,
