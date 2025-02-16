@@ -19,8 +19,8 @@ initial begin
 end
 
 initial begin
-    r_clk   = 1'h0;
-    r_rst_n = 1'h0;
+    r_clk   = 1'b0;
+    r_rst_n = 1'b0;
     #(CYCLE * 1);
     r_rst_n = 1'h1;
 end

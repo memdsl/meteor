@@ -23,7 +23,7 @@ module imm(
                                            i_imm_inst[ 7     ],
                                            i_imm_inst[30 : 25],
                                            i_imm_inst[11 :  8],
-                                           1'h0},
+                                           1'b0},
                                           `DATA_WIDTH);
             // U Type
             7'b0110111,
@@ -36,7 +36,7 @@ module imm(
                                            i_imm_inst[19 : 12],
                                            i_imm_inst[20     ],
                                            i_imm_inst[30 : 21],
-                                           1'h0},
+                                           1'b0},
                                           `DATA_WIDTH);
             default:
                 o_imm_data = `DATA_ZERO;

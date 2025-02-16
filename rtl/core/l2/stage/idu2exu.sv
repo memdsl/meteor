@@ -36,6 +36,9 @@ module idu2exu(
     output logic [`DATA_WIDTH - 1 : 0] o_i2e_rs1_data,
     output logic [`DATA_WIDTH - 1 : 0] o_i2e_rs2_data,
 
+    input  logic [`GPRS_WIDTH - 1 : 0] i_idu_gpr_rd_id,
+    output logic [`GPRS_WIDTH - 1 : 0] o_i2e_gpr_rd_id,
+
     input  logic [`DATA_WIDTH - 1 : 0] i_idu_jmp_or_reg_data,
     output logic [`DATA_WIDTH - 1 : 0] o_i2e_jmp_or_reg_data
 );
@@ -56,6 +59,7 @@ module idu2exu(
     logic [`ARGS_WIDTH - 1 : 0] r_i2e_ctr_reg_wr_src;
     logic [`DATA_WIDTH - 1 : 0] r_i2e_rs1_data;
     logic [`DATA_WIDTH - 1 : 0] r_i2e_rs2_data;
+    logic [`GPRS_WIDTH - 1 : 0] r_i2e_gpr_rd_id;
     logic [`DATA_WIDTH - 1 : 0] r_i2e_jmp_or_reg_data;
 
     always_ff @(posedge i_sys_clk) begin
@@ -126,6 +130,18 @@ module idu2exu(
 
     always_ff @(posedge i_sys_clk) begin
         if (!i_sys_rst_n) begin
+            r_i2e_gpr_rd_id <= `DATA_ZERO;
+        end
+        else if (i_idu_valid && o_i2e_ready) begin
+            r_i2e_gpr_rd_id <= i_idu_gpr_rd_id;
+        end
+        else begin
+            r_i2e_gpr_rd_id <= r_i2e_gpr_rd_id;
+        end
+    end
+
+    always_ff @(posedge i_sys_clk) begin
+        if (!i_sys_rst_n) begin
             r_i2e_jmp_or_reg_data <= `DATA_ZERO;
         end
         else if (i_idu_valid && o_i2e_ready) begin
@@ -149,6 +165,7 @@ module idu2exu(
     assign o_i2e_ctr_reg_wr_src  = r_i2e_ctr_reg_wr_src;
     assign o_i2e_rs1_data        = r_i2e_rs1_data;
     assign o_i2e_rs2_data        = r_i2e_rs2_data;
+    assign o_i2e_gpr_rd_id       = r_i2e_gpr_rd_id;
     assign o_i2e_jmp_or_reg_data = r_i2e_jmp_or_reg_data;
 
 endmodule

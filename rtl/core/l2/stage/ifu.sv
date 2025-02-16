@@ -2,7 +2,7 @@ module ifu(
     input  logic                       i_sys_clk,
     input  logic                       i_sys_rst_n,
 
-    input  logic                       i_sys_valid,
+    input  logic                       i_wbu_valid,
     output logic                       o_ifu_ready,
     input  logic                       i_i2i_ready,
     output logic                       o_ifu_valid,
@@ -23,7 +23,7 @@ module ifu(
         if (!i_sys_rst_n) begin
             r_ifu_pc <= `ADDR_INIT;
         end
-        else if (i_sys_valid && o_ifu_ready) begin
+        else if (i_wbu_valid && o_ifu_ready) begin
             r_ifu_pc <= w_ifu_pc_next;
         end
         else begin

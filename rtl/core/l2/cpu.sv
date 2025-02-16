@@ -19,16 +19,6 @@ module cpu(
     output logic [`DATA_WIDTH     - 1 : 0] o_end_data
 );
 
-
-
-    // LSU
-
-    // WBU
-    logic [`GPRS_WIDTH - 1 : 0] w_gpr_wr_id;
-    logic                       w_wbu_gpr_wr_en;
-    logic [`GPRS_WIDTH - 1 : 0] w_wbu_gpr_wr_id;
-    logic [`DATA_WIDTH - 1 : 0] w_wbu_gpr_wr_data;
-
     assign o_rom_rd_en   = 1'b1;
     assign o_rom_rd_addr = w_ifu_pc;
     assign o_ram_rd_en   = w_lsu_ram_rd_en;
@@ -40,54 +30,14 @@ module cpu(
     assign o_end_flag    = w_idu_end_flag;
     assign o_end_data    = w_gpr_end_data;
 
-    gpr u_gpr(
-        .i_sys_clk        (i_sys_clk        ),
-        .i_sys_rst_n      (i_sys_rst_n      ),
-        .i_gpr_rd_rs1_id  (w_idu_gpr_rs1_id ),
-        .i_gpr_rd_rs2_id  (w_idu_gpr_rs2_id ),
-        .i_gpr_rd_end_id  (5'ha             ),
-        .o_gpr_rd_rs1_data(w_gpr_rs1_data   ),
-        .o_gpr_rd_rs2_data(w_gpr_rs2_data   ),
-        .o_gpr_rd_end_data(w_gpr_end_data   ),
-        .i_gpr_wr_en      (w_wbu_gpr_wr_en  ),
-        .i_gpr_wr_id      (w_wbu_gpr_wr_id  ),
-        .i_gpr_wr_data    (w_wbu_gpr_wr_data)
-    );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // GPR
     logic [`DATA_WIDTH - 1 : 0] w_gpr_rs1_data;
     logic [`DATA_WIDTH - 1 : 0] w_gpr_rs2_data;
     logic [`DATA_WIDTH - 1 : 0] w_gpr_end_data;
 
-
-
-
-
-
-
-
     // IFU
     logic                       w_ifu_valid;
+    logic                       w_ifu_ready;
     logic [`ADDR_WIDTH - 1 : 0] w_ifu_pc;
 
     // I2I
@@ -133,12 +83,16 @@ module cpu(
     logic [`ARGS_WIDTH - 1 : 0] w_i2e_ctr_reg_wr_src;
     logic [`DATA_WIDTH - 1 : 0] w_i2e_rs1_data;
     logic [`DATA_WIDTH - 1 : 0] w_i2e_rs2_data;
+    logic [`GPRS_WIDTH - 1 : 0] w_i2e_gpr_rd_id;
     logic [`DATA_WIDTH - 1 : 0] w_i2e_jmp_or_reg_data;
 
     // EXU
     logic                       w_exu_valid;
     logic                       w_exu_ready;
     logic [`ADDR_WIDTH - 1 : 0] w_exu_pc;
+    logic                       w_exu_ctr_reg_wr_en,
+    logic [`ARGS_WIDTH - 1 : 0] w_exu_ctr_reg_wr_src,
+    logic [`GPRS_WIDTH - 1 : 0] w_exu_gpr_rd_id,
     logic [`ARGS_WIDTH - 1 : 0] w_exu_ctr_inst_type;
     logic [`ARGS_WIDTH - 1 : 0] w_exu_ctr_ram_byt;
     logic                       w_exu_ctr_ram_wr_en;
@@ -152,6 +106,9 @@ module cpu(
     logic                       w_e2l_valid;
     logic                       w_e2l_ready;
     logic [`ADDR_WIDTH - 1 : 0] w_e2l_pc;
+    logic                       w_e2l_ctr_reg_wr_en;
+    logic [`ARGS_WIDTH - 1 : 0] w_e2l_ctr_reg_wr_src;
+    logic [`GPRS_WIDTH - 1 : 0] w_e2l_gpr_rd_id;
     logic [`ARGS_WIDTH - 1 : 0] w_e2l_ctr_inst_type;
     logic [`ARGS_WIDTH - 1 : 0] w_e2l_ctr_ram_byt;
     logic [`ARGS_WIDTH - 1 : 0] w_e2l_ctr_ram_wr_en;
@@ -159,26 +116,58 @@ module cpu(
     logic [`DATA_WIDTH - 1 : 0] w_e2l_rs2_data;
 
     // LSU
-    logic w_lsu_valid;
-    logic w_lsu_ready;
-
+    logic                           w_lsu_valid;
+    logic                           w_lsu_ready;
+    logic [`ADDR_WIDTH     - 1 : 0] w_lsu_pc;
+    logic                           w_lsu_ctr_reg_wr_en;
+    logic [`ARGS_WIDTH     - 1 : 0] w_lsu_ctr_reg_wr_src;
+    logic [`GPRS_WIDTH     - 1 : 0] w_lsu_gpr_wr_id;
+    logic [`DATA_WIDTH     - 1 : 0] w_lsu_alu_res;
     logic                           w_lsu_ram_rd_en;
     logic [`ADDR_WIDTH     - 1 : 0] w_lsu_ram_rd_addr;
     logic [`DATA_WIDTH     - 1 : 0] w_lsu_gpr_wr_data;
+    logic [`DATA_ZERO      - 1 : 0] w_lsu_ram_res;
     logic                           w_lsu_ram_wr_en;
     logic [`ADDR_WIDTH     - 1 : 0] w_lsu_ram_wr_addr;
     logic [`DATA_WIDTH     - 1 : 0] w_lsu_ram_wr_data;
+    logic                           w_lsu_pc_en;
 
-
-    logic w_lsu_pc_en;
+    // LSU2WBU
+    logic                       w_l2w_valid;
+    logic                       w_l2w_ready;
+    logic                       w_l2w_ctr_reg_wr_en;
+    logic [`ARGS_WIDTH - 1 : 0] w_l2w_ctr_reg_wr_src;
+    logic [`ADDR_WIDTH - 1 : 0] w_l2w_pc;
+    logic [`DATA_WIDTH - 1 : 0] w_l2w_alu_res;
+    logic [`DATA_WIDTH - 1 : 0] w_l2w_ram_res;
+    logic [`lsuS_WIDTH - 1 : 0] w_l2w_gpr_wr_id;
 
     // WBU
-    logic w_wbu_pc_en;
+    logic                       w_wbu_valid;
+    logic                       w_wbu_ready;
+    logic                       w_wbu_gpr_wr_en;
+    logic [`GPRS_WIDTH - 1 : 0] w_wbu_gpr_wr_id;
+    logic [`DATA_WIDTH - 1 : 0] w_wbu_gpr_wr_data;
+    logic                       w_wbu_pc_en;
+
+    gpr u_gpr(
+        .i_sys_clk        (i_sys_clk        ),
+        .i_sys_rst_n      (i_sys_rst_n      ),
+        .i_gpr_rd_rs1_id  (w_idu_gpr_rs1_id ),
+        .i_gpr_rd_rs2_id  (w_idu_gpr_rs2_id ),
+        .i_gpr_rd_end_id  (5'ha             ),
+        .o_gpr_rd_rs1_data(w_gpr_rs1_data   ),
+        .o_gpr_rd_rs2_data(w_gpr_rs2_data   ),
+        .o_gpr_rd_end_data(w_gpr_end_data   ),
+        .i_gpr_wr_en      (w_wbu_gpr_wr_en  ),
+        .i_gpr_wr_id      (w_wbu_gpr_wr_id  ),
+        .i_gpr_wr_data    (w_wbu_gpr_wr_data)
+    );
 
     ifu u_ifu(
         .i_sys_clk    (i_sys_clk                              ),
         .i_sys_rst_n  (i_sys_rst_n                            ),
-        .i_sys_ready  (1'b1                                   ),
+        .i_wbu_valid  (w_wbu_valid                            ),
         .o_ifu_ready  (w_exu_pc_en | w_lsu_pc_en | w_wbu_pc_en),
         .i_i2i_ready  (w_i2i_ready                            ),
         .o_ifu_valid  (w_ifu_valid                            ),
@@ -260,6 +249,8 @@ module cpu(
         .i_idu_rs2_data       (w_idu_rs2_data       ),
         .o_i2e_rs1_data       (w_i2e_rs1_data       ),
         .o_i2e_rs2_data       (w_i2e_rs2_data       ),
+        .i_idu_gpr_rd_id      (w_idu_gpr_rd_id      ),
+        .o_i2e_gpr_rd_id      (w_i2e_gpr_rd_id      ),
         .i_idu_jmp_or_reg_data(w_idu_jmp_or_reg_data),
         .o_i2e_jmp_or_reg_data(w_i2e_jmp_or_reg_data)
     );
@@ -271,6 +262,12 @@ module cpu(
         .o_exu_valid          (w_exu_valid          ),
         .i_i2e_pc             (w_i2e_pc             ),
         .o_exu_pc             (w_exu_pc             ),
+        .i_i2e_ctr_reg_wr_en  (w_i2e_ctr_reg_wr_en  ),
+        .i_i2e_ctr_reg_wr_src (w_i2e_ctr_reg_wr_src ),
+        .i_i2e_gpr_rd_id      (w_i2e_gpr_rd_id      ),
+        .o_exu_ctr_reg_wr_en  (w_exu_ctr_reg_wr_en  ),
+        .o_exu_ctr_reg_wr_src (w_exu_ctr_reg_wr_src ),
+        .o_exu_gpr_rd_id      (w_exu_gpr_rd_id      ),
         .i_i2e_ctr_inst_type  (w_i2e_ctr_inst_type  ),
         .i_i2e_ctr_ram_byt    (w_i2e_ctr_ram_byt    ),
         .i_i2e_ctr_ram_wr_en  (w_i2e_ctr_ram_wr_en  ),
@@ -299,6 +296,12 @@ module cpu(
         .o_e2l_valid        (w_e2l_valid        ),
         .i_exu_pc           (w_exu_pc           ),
         .o_e2l_pc           (w_e2l_pc           ),
+        .i_exu_ctr_reg_wr_en (w_exu_ctr_reg_wr_en),
+        .i_exu_ctr_reg_wr_src(w_exu_ctr_reg_wr_src),
+        .i_exu_gpr_rd_id     (w_exu_gpr_rd_id),
+        .o_e2l_ctr_reg_wr_en (w_e2l_ctr_reg_wr_en),
+        .o_e2l_ctr_reg_wr_src(w_e2l_ctr_reg_wr_src),
+        .o_e2l_gpr_rd_id     (w_e2l_gpr_rd_id),
         .i_exu_ctr_inst_type(w_exu_ctr_inst_type),
         .i_exu_ctr_ram_byt  (w_exu_ctr_ram_byt  ),
         .i_exu_ctr_ram_wr_en(w_exu_ctr_ram_wr_en),
@@ -311,50 +314,70 @@ module cpu(
         .o_e2l_rs2_data     (w_el2_rs2_data     ),
     );
 
-
-
-
-
-
-
-
-
-
-
-
-
     lsu u_lsu(
-        .i_sys_ready        (1'b1               ),
-        .o_sys_valid        (                   ),
-        .i_idu_ctr_ram_byt  (w_idu_ctr_ram_byt  ),
-        .i_exu_res          (w_exu_res          ),
-        .i_ram_rd_data      (i_ram_rd_data      ),
-        .o_lsu_ram_rd_en    (w_lsu_ram_rd_en    ),
-        .o_lsu_ram_rd_addr  (w_lsu_ram_rd_addr  ),
-        .o_lsu_gpr_wr_data  (w_lsu_gpr_wr_data  ),
-        .i_idu_ctr_ram_wr_en(w_idu_ctr_ram_wr_en),
-        .i_gpr_rs2_data     (w_gpr_rs2_data     ),
-        .o_lsu_ram_wr_en    (w_lsu_ram_wr_en    ),
-        .o_lsu_ram_wr_addr  (w_lsu_ram_wr_addr  ),
-        .o_lsu_ram_wr_data  (w_lsu_ram_wr_data  )
+        .i_e2l_valid         (w_e2l_valid        ),
+        .o_lsu_ready         (w_lsu_ready        ),
+        .i_l2w_ready         (w_l2w_ready        ),
+        .o_lsu_valid         (w_lsu_valid        ),
+        .i_e2l_pc            (w_e2l_pc           ),
+        .o_lsu_pc            (w_lsu_pc           ),
+        .i_e2l_ctr_reg_wr_en (w_e2l_ctr_reg_wr_en ),
+        .i_e2l_ctr_reg_wr_src(w_e2l_ctr_reg_wr_src),
+        .i_e2l_gpr_wr_id     (w_e2l_gpr_rd_id     ),
+        .o_lsu_ctr_reg_wr_en (w_lsu_ctr_reg_wr_en ),
+        .o_lsu_ctr_reg_wr_src(w_lsu_ctr_reg_wr_src),
+        .o_lsu_gpr_wr_id     (w_lsu_gpr_wr_id     ),
+        .i_e2l_ctr_ram_byt   (w_e2l_ctr_ram_byt  ),
+        .i_e2l_res           (w_e2l_res          ),
+        .i_ram_rd_data       (i_ram_rd_data      ),
+        .o_lsu_ram_rd_en     (w_lsu_ram_rd_en    ),
+        .o_lsu_ram_rd_addr   (w_lsu_ram_rd_addr  ),
+        .o_lsu_gpr_wr_data   (w_lsu_gpr_wr_data  ),
+        .i_e2l_ctr_ram_wr_en (w_e2l_ctr_ram_wr_en),
+        .i_e2l_rs2_data      (w_e2l_rs2_data     ),
+        .o_lsu_ram_wr_en     (w_lsu_ram_wr_en    ),
+        .o_lsu_ram_wr_addr   (w_lsu_ram_wr_addr  ),
+        .o_lsu_ram_wr_data   (w_lsu_ram_wr_data  )
+        .i_e2l_ctr_inst_type (w_e2l_ctr_inst_type),
+        .o_lsu_pc_en         (w_lsu_pc_en        ),
     );
 
     lsu2wbu u_lsu2wbu(
-
+        .i_sys_clk           (i_sys_clk           ),
+        .i_sys_rst_n         (i_sys_rst_n         ),
+        .i_lsu_valid         (w_lsu_valid         ),
+        .o_l2w_ready         (w_l2w_ready         ),
+        .i_wbu_ready         (w_wbu_ready         ),
+        .o_l2w_valid         (w_l2w_valid         ),
+        .i_lsu_ctr_reg_wr_en (w_lsu_ctr_reg_wr_en ),
+        .i_lsu_ctr_reg_wr_src(w_lsu_ctr_reg_wr_src),
+        .i_lsu_pc            (w_lsu_pc            ),
+        .i_lsu_alu_res       (w_lsu_alu_res       ),
+        .i_lsu_ram_res       (w_lsu_ram_res       ),
+        .i_lsu_gpr_wr_id     (w_lsu_gpr_wr_id     ),
+        .o_l2w_ctr_reg_wr_en (w_l2w_ctr_reg_wr_en ),
+        .o_l2w_ctr_reg_wr_src(w_l2w_ctr_reg_wr_src),
+        .o_l2w_pc            (w_l2w_pc            ),
+        .o_l2w_alu_res       (w_l2w_alu_res       ),
+        .o_l2w_ram_res       (w_l2w_ram_res       ),
+        .o_l2w_gpr_wr_id     (w_l2w_gpr_wr_id     )
     );
 
     wbu u_wbu(
-        .i_sys_ready         (1'b1                ),
-        .o_sys_valid         (                    ),
-        .i_idu_ctr_reg_wr_en (w_idu_ctr_reg_wr_en ),
-        .i_idu_ctr_reg_wr_src(w_idu_ctr_reg_wr_src),
-        .i_ifu_pc            (w_ifu_pc            ),
-        .i_exu_res           (w_exu_res           ),
-        .i_lsu_res           (w_lsu_gpr_wr_data   ),
-        .i_gpr_wr_id         (w_idu_gpr_rd_id     ),
+        .i_l2w_valid         (w_l2w_valid         ),
+        .o_wbu_ready         (w_wbu_ready         ),
+        .i_ifu_ready         (w_ifu_ready         ),
+        .o_wbu_valid         (w_wbu_valid         ),
+        .i_l2w_ctr_reg_wr_en (w_l2w_ctr_reg_wr_en ),
+        .i_l2w_ctr_reg_wr_src(w_l2w_ctr_reg_wr_src),
+        .i_l2w_pc            (w_l2w_pc            ),
+        .i_l2w_alu_res       (w_l2w_alu_res       ),
+        .i_l2w_ram_res       (w_l2w_ram_res       ),
+        .i_l2w_gpr_wr_id     (w_l2w_gpr_wr_id     ),
         .o_wbu_gpr_wr_en     (w_wbu_gpr_wr_en     ),
         .o_wbu_gpr_wr_id     (w_wbu_gpr_wr_id     ),
-        .o_wbu_gpr_wr_data   (w_wbu_gpr_wr_data   )
+        .o_wbu_gpr_wr_data   (w_wbu_gpr_wr_data   ),
+        .o_wbu_pc_en         (w_wbu_pc_en         )
     );
 
 endmodule

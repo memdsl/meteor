@@ -1,26 +1,50 @@
 module lsu(
-    input  logic                           i_sys_ready,
-    output logic                           o_sys_valid,
+    input  logic                           i_e2l_valid,
+    output logic                           o_lsu_ready,
+    input  logic                           i_l2w_ready,
+    output logic                           o_lsu_valid,
 
-    input  logic [`ARGS_WIDTH     - 1 : 0] i_idu_ctr_ram_byt,
-    input  logic [`DATA_WIDTH     - 1 : 0] i_exu_res,
+    input  logic [`ADDR_WIDTH     - 1 : 0] i_e2l_pc,
+    output logic [`ADDR_WIDTH     - 1 : 0] o_lsu_pc,
+
+    input  logic                           i_e2l_ctr_reg_wr_en,
+    input  logic [`ARGS_WIDTH     - 1 : 0] i_e2l_ctr_reg_wr_src,
+    input  logic [`GPRS_WIDTH     - 1 : 0] i_e2l_gpr_wr_id,
+    output logic                           o_lsu_ctr_reg_wr_en,
+    output logic [`ARGS_WIDTH     - 1 : 0] o_lsu_ctr_reg_wr_src,
+    output logic [`GPRS_WIDTH     - 1 : 0] o_lsu_gpr_wr_id,
+
+    input  logic [`ARGS_WIDTH     - 1 : 0] i_e2l_ctr_ram_byt,
+    input  logic [`DATA_WIDTH     - 1 : 0] i_e2l_res,
+    output logic [`DATA_WIDTH     - 1 : 0] o_lsu_alu_res,
 
     input  logic [`DATA_WIDTH     - 1 : 0] i_ram_rd_data,
     output logic                           o_lsu_ram_rd_en,
     output logic [`ADDR_WIDTH     - 1 : 0] o_lsu_ram_rd_addr,
     output logic [`DATA_WIDTH     - 1 : 0] o_lsu_gpr_wr_data,
+    output logic [`DATA_ZERO      - 1 : 0] o_lsu_ram_res,
 
-    input  logic                           i_idu_ctr_ram_wr_en,
-    input  logic [`DATA_WIDTH     - 1 : 0] i_gpr_rs2_data,
+    input  logic                           i_e2l_ctr_ram_wr_en,
+    input  logic [`DATA_WIDTH     - 1 : 0] i_e2l_rs2_data,
     output logic                           o_lsu_ram_wr_en,
     output logic [`ADDR_WIDTH     - 1 : 0] o_lsu_ram_wr_addr,
     output logic [`DATA_WIDTH     - 1 : 0] o_lsu_ram_wr_data,
 
-    input  logic [`ARGS_WIDTH     - 1 : 0] i_idu_ctr_inst_type,
+    input  logic [`ARGS_WIDTH     - 1 : 0] i_e2l_ctr_inst_type,
     output logic                           o_lsu_pc_en
 );
 
-    assign o_sys_valid = 1'b1;
+    assign o_lsu_ready = 1'b1;
+    assign o_lsu_valid = 1'b1;
+
+    assign o_lsu_pc = (i_e2l_valid && o_lsu_ready) ? i_e2l_pc : `ADDR_ZERO;
+
+    assign o_lsu_ctr_reg_wr_en  = (i_e2l_valid && o_lsu_ready) ? i_e2l_ctr_reg_wr_en  : 1'b0;
+    assign o_lsu_ctr_reg_wr_src = (i_e2l_valid && o_lsu_ready) ? i_e2l_ctr_reg_wr_src : `REG_WR_SRC_X;
+    assign o_lsu_gpr_wr_id      = (i_e2l_valid && o_lsu_ready) ? i_e2l_gpr_wr_id      : `GPRS_ZERO;
+
+    assign o_lsu_alu_res = (i_e2l_valid && o_lsu_ready) ? i_exu_res     : `DATA_ZERO;
+    assign o_lsu_ram_res = (i_e2l_valid && o_lsu_ready) ? i_ram_rd_data : `DATA_ZERO;
 
     logic [`BYTE_WIDTH * 1 - 1 : 0] w_ram_rd_byt_1_0;
     logic [`BYTE_WIDTH * 1 - 1 : 0] w_ram_rd_byt_1_1;
@@ -38,11 +62,11 @@ module lsu(
     assign w_ram_rd_byt_2_2 = i_ram_rd_data[31 : 16];
     assign w_ram_rd_byt_4_0 = i_ram_rd_data[31 :  0];
 
-    assign o_lsu_ram_rd_en   = (o_sys_valid && i_sys_ready) ? 1'b1              :  1'b0;
-    assign o_lsu_ram_rd_addr = (o_sys_valid && i_sys_ready) ? i_exu_res[31 : 0] : 32'h0;
+    assign o_lsu_ram_rd_en   = (i_e2l_valid && o_lsu_ready) ? 1'b1              :  1'b0;
+    assign o_lsu_ram_rd_addr = (i_e2l_valid && o_lsu_ready) ? i_e2l_res[31 : 0] : 32'h0;
     always_comb begin
-        if (o_sys_valid && i_sys_ready) begin
-            case (i_idu_ctr_ram_byt)
+        if (i_e2l_valid && o_lsu_ready) begin
+            case (i_e2l_ctr_ram_byt)
                 `RAM_BYT_1_S: begin
                     case (o_lsu_ram_rd_addr[1 : 0])
                         2'b00:   o_lsu_gpr_wr_data = `SIGN_EXTEND(w_ram_rd_byt_1_0, `DATA_WIDTH);
@@ -89,15 +113,15 @@ module lsu(
     logic [`BYTE_WIDTH * 2 - 1 : 0] w_ram_wr_byt_2;
     logic [`BYTE_WIDTH * 4 - 1 : 0] w_ram_wr_byt_4;
 
-    assign w_ram_wr_byt_1 = i_gpr_rs2_data[ 7 : 0];
-    assign w_ram_wr_byt_2 = i_gpr_rs2_data[15 : 0];
-    assign w_ram_wr_byt_4 = i_gpr_rs2_data[31 : 0];
+    assign w_ram_wr_byt_1 = i_e2l_rs2_data[ 7 : 0];
+    assign w_ram_wr_byt_2 = i_e2l_rs2_data[15 : 0];
+    assign w_ram_wr_byt_4 = i_e2l_rs2_data[31 : 0];
 
-    assign o_lsu_ram_wr_en   = (o_sys_valid && i_sys_ready) ? i_idu_ctr_ram_wr_en :  1'b0;
-    assign o_lsu_ram_wr_addr = (o_sys_valid && i_sys_ready) ? i_exu_res[31 : 0]   : 32'h0;
+    assign o_lsu_ram_wr_en   = (i_e2l_valid && o_lsu_ready) ? i_e2l_ctr_ram_wr_en :  1'b0;
+    assign o_lsu_ram_wr_addr = (i_e2l_valid && o_lsu_ready) ? i_e2l_res[31 : 0]   : 32'h0;
     always_comb begin
-        if (o_sys_valid && i_sys_ready) begin
-            case (i_idu_ctr_ram_byt)
+        if (i_e2l_valid && o_lsu_ready) begin
+            case (i_e2l_ctr_ram_byt)
                 `RAM_BYT_1_U: begin
                     case (o_lsu_ram_wr_addr[1 : 0])
                         2'b00:   o_lsu_ram_wr_data = {i_ram_rd_data[31 :  8], w_ram_wr_byt_1};
@@ -123,6 +147,18 @@ module lsu(
         end
     end
 
-    assign o_lsu_pc_en = (i_idu_ctr_inst_type == `INST_TYPE_STOR) ? 1'b1 : 1'b0;
+    always_comb begin
+        if (i_e2l_valid && o_lsu_ready) begin
+            if (i_e2l_ctr_inst_type == `INST_TYPE_STOR) begin
+                o_lsu_pc_en = 1'b1;
+            end
+            else begin
+                o_lsu_pc_en = 1'b0;
+            end
+        end
+        else begin
+            o_lsu_pc_en = 1'b0;
+        end
+    end
 
 endmodule

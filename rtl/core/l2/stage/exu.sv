@@ -7,10 +7,16 @@ module exu(
     input  logic [`ADDR_WIDTH - 1 : 0] i_i2e_pc,
     output logic [`ADDR_WIDTH - 1 : 0] o_exu_pc;
 
+    input  logic                       i_i2e_ctr_reg_wr_en,
+    input  logic [`ARGS_WIDTH - 1 : 0] i_i2e_ctr_reg_wr_src,
+    input  logic [`GPRS_WIDTH - 1 : 0] i_i2e_gpr_rd_id,
+    output logic                       o_exu_ctr_reg_wr_en,
+    output logic [`ARGS_WIDTH - 1 : 0] o_exu_ctr_reg_wr_src,
+    output logic [`GPRS_WIDTH - 1 : 0] o_exu_gpr_rd_id,
+
     input  logic [`ARGS_WIDTH - 1 : 0] i_i2e_ctr_inst_type,
     input  logic [`ARGS_WIDTH - 1 : 0] i_i2e_ctr_ram_byt,
     input  logic                       i_i2e_ctr_ram_wr_en,
-    output logic [`ARGS_WIDTH - 1 : 0] o_exu_ctr_inst_type,
     output logic [`ARGS_WIDTH - 1 : 0] o_exu_ctr_ram_byt,
     output logic [`ARGS_WIDTH - 1 : 0] o_exu_ctr_ram_wr_en,
 
@@ -25,7 +31,6 @@ module exu(
     output logic                       o_exu_jmp_en,
     output logic [`ADDR_WIDTH - 1 : 0] o_exu_jmp_pc,
 
-    input  logic [`ARGS_WIDTH - 1 : 0] i_i2e_ctr_inst_type,
     output logic                       o_exu_pc_en
 );
 
@@ -33,6 +38,10 @@ module exu(
     assign o_exu_valid = 1'b1;
 
     assign o_exu_pc = (i_i2e_valid && o_exu_ready) ? i_i2e_pc : `ADDR_ZERO;
+
+    assign o_exu_ctr_reg_wr_en  = (i_i2e_valid && o_exu_ready) ? i_i2e_ctr_reg_wr_en  : 1'b0;
+    assign o_exu_ctr_reg_wr_src = (i_i2e_valid && o_exu_ready) ? i_i2e_ctr_reg_wr_src : `REG_WR_SRC_X;
+    assign o_exu_gpr_rd_id      = (i_i2e_valid && o_exu_ready) ? i_i2e_gpr_rd_id      : `GPRS_ZERO;
 
     assign o_exu_ctr_inst_type = (i_i2e_valid && o_exu_ready) ? i_i2e_ctr_inst_type : `INST_TYPE_X;
     assign o_exu_ctr_ram_byt   = (i_i2e_valid && o_exu_ready) ? i_i2e_ctr_ram_byt   : `RAM_BYT_X;
