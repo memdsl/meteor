@@ -130,7 +130,7 @@ module idu2exu(
 
     always_ff @(posedge i_sys_clk) begin
         if (!i_sys_rst_n) begin
-            r_i2e_gpr_rd_id <= `DATA_ZERO;
+            r_i2e_gpr_rd_id <= `GPRS_ZERO;
         end
         else if (i_idu_valid && o_i2e_ready) begin
             r_i2e_gpr_rd_id <= i_idu_gpr_rd_id;

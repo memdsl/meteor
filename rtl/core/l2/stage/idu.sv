@@ -43,15 +43,15 @@ module idu(
     logic [`GPRS_WIDTH - 1 : 0] w_inst_rd_id;
     logic [`DATA_WIDTH - 1 : 0] w_inst_imm;
 
-    assign w_inst_opcode = i_ram_inst[ 6 :  0];
-    assign w_inst_funct3 = i_ram_inst[14 : 12];
-    assign w_inst_funct7 = i_ram_inst[31 : 25];
-    assign w_inst_rs1_id = i_ram_inst[19 : 15];
-    assign w_inst_rs2_id = i_ram_inst[24 : 20];
-    assign w_inst_rd_id  = i_ram_inst[11 :  7];
+    assign w_inst_opcode = i_rom_inst[ 6 :  0];
+    assign w_inst_funct3 = i_rom_inst[14 : 12];
+    assign w_inst_funct7 = i_rom_inst[31 : 25];
+    assign w_inst_rs1_id = i_rom_inst[19 : 15];
+    assign w_inst_rs2_id = i_rom_inst[24 : 20];
+    assign w_inst_rd_id  = i_rom_inst[11 :  7];
 
     imm u_imm(
-        .i_imm_inst  (i_ram_inst   ),
+        .i_imm_inst  (i_rom_inst   ),
         .i_imm_opcode(w_inst_opcode),
         .o_imm_data  (w_inst_imm   )
     );
@@ -182,7 +182,7 @@ module idu(
                         w_ctr_ram_byt   = `RAM_BYT_1_U;
                     end
                     3'b101: begin
-                        w_ctr_inst_name = `INST_NAME_LHU
+                        w_ctr_inst_name = `INST_NAME_LHU;
                         w_ctr_ram_byt   = `RAM_BYT_2_U;
                     end
                     default: begin
@@ -234,7 +234,7 @@ module idu(
                     3'b000: begin
                         w_ctr_inst_name = `INST_NAME_ADDI;
                         w_ctr_alu_type  = `ALU_TYPE_ADD;
-                    end;
+                    end
                     3'b010: begin
                         w_ctr_inst_name = `INST_NAME_SLTI;
                         w_ctr_alu_type  = `ALU_TYPE_SLT;
@@ -410,7 +410,7 @@ module idu(
 
     always_comb begin
         if (i_i2i_valid && o_idu_ready) begin
-            if (w_inst_opcode == 7'b1110011 && i_ram_inst[31 : 20] == 12'h0001) begin
+            if (w_inst_opcode == 7'b1110011 && i_rom_inst[31 : 20] == 12'h0001) begin
                 o_idu_end_flag = 1'b1;
             end
             else begin

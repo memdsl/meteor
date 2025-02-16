@@ -12,13 +12,13 @@ module lsu2wbu(
     input  logic [`ADDR_WIDTH - 1 : 0] i_lsu_pc,
     input  logic [`DATA_WIDTH - 1 : 0] i_lsu_alu_res,
     input  logic [`DATA_WIDTH - 1 : 0] i_lsu_ram_res,
-    input  logic [`lsuS_WIDTH - 1 : 0] i_lsu_gpr_wr_id,
+    input  logic [`GPRS_WIDTH - 1 : 0] i_lsu_gpr_wr_id,
     output logic                       o_l2w_ctr_reg_wr_en,
     output logic [`ARGS_WIDTH - 1 : 0] o_l2w_ctr_reg_wr_src,
     output logic [`ADDR_WIDTH - 1 : 0] o_l2w_pc,
     output logic [`DATA_WIDTH - 1 : 0] o_l2w_alu_res,
     output logic [`DATA_WIDTH - 1 : 0] o_l2w_ram_res,
-    output logic [`lsuS_WIDTH - 1 : 0] o_l2w_gpr_wr_id
+    output logic [`GPRS_WIDTH - 1 : 0] o_l2w_gpr_wr_id
 );
 
     assign o_l2w_ready = 1'b1;
@@ -29,7 +29,7 @@ module lsu2wbu(
     logic [`ADDR_WIDTH - 1 : 0] r_l2w_pc;
     logic [`DATA_WIDTH - 1 : 0] r_l2w_alu_res;
     logic [`DATA_WIDTH - 1 : 0] r_l2w_ram_res;
-    logic [`lsuS_WIDTH - 1 : 0] r_l2w_gpr_wr_id;
+    logic [`GPRS_WIDTH - 1 : 0] r_l2w_gpr_wr_id;
 
     always_ff @(posedge i_sys_clk) begin
         if (!i_sys_rst_n) begin
@@ -38,7 +38,7 @@ module lsu2wbu(
             r_l2w_pc             <= `ADDR_INIT;
             r_l2w_alu_res        <= `DATA_ZERO;
             r_l2w_ram_res        <= `DATA_ZERO;
-            r_l2w_gpr_wr_id      <= `lsuS_ZERO;
+            r_l2w_gpr_wr_id      <= `GPRS_ZERO;
         end
         else if (i_lsu_valid && o_l2w_ready) begin
             r_l2w_ctr_reg_wr_en  <= i_lsu_ctr_reg_wr_en;

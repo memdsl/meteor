@@ -34,9 +34,9 @@ module exu2lsu(
     assign o_e2l_valid = 1'b1;
 
     logic [`ADDR_WIDTH - 1 : 0] r_e2l_pc;
-    logic                       r_e2l_ctr_reg_wr_en,
-    logic [`ARGS_WIDTH - 1 : 0] r_e2l_ctr_reg_wr_src,
-    logic [`GPRS_WIDTH - 1 : 0] r_e2l_gpr_rd_id,
+    logic                       r_e2l_ctr_reg_wr_en;
+    logic [`ARGS_WIDTH - 1 : 0] r_e2l_ctr_reg_wr_src;
+    logic [`GPRS_WIDTH - 1 : 0] r_e2l_gpr_rd_id;
     logic [`ARGS_WIDTH - 1 : 0] r_e2l_ctr_inst_type;
     logic [`ARGS_WIDTH - 1 : 0] r_e2l_ctr_ram_byt;
     logic                       r_e2l_ctr_ram_wr_en;
@@ -114,7 +114,6 @@ module exu2lsu(
     assign o_e2l_ctr_ram_byt    = r_e2l_ctr_ram_byt;
     assign o_e2l_ctr_ram_wr_en  = r_e2l_ctr_ram_wr_en;
     assign o_e2l_res            = r_e2l_res;
-    assign o_ram_rd_data        = r_ram_rd_data;
     assign o_e2l_rs2_data       = r_e2l_rs2_data;
 
 endmodule

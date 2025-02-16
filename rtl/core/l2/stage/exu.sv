@@ -5,7 +5,7 @@ module exu(
     output logic                       o_exu_valid,
 
     input  logic [`ADDR_WIDTH - 1 : 0] i_i2e_pc,
-    output logic [`ADDR_WIDTH - 1 : 0] o_exu_pc;
+    output logic [`ADDR_WIDTH - 1 : 0] o_exu_pc,
 
     input  logic                       i_i2e_ctr_reg_wr_en,
     input  logic [`ARGS_WIDTH - 1 : 0] i_i2e_ctr_reg_wr_src,
@@ -17,8 +17,9 @@ module exu(
     input  logic [`ARGS_WIDTH - 1 : 0] i_i2e_ctr_inst_type,
     input  logic [`ARGS_WIDTH - 1 : 0] i_i2e_ctr_ram_byt,
     input  logic                       i_i2e_ctr_ram_wr_en,
+    output logic [`ARGS_WIDTH - 1 : 0] o_exu_ctr_inst_type,
     output logic [`ARGS_WIDTH - 1 : 0] o_exu_ctr_ram_byt,
-    output logic [`ARGS_WIDTH - 1 : 0] o_exu_ctr_ram_wr_en,
+    output logic                       o_exu_ctr_ram_wr_en,
 
     input  logic [`ARGS_WIDTH - 1 : 0] i_i2e_ctr_alu_type,
     input  logic [`DATA_WIDTH - 1 : 0] i_i2e_rs1_data,

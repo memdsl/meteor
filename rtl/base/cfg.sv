@@ -6,9 +6,9 @@
 `define BYTE_WIDTH  8
 
 `define ADDR_INIT 32'h0000_0000
-`define ADDR_ZERO `ADDR_WIDTH{1'b0}
-`define DATA_ZERO `DATA_WIDTH{1'b0}
-`define GPRS_ZERO `GPRS_WIDTH{1'b0}
+`define ADDR_ZERO {`ADDR_WIDTH{1'b0}}
+`define DATA_ZERO {`DATA_WIDTH{1'b0}}
+`define GPRS_ZERO {`GPRS_WIDTH{1'b0}}
 
 // 32bit: 4KB
 `define ROM_BITS 10
@@ -74,7 +74,7 @@
 `define INST_NAME_BLT     7
 `define INST_NAME_BGE     8
 `define INST_NAME_BLTU    9
-`define INST_NAME_BEGU   10
+`define INST_NAME_BGEU   10
 `define INST_NAME_LB     11
 `define INST_NAME_LH     12
 `define INST_NAME_LW     13

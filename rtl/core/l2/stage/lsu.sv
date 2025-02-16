@@ -22,7 +22,7 @@ module lsu(
     output logic                           o_lsu_ram_rd_en,
     output logic [`ADDR_WIDTH     - 1 : 0] o_lsu_ram_rd_addr,
     output logic [`DATA_WIDTH     - 1 : 0] o_lsu_gpr_wr_data,
-    output logic [`DATA_ZERO      - 1 : 0] o_lsu_ram_res,
+    output logic [`DATA_WIDTH     - 1 : 0] o_lsu_ram_res,
 
     input  logic                           i_e2l_ctr_ram_wr_en,
     input  logic [`DATA_WIDTH     - 1 : 0] i_e2l_rs2_data,
@@ -43,7 +43,7 @@ module lsu(
     assign o_lsu_ctr_reg_wr_src = (i_e2l_valid && o_lsu_ready) ? i_e2l_ctr_reg_wr_src : `REG_WR_SRC_X;
     assign o_lsu_gpr_wr_id      = (i_e2l_valid && o_lsu_ready) ? i_e2l_gpr_wr_id      : `GPRS_ZERO;
 
-    assign o_lsu_alu_res = (i_e2l_valid && o_lsu_ready) ? i_exu_res     : `DATA_ZERO;
+    assign o_lsu_alu_res = (i_e2l_valid && o_lsu_ready) ? i_e2l_res     : `DATA_ZERO;
     assign o_lsu_ram_res = (i_e2l_valid && o_lsu_ready) ? i_ram_rd_data : `DATA_ZERO;
 
     logic [`BYTE_WIDTH * 1 - 1 : 0] w_ram_rd_byt_1_0;
