@@ -394,10 +394,32 @@ module idu(
         end
     end
 
-    assign o_idu_jmp_or_reg_data = (i_i2i_valid && o_idu_ready) ?
-                                  ((w_ctr_jmp_type === `JMP_B ) ? w_inst_imm      :
-                                                                  i_gpr_rs2_data) : `DATA_ZERO;
-    assign o_idu_end_flag  = (w_inst_opcode == 7'b1110011 &&
-                              i_ram_inst[31 : 20] == 12'h0001) ? 1'b1 : 1'b0;
+    always_comb begin
+        if (i_i2i_valid && o_idu_ready) begin
+            if (w_ctr_jmp_type === `JMP_B ) begin
+                o_idu_jmp_or_reg_data = w_inst_imm;
+            end
+            else begin
+                o_idu_jmp_or_reg_data = i_gpr_rs2_data;
+            end
+        end
+        else begin
+            o_idu_jmp_or_reg_data = `DATA_ZERO;
+        end
+    end
+
+    always_comb begin
+        if (i_i2i_valid && o_idu_ready) begin
+            if (w_inst_opcode == 7'b1110011 && i_ram_inst[31 : 20] == 12'h0001) begin
+                o_idu_end_flag = 1'b1;
+            end
+            else begin
+                o_idu_end_flag = 1'b0;
+            end
+        end
+        else begin
+            o_idu_end_flag = 1'b0;
+        end
+    end
 
 endmodule

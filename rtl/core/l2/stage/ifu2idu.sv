@@ -14,20 +14,20 @@ module ifu2idu(
     assign o_i2i_ready = 1'b1;
     assign o_i2i_valid = 1'b1;
 
-    logic [`ADDR_WIDTH - 1 : 0] r_ifu_pc;
+    logic [`ADDR_WIDTH - 1 : 0] r_i2i_pc;
 
     always_ff @(i_sys_clk) begin
         if (!i_sys_rst_n) begin
-            r_ifu_pc <= `ADDR_ZERO;
+            r_i2i_pc <= `ADDR_ZERO;
         end
         else if (i_ifu_valid && o_i2i_ready) begin
-            r_ifu_pc <= i_ifu_pc;
+            r_i2i_pc <= i_ifu_pc;
         end
         else begin
-            r_ifu_pc <= r_ifu_pc;
+            r_i2i_pc <= r_i2i_pc;
         end
     end
 
-    assign o_i2i_pc = r_ifu_pc;
+    assign o_i2i_pc = r_i2i_pc;
 
 endmodule

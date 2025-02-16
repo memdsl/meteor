@@ -21,19 +21,7 @@ module cpu(
 
 
 
-    // IDU
-
-
-    // EXU
-    logic [`DATA_WIDTH - 1 : 0] w_exu_res;
-
     // LSU
-    logic                           w_lsu_ram_rd_en;
-    logic [`ADDR_WIDTH     - 1 : 0] w_lsu_ram_rd_addr;
-    logic [`DATA_WIDTH     - 1 : 0] w_lsu_gpr_wr_data;
-    logic                           w_lsu_ram_wr_en;
-    logic [`ADDR_WIDTH     - 1 : 0] w_lsu_ram_wr_addr;
-    logic [`DATA_WIDTH     - 1 : 0] w_lsu_ram_wr_data;
 
     // WBU
     logic [`GPRS_WIDTH - 1 : 0] w_gpr_wr_id;
@@ -71,10 +59,30 @@ module cpu(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // GPR
     logic [`DATA_WIDTH - 1 : 0] w_gpr_rs1_data;
     logic [`DATA_WIDTH - 1 : 0] w_gpr_rs2_data;
     logic [`DATA_WIDTH - 1 : 0] w_gpr_end_data;
+
+
+
+
+
 
 
 
@@ -128,15 +136,40 @@ module cpu(
     logic [`DATA_WIDTH - 1 : 0] w_i2e_jmp_or_reg_data;
 
     // EXU
-    logic w_exu_valid;
-    logic w_exu_ready;
-
-
+    logic                       w_exu_valid;
+    logic                       w_exu_ready;
+    logic [`ADDR_WIDTH - 1 : 0] w_exu_pc;
+    logic [`ARGS_WIDTH - 1 : 0] w_exu_ctr_inst_type;
+    logic [`ARGS_WIDTH - 1 : 0] w_exu_ctr_ram_byt;
+    logic                       w_exu_ctr_ram_wr_en;
+    logic [`DATA_WIDTH - 1 : 0] w_exu_res;
+    logic [`DATA_WIDTH - 1 : 0] w_exu_rs2_data;
     logic                       w_exu_jmp_en;
     logic [`ADDR_WIDTH - 1 : 0] w_exu_jmp_pc;
     logic                       w_exu_pc_en;
 
+    // EXU2LSU
+    logic                       w_e2l_valid;
+    logic                       w_e2l_ready;
+    logic [`ADDR_WIDTH - 1 : 0] w_e2l_pc;
+    logic [`ARGS_WIDTH - 1 : 0] w_e2l_ctr_inst_type;
+    logic [`ARGS_WIDTH - 1 : 0] w_e2l_ctr_ram_byt;
+    logic [`ARGS_WIDTH - 1 : 0] w_e2l_ctr_ram_wr_en;
+    logic [`DATA_WIDTH - 1 : 0] w_e2l_res;
+    logic [`DATA_WIDTH - 1 : 0] w_e2l_rs2_data;
+
     // LSU
+    logic w_lsu_valid;
+    logic w_lsu_ready;
+
+    logic                           w_lsu_ram_rd_en;
+    logic [`ADDR_WIDTH     - 1 : 0] w_lsu_ram_rd_addr;
+    logic [`DATA_WIDTH     - 1 : 0] w_lsu_gpr_wr_data;
+    logic                           w_lsu_ram_wr_en;
+    logic [`ADDR_WIDTH     - 1 : 0] w_lsu_ram_wr_addr;
+    logic [`DATA_WIDTH     - 1 : 0] w_lsu_ram_wr_data;
+
+
     logic w_lsu_pc_en;
 
     // WBU
@@ -195,59 +228,100 @@ module cpu(
     );
 
     idu2exu u_idu2exu(
-        .i_sys_clk            (i_sys_clk),
-        .i_sys_rst_n          (i_sys_rst_n),
-        .i_idu_valid          (w_idu_valid),
-        .o_i2e_ready          (w_i2e_ready),
-        .i_exu_ready          (w_exu_ready),
-        .o_i2e_valid          (w_i2e_valid),
-        .i_idu_pc             (w_idu_pc),
-        .o_i2e_pc             (w_i2e_pc),
-        .i_idu_ctr_inst_type  (w_idu_ctr_inst_type ),
-        .i_idu_ctr_inst_name  (w_idu_ctr_inst_name ),
-        .i_idu_ctr_alu_type   (w_idu_ctr_alu_type  ),
-        .i_idu_ctr_alu_rs1    (w_idu_ctr_alu_rs1   ),
-        .i_idu_ctr_alu_rs2    (w_idu_ctr_alu_rs2   ),
-        .i_idu_ctr_jmp_type   (w_idu_ctr_jmp_type  ),
-        .i_idu_ctr_ram_wr_en  (w_idu_ctr_ram_wr_en ),
-        .i_idu_ctr_ram_byt    (w_idu_ctr_ram_byt   ),
-        .i_idu_ctr_reg_wr_en  (w_idu_ctr_reg_wr_en ),
-        .i_idu_ctr_reg_wr_src (w_idu_ctr_reg_wr_src),
-        .o_i2e_ctr_inst_type  (w_i2e_ctr_inst_type ),
-        .o_i2e_ctr_inst_name  (w_i2e_ctr_inst_name ),
-        .o_i2e_ctr_alu_type   (w_i2e_ctr_alu_type  ),
-        .o_i2e_ctr_alu_rs1    (w_i2e_ctr_alu_rs1   ),
-        .o_i2e_ctr_alu_rs2    (w_i2e_ctr_alu_rs2   ),
-        .o_i2e_ctr_jmp_type   (w_i2e_ctr_jmp_type  ),
-        .o_i2e_ctr_ram_wr_en  (w_i2e_ctr_ram_wr_en ),
-        .o_i2e_ctr_ram_byt    (w_i2e_ctr_ram_byt   ),
-        .o_i2e_ctr_reg_wr_en  (w_i2e_ctr_reg_wr_en ),
-        .o_i2e_ctr_reg_wr_src (w_i2e_ctr_reg_wr_src),
-        .i_idu_rs1_data       (w_idu_rs1_data),
-        .i_idu_rs2_data       (w_idu_rs2_data),
-        .o_i2e_rs1_data       (w_i2e_rs1_data),
-        .o_i2e_rs2_data       (w_i2e_rs2_data),
+        .i_sys_clk            (i_sys_clk            ),
+        .i_sys_rst_n          (i_sys_rst_n          ),
+        .i_idu_valid          (w_idu_valid          ),
+        .o_i2e_ready          (w_i2e_ready          ),
+        .i_exu_ready          (w_exu_ready          ),
+        .o_i2e_valid          (w_i2e_valid          ),
+        .i_idu_pc             (w_idu_pc             ),
+        .o_i2e_pc             (w_i2e_pc             ),
+        .i_idu_ctr_inst_type  (w_idu_ctr_inst_type  ),
+        .i_idu_ctr_inst_name  (w_idu_ctr_inst_name  ),
+        .i_idu_ctr_alu_type   (w_idu_ctr_alu_type   ),
+        .i_idu_ctr_alu_rs1    (w_idu_ctr_alu_rs1    ),
+        .i_idu_ctr_alu_rs2    (w_idu_ctr_alu_rs2    ),
+        .i_idu_ctr_jmp_type   (w_idu_ctr_jmp_type   ),
+        .i_idu_ctr_ram_wr_en  (w_idu_ctr_ram_wr_en  ),
+        .i_idu_ctr_ram_byt    (w_idu_ctr_ram_byt    ),
+        .i_idu_ctr_reg_wr_en  (w_idu_ctr_reg_wr_en  ),
+        .i_idu_ctr_reg_wr_src (w_idu_ctr_reg_wr_src ),
+        .o_i2e_ctr_inst_type  (w_i2e_ctr_inst_type  ),
+        .o_i2e_ctr_inst_name  (w_i2e_ctr_inst_name  ),
+        .o_i2e_ctr_alu_type   (w_i2e_ctr_alu_type   ),
+        .o_i2e_ctr_alu_rs1    (w_i2e_ctr_alu_rs1    ),
+        .o_i2e_ctr_alu_rs2    (w_i2e_ctr_alu_rs2    ),
+        .o_i2e_ctr_jmp_type   (w_i2e_ctr_jmp_type   ),
+        .o_i2e_ctr_ram_wr_en  (w_i2e_ctr_ram_wr_en  ),
+        .o_i2e_ctr_ram_byt    (w_i2e_ctr_ram_byt    ),
+        .o_i2e_ctr_reg_wr_en  (w_i2e_ctr_reg_wr_en  ),
+        .o_i2e_ctr_reg_wr_src (w_i2e_ctr_reg_wr_src ),
+        .i_idu_rs1_data       (w_idu_rs1_data       ),
+        .i_idu_rs2_data       (w_idu_rs2_data       ),
+        .o_i2e_rs1_data       (w_i2e_rs1_data       ),
+        .o_i2e_rs2_data       (w_i2e_rs2_data       ),
         .i_idu_jmp_or_reg_data(w_idu_jmp_or_reg_data),
         .o_i2e_jmp_or_reg_data(w_i2e_jmp_or_reg_data)
     );
 
     exu u_exu(
-        .i_sys_ready          (1'b1                 ),
-        .o_sys_valid          (                     ),
-        .i_ifu_pc             (w_ifu_pc             ),
-        .i_idu_ctr_alu_type   (w_idu_ctr_alu_type   ),
-        .i_idu_rs1_data       (w_idu_rs1_data       ),
-        .i_idu_rs2_data       (w_idu_rs2_data       ),
+        .i_i2e_valid          (w_i2e_valid          ),
+        .o_exu_ready          (w_exu_ready          ),
+        .i_e2l_ready          (w_e2l_ready          ),
+        .o_exu_valid          (w_exu_valid          ),
+        .i_i2e_pc             (w_i2e_pc             ),
+        .o_exu_pc             (w_exu_pc             ),
+        .i_i2e_ctr_inst_type  (w_i2e_ctr_inst_type  ),
+        .i_i2e_ctr_ram_byt    (w_i2e_ctr_ram_byt    ),
+        .i_i2e_ctr_ram_wr_en  (w_i2e_ctr_ram_wr_en  ),
+        .o_exu_ctr_inst_type  (w_exu_ctr_inst_type  ),
+        .o_exu_ctr_ram_byt    (w_exu_ctr_ram_byt    ),
+        .o_exu_ctr_ram_wr_en  (w_exu_ctr_ram_wr_en  ),
+        .i_i2e_ctr_alu_type   (w_i2e_ctr_alu_type   ),
+        .i_i2e_rs1_data       (w_i2e_rs1_data       ),
+        .i_i2e_rs2_data       (w_i2e_rs2_data       ),
         .o_exu_res            (w_exu_res            ),
-        .i_idu_ctr_jmp_type   (w_idu_ctr_jmp_type   ),
-        .i_idu_jmp_or_reg_data(w_idu_jmp_or_reg_data),
+        .o_exu_rs2_data       (w_exu_rs2_data       ),
+        .i_i2e_ctr_jmp_type   (w_i2e_ctr_jmp_type   ),
+        .i_i2e_jmp_or_reg_data(w_i2e_jmp_or_reg_data),
         .o_exu_jmp_en         (w_exu_jmp_en         ),
-        .o_exu_jmp_pc         (w_exu_jmp_pc         )
+        .o_exu_jmp_pc         (w_exu_jmp_pc         ),
+        .i_i2e_ctr_inst_type  (w_i2e_ctr_inst_type  ),
+        .o_exu_pc_en          (w_exu_pc_en          )
     );
 
     exu2lsu u_exu2lsu(
-
+        .i_sys_clk          (i_sys_clk          ),
+        .i_sys_rst_n        (i_sys_rst_n        ),
+        .i_exu_valid        (w_exu_valid        ),
+        .o_e2l_ready        (w_e2l_ready        ),
+        .i_lsu_ready        (w_lsu_ready        ),
+        .o_e2l_valid        (w_e2l_valid        ),
+        .i_exu_pc           (w_exu_pc           ),
+        .o_e2l_pc           (w_e2l_pc           ),
+        .i_exu_ctr_inst_type(w_exu_ctr_inst_type),
+        .i_exu_ctr_ram_byt  (w_exu_ctr_ram_byt  ),
+        .i_exu_ctr_ram_wr_en(w_exu_ctr_ram_wr_en),
+        .o_e2l_ctr_inst_type(w_e2l_ctr_inst_type)
+        .o_e2l_ctr_ram_byt  (w_e2l_ctr_ram_byt  ),
+        .o_e2l_ctr_ram_wr_en(w_el2_ctr_ram_wr_en),
+        .i_exu_res          (w_exu_res          ),
+        .i_exu_rs2_data     (w_exu_rs2_data     ),
+        .o_e2l_res          (w_e2l_res          ),
+        .o_e2l_rs2_data     (w_el2_rs2_data     ),
     );
+
+
+
+
+
+
+
+
+
+
+
+
 
     lsu u_lsu(
         .i_sys_ready        (1'b1               ),
