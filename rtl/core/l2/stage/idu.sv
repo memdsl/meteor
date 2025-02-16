@@ -1,8 +1,10 @@
 module idu(
-    input  logic                       i_sys_ready,
-    output logic                       o_sys_valid,
+    input  logic                       i_i2i_valid,
+    output logic                       o_idu_ready,
+    input  logic                       i_i2e_ready,
+    output logic                       o_idu_valid,
 
-    input  logic [`INST_WIDTH - 1 : 0] i_ram_inst,
+    input  logic [`INST_WIDTH - 1 : 0] i_rom_inst,
 
     output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_inst_type,
     output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_inst_name,
@@ -21,7 +23,8 @@ module idu(
     output logic [`GPRS_WIDTH - 1 : 0] o_idu_gpr_rs2_id,
     output logic [`GPRS_WIDTH - 1 : 0] o_idu_gpr_rd_id,
 
-    input  logic [`ADDR_WIDTH - 1 : 0] i_ifu_pc,
+    input  logic [`ADDR_WIDTH - 1 : 0] i_i2i_pc,
+    output logic [`ADDR_WIDTH - 1 : 0] o_idu_pc,
     output logic [`DATA_WIDTH - 1 : 0] o_idu_rs1_data,
     output logic [`DATA_WIDTH - 1 : 0] o_idu_rs2_data,
 
@@ -29,7 +32,8 @@ module idu(
     output logic                       o_idu_end_flag
 );
 
-    assign o_sys_valid = 1'b1;
+    assign o_idu_ready = 1'b1;
+    assign o_idu_valid = 1'b1;
 
     logic [              6 : 0] w_inst_opcode;
     logic [              2 : 0] w_inst_funct3;
@@ -355,25 +359,26 @@ module idu(
         endcase
     end
 
-    assign o_idu_ctr_inst_type  = (o_sys_valid && i_sys_ready) ? w_ctr_inst_type  : `INST_TYPE_X;
-    assign o_idu_ctr_inst_name  = (o_sys_valid && i_sys_ready) ? w_ctr_inst_name  : `INST_NAME_X;
-    assign o_idu_ctr_alu_type   = (o_sys_valid && i_sys_ready) ? w_ctr_alu_type   : `ALU_TYPE_X;
-    assign o_idu_ctr_alu_rs1    = (o_sys_valid && i_sys_ready) ? w_ctr_alu_rs1    : `ALU_RS1_X;
-    assign o_idu_ctr_alu_rs2    = (o_sys_valid && i_sys_ready) ? w_ctr_alu_rs2    : `ALU_RS2_X;
-    assign o_idu_ctr_jmp_type   = (o_sys_valid && i_sys_ready) ? w_ctr_jmp_type   : `JMP_X;
-    assign o_idu_ctr_ram_wr_en  = (o_sys_valid && i_sys_ready) ? w_ctr_ram_wr_en  : 1'b0;
-    assign o_idu_ctr_ram_byt    = (o_sys_valid && i_sys_ready) ? w_ctr_ram_byt    : `RAM_BYT_X;
-    assign o_idu_ctr_reg_wr_en  = (o_sys_valid && i_sys_ready) ? w_ctr_reg_wr_en  : 1'b0;
-    assign o_idu_ctr_reg_wr_src = (o_sys_valid && i_sys_ready) ? w_ctr_reg_wr_src : `REG_WR_SRC_X;
+    assign o_idu_ctr_inst_type  = (i_i2i_valid && o_idu_ready) ? w_ctr_inst_type  : `INST_TYPE_X;
+    assign o_idu_ctr_inst_name  = (i_i2i_valid && o_idu_ready) ? w_ctr_inst_name  : `INST_NAME_X;
+    assign o_idu_ctr_alu_type   = (i_i2i_valid && o_idu_ready) ? w_ctr_alu_type   : `ALU_TYPE_X;
+    assign o_idu_ctr_alu_rs1    = (i_i2i_valid && o_idu_ready) ? w_ctr_alu_rs1    : `ALU_RS1_X;
+    assign o_idu_ctr_alu_rs2    = (i_i2i_valid && o_idu_ready) ? w_ctr_alu_rs2    : `ALU_RS2_X;
+    assign o_idu_ctr_jmp_type   = (i_i2i_valid && o_idu_ready) ? w_ctr_jmp_type   : `JMP_X;
+    assign o_idu_ctr_ram_wr_en  = (i_i2i_valid && o_idu_ready) ? w_ctr_ram_wr_en  : 1'b0;
+    assign o_idu_ctr_ram_byt    = (i_i2i_valid && o_idu_ready) ? w_ctr_ram_byt    : `RAM_BYT_X;
+    assign o_idu_ctr_reg_wr_en  = (i_i2i_valid && o_idu_ready) ? w_ctr_reg_wr_en  : 1'b0;
+    assign o_idu_ctr_reg_wr_src = (i_i2i_valid && o_idu_ready) ? w_ctr_reg_wr_src : `REG_WR_SRC_X;
 
-    assign o_idu_gpr_rs1_id = (o_sys_valid && i_sys_ready) ? w_inst_rs1_id : 5'h0;
-    assign o_idu_gpr_rs2_id = (o_sys_valid && i_sys_ready) ? w_inst_rs2_id : 5'h0;
-    assign o_idu_gpr_rd_id  = (o_sys_valid && i_sys_ready) ? w_inst_rd_id  : 5'h0;
+    assign o_idu_gpr_rs1_id = (i_i2i_valid && o_idu_ready) ? w_inst_rs1_id : 5'h0;
+    assign o_idu_gpr_rs2_id = (i_i2i_valid && o_idu_ready) ? w_inst_rs2_id : 5'h0;
+    assign o_idu_gpr_rd_id  = (i_i2i_valid && o_idu_ready) ? w_inst_rd_id  : 5'h0;
 
+    assign o_idu_pc = (i_i2i_valid && o_idu_ready) ? i_i2i_pc : `ADDR_ZERO;
     always_comb begin
-        if (o_sys_valid && i_sys_ready) begin
+        if (i_i2i_valid && o_idu_ready) begin
             o_idu_rs1_data = (w_ctr_alu_rs1 === `ALU_RS1_GPR) ? i_gpr_rs1_data :
-                             (w_ctr_alu_rs1 === `ALU_RS1_PC ) ? i_ifu_pc       :
+                             (w_ctr_alu_rs1 === `ALU_RS1_PC ) ? i_i2i_pc       :
                                                                `DATA_ZERO;
             o_idu_rs2_data = (w_ctr_alu_rs2 === `ALU_RS2_GPR  ) ? i_gpr_rs2_data :
                              (w_ctr_alu_rs2 === `ALU_RS2_IMM_I) ? w_inst_imm     :
@@ -389,7 +394,7 @@ module idu(
         end
     end
 
-    assign o_idu_jmp_or_reg_data = (o_sys_valid && i_sys_ready) ?
+    assign o_idu_jmp_or_reg_data = (i_i2i_valid && o_idu_ready) ?
                                   ((w_ctr_jmp_type === `JMP_B ) ? w_inst_imm      :
                                                                   i_gpr_rs2_data) : `DATA_ZERO;
     assign o_idu_end_flag  = (w_inst_opcode == 7'b1110011 &&

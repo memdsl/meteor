@@ -6,6 +6,7 @@
 `define BYTE_WIDTH  8
 
 `define ADDR_INIT 32'h0000_0000
+`define ADDR_ZERO `ADDR_WIDTH{1'b0}
 `define DATA_ZERO `DATA_WIDTH{1'b0}
 `define GPRS_ZERO `GPRS_WIDTH{1'b0}
 
