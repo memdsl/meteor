@@ -21,7 +21,7 @@ module wbu(
     assign o_wbu_valid = 1'b1;
 
     assign o_wbu_gpr_wr_en   = (i_l2w_valid && o_wbu_ready) ? i_l2w_ctr_reg_wr_en : 1'b0;
-    assign o_wbu_gpr_wr_id   = (i_l2w_valid && o_wbu_ready) ? i_l2w_gpr_wr_id         : 5'h0;
+    assign o_wbu_gpr_wr_id   = (i_l2w_valid && o_wbu_ready) ? i_l2w_gpr_wr_id     : 5'h0;
     assign o_wbu_gpr_wr_data = (i_l2w_valid && o_wbu_ready) ?
                               ((i_l2w_ctr_reg_wr_src === `REG_WR_SRC_ALU) ? i_l2w_alu_res     :
                                (i_l2w_ctr_reg_wr_src === `REG_WR_SRC_MEM) ? i_l2w_ram_res     :

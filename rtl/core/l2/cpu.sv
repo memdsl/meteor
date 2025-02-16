@@ -167,8 +167,9 @@ module cpu(
     ifu u_ifu(
         .i_sys_clk    (i_sys_clk                              ),
         .i_sys_rst_n  (i_sys_rst_n                            ),
+        .i_sys_pc_en  (w_exu_pc_en | w_lsu_pc_en),
         .i_wbu_valid  (w_wbu_valid                            ),
-        .o_ifu_ready  (w_exu_pc_en | w_lsu_pc_en | w_wbu_pc_en),
+        .o_ifu_ready  (w_ifu_ready                            ),
         .i_i2i_ready  (w_i2i_ready                            ),
         .o_ifu_valid  (w_ifu_valid                            ),
         .i_exu_jmp_en (w_exu_jmp_en                           ),

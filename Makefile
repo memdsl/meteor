@@ -95,7 +95,7 @@ $(BUILD_BIN): $(BUILD_MK)
 
 run: $(BUILD_BIN)
 	$(BUILD_BIN)
-sim: run
+sim:
 	gtkwave $(BUILD_VCD) $(GTKW)
 clean:
 	rm -rf build
