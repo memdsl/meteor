@@ -5,7 +5,6 @@ module idu(
     output logic                       o_idu_valid,
 
     input  logic [`INST_WIDTH - 1 : 0] i_rom_inst,
-
     output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_inst_type,
     output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_inst_name,
     output logic [`ARGS_WIDTH - 1 : 0] o_idu_ctr_alu_type,

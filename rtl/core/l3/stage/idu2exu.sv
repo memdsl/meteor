@@ -2,6 +2,9 @@ module idu2exu(
     input  logic                       i_sys_clk,
     input  logic                       i_sys_rst_n,
 
+    input  logic                       i_i2i_st_en,
+    output logic                       o_i2e_st_en,
+
     input  logic                       i_idu_valid,
     output logic                       o_i2e_ready,
     input  logic                       i_exu_ready,
@@ -42,6 +45,25 @@ module idu2exu(
     input  logic [`DATA_WIDTH - 1 : 0] i_idu_jmp_or_reg_data,
     output logic [`DATA_WIDTH - 1 : 0] o_i2e_jmp_or_reg_data
 );
+
+    logic r_i2e_st_en;
+
+    always_ff @(posedge i_sys_clk) begin
+        if (!i_sys_rst_n) begin
+            r_i2e_st_en <= 1'b0;
+        end
+        else if (i_idu_valid && o_i2e_ready && i_i2i_st_en) begin
+            r_i2e_st_en <= 1'b1;
+        end
+        // else if (i_i2i_st_en) begin
+        //     r_i2e_st_en <= 1'b0;
+        // end
+        else begin
+            r_i2e_st_en <= r_i2e_st_en;
+        end
+    end
+
+    assign o_i2e_st_en = r_i2e_st_en;
 
     assign o_i2e_ready = 1'b1;
     assign o_i2e_valid = 1'b1;

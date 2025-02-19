@@ -150,6 +150,10 @@ module cpu(
     logic [`DATA_WIDTH - 1 : 0] w_wbu_gpr_wr_data;
     logic                       w_wbu_pc_en;
 
+
+    logic w_i2i_st_en;
+    logic w_i2e_st_en;
+
     gpr u_gpr(
         .i_sys_clk        (i_sys_clk        ),
         .i_sys_rst_n      (i_sys_rst_n      ),
@@ -181,6 +185,8 @@ module cpu(
     ifu2idu u_ifu2idu(
         .i_sys_clk  (i_sys_clk  ),
         .i_sys_rst_n(i_sys_rst_n),
+        .i_sys_pc_en(w_exu_pc_en | w_lsu_pc_en),
+        .o_i2i_st_en(w_i2i_st_en),
         .i_ifu_valid(w_ifu_valid),
         .o_i2i_ready(w_i2i_ready),
         .i_idu_ready(w_idu_ready),
@@ -221,6 +227,8 @@ module cpu(
     idu2exu u_idu2exu(
         .i_sys_clk            (i_sys_clk            ),
         .i_sys_rst_n          (i_sys_rst_n          ),
+        .i_i2i_st_en          (w_i2i_st_en),
+        .o_i2e_st_en          (w_i2e_st_en),
         .i_idu_valid          (w_idu_valid          ),
         .o_i2e_ready          (w_i2e_ready          ),
         .i_exu_ready          (w_exu_ready          ),
