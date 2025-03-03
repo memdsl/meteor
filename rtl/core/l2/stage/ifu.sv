@@ -2,9 +2,10 @@ module ifu(
     input  logic                       i_sys_clk,
     input  logic                       i_sys_rst_n,
 
+
     input  logic                       i_wbu_valid,
     output logic                       o_ifu_ready,
-    input  logic                       i_i2i_ready,
+    input  logic                       i_idu_ready,
     output logic                       o_ifu_valid,
 
     input  logic                       i_exu_jmp_en,
@@ -13,8 +14,40 @@ module ifu(
     output logic [`ADDR_WIDTH - 1 : 0] o_ifu_pc_next
 );
 
-    assign o_ifu_ready = 1'b1;
-    assign o_ifu_valid = 1'b1;
+
+    localparam S_IDLE = 0;
+    localparam S_WAIT = 1;
+
+    logic s_1;
+    logic s_1_next;
+
+    always_ff @(posedge i_sys_clk) begin
+        if (!i_sys_rst_n) begin
+            s_1 <= S_IDLE;
+        end
+        else begin
+            s_1 <= s_1_next;
+        end
+    end
+
+    always_comb begin
+        case (s_1)
+            S_IDLE:  s_1_next = o_ifu_valid ? S_WAIT : S_IDLE;
+            S_WAIT:  s_1_next = i_idu_ready ? S_IDLE : S_WAIT;
+            default: s_1_next = S_IDLE;
+        endcase
+    end
+
+    assign o_ifu_valid = i_wbu_valid && ;
+    assign o_ifu_ready = (s_1 == S_IDLE) ? 1'b1 : 1'b0;
+
+
+
+
+
+
+
+
 
     logic [`ADDR_WIDTH - 1 : 0] r_ifu_pc;
     logic [`ADDR_WIDTH - 1 : 0] w_ifu_pc_next;
